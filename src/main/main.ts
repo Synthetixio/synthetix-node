@@ -157,3 +157,13 @@ ipcMain.on('ipfs-id', (event) => {
     event.sender.send('ipfs-id-result', stdout);
   });
 });
+
+ipcMain.on('ipfs-repo-stat', (event) => {
+  exec('ipfs repo stat', (error: any, stdout: any, stderr: any) => {
+    if (error) {
+      console.error(`exec error: ${error}`);
+      return;
+    }
+    event.sender.send('ipfs-repo-stat-result', stdout);
+  });
+});

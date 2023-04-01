@@ -16,6 +16,7 @@ import {
 } from '@chakra-ui/react';
 import PeersCount from './PeersCount';
 import PeerId from './PeerId';
+import Hosting from './Hosting';
 
 export default function Ipfs() {
   return (
@@ -61,19 +62,21 @@ export default function Ipfs() {
                   <StatLabel mb="0" opacity="0.8">
                     Hosting
                   </StatLabel>
-                  <StatNumber>23MiB</StatNumber>
+                  <StatNumber>
+                    <Hosting />
+                  </StatNumber>
                 </Stat>
                 <Stat>
                   <StatLabel mb="0" opacity="0.8">
                     Outgoing
                   </StatLabel>
-                  <StatNumber>34 KiB/s</StatNumber>
+                  <StatNumber>X KB/s</StatNumber>
                 </Stat>
                 <Stat>
                   <StatLabel mb="0" opacity="0.8">
                     Incoming
                   </StatLabel>
-                  <StatNumber>43 KiB/s</StatNumber>
+                  <StatNumber>X KB/s</StatNumber>
                 </Stat>
               </Stack>
               <Box mb="2">
@@ -96,10 +99,10 @@ export default function Ipfs() {
                   letterSpacing="1px"
                   opacity="0.8"
                 >
-                  Synthetix Cluster ID
+                  Synthetix Cluster IPNS
                 </Text>
                 <Code>
-                  12D3KooWceEkc6t7kmHg5bidQ3UybG52tScQzWvZ8bxpA7Qeb87n
+                  k51qzi5uqu5dmdzyb1begj16z2v5btbyzo1lnkdph0kn84o9gmc2uokpi4w54c
                 </Code>
               </Box>
             </Box>
