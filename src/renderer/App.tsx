@@ -1,5 +1,11 @@
 import { Box, Heading, Text } from '@chakra-ui/react';
-import { MemoryRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import {
+  MemoryRouter as Router,
+  Routes,
+  Route,
+  Link,
+  Navigate,
+} from 'react-router-dom';
 import Ipfs from './components/Ipfs';
 
 export default function App() {
@@ -9,11 +15,19 @@ export default function App() {
         <Box background="blackAlpha.300" px="3" py="2" display="flex">
           <Heading size="md">Synthetix Node</Heading>
           <Box ml="auto">
-            <Link to="/ipfs">IPFS</Link>
+            <Text
+              fontSize="sm"
+              fontWeight="semibold"
+              letterSpacing="0.5px"
+              borderBottom="1px solid rgba(255,255,255,0.4)"
+            >
+              <Link to="/ipfs">IPFS</Link>
+            </Text>
           </Box>
         </Box>
         <Box px="3" flex="1" overflowY="auto">
           <Routes>
+            <Route path="/" element={<Navigate to="/ipfs" />} />
             <Route path="/ipfs" element={<Ipfs />} />
           </Routes>
         </Box>
