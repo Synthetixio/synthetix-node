@@ -9,7 +9,7 @@
  * `./src/main.js` using webpack. This gives us some performance wins.
  */
 import path from 'path';
-import { app, BrowserWindow, shell, ipcMain } from 'electron';
+import { app, BrowserWindow, shell, ipcMain, Tray, Menu } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
 import MenuBuilder from './menu';
@@ -23,6 +23,7 @@ class AppUpdater {
   }
 }
 
+let tray: Tray | null = null;
 let mainWindow: BrowserWindow | null = null;
 
 ipcMain.on('ipc-example', async (event, arg) => {
@@ -35,6 +36,14 @@ if (process.env.NODE_ENV === 'production') {
   const sourceMapSupport = require('source-map-support');
   sourceMapSupport.install();
 }
+
+const RESOURCES_PATH = app.isPackaged
+  ? path.join(process.resourcesPath, 'assets')
+  : path.join(__dirname, '../../assets');
+
+const getAssetPath = (...paths: string[]): string => {
+  return path.join(RESOURCES_PATH, ...paths);
+};
 
 const isDebug =
   process.env.NODE_ENV === 'development' || process.env.DEBUG_PROD === 'true';
@@ -60,14 +69,6 @@ const createWindow = async () => {
   if (isDebug) {
     await installExtensions();
   }
-
-  const RESOURCES_PATH = app.isPackaged
-    ? path.join(process.resourcesPath, 'assets')
-    : path.join(__dirname, '../../assets');
-
-  const getAssetPath = (...paths: string[]): string => {
-    return path.join(RESOURCES_PATH, ...paths);
-  };
 
   mainWindow = new BrowserWindow({
     show: false,
@@ -111,6 +112,40 @@ const createWindow = async () => {
   // eslint-disable-next-line
   new AppUpdater();
 };
+
+app.on('ready', () => {
+  // Create a Tray instance with the icon you want to use for the menu bar
+  try {
+    tray = new Tray(getAssetPath('icons/16x16.png'));
+  } catch (err) {
+    console.log('ASD');
+    console.log(err);
+  }
+
+  // Create a Menu instance with the options you want
+  const contextMenu = Menu.buildFromTemplate([
+    {
+      label: 'Open App',
+      click: () => {
+        if (!mainWindow) {
+          createWindow();
+        } else {
+          mainWindow.show();
+        }
+      },
+    },
+    { type: 'separator' },
+    {
+      label: 'Quit',
+      click: () => {
+        app.quit();
+      },
+    },
+  ]);
+
+  // Set the context menu for the tray icon
+  tray?.setContextMenu(contextMenu);
+});
 
 /**
  * Add event listeners...
