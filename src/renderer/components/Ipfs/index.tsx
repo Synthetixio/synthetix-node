@@ -1,13 +1,7 @@
 import {
   Box,
-  Tab,
-  Tabs,
-  TabList,
-  TabPanel,
-  TabPanels,
   Heading,
   Text,
-  Icon,
   Code,
   Stack,
   Stat,

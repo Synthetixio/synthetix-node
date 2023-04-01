@@ -114,13 +114,13 @@ const createWindow = async () => {
 };
 
 app.on('ready', () => {
-  // Create a Tray instance with the icon you want to use for the menu bar
-  try {
-    tray = new Tray(getAssetPath('icons/16x16.png'));
-  } catch (err) {
-    console.log('ASD');
-    console.log(err);
+  // Hide the app from the dock
+  if (app.dock) {
+    app.dock.hide();
   }
+
+  // Create a Tray instance with the icon you want to use for the menu bar
+  tray = new Tray(getAssetPath('icons/16x16.png'));
 
   // Create a Menu instance with the options you want
   const contextMenu = Menu.buildFromTemplate([
