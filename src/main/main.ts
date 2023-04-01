@@ -167,3 +167,13 @@ ipcMain.on('ipfs-repo-stat', (event) => {
     event.sender.send('ipfs-repo-stat-result', stdout);
   });
 });
+
+ipcMain.on('ipfs-stats-bw', (event) => {
+  exec('ipfs stats bw', (error: any, stdout: any, stderr: any) => {
+    if (error) {
+      console.error(`exec error: ${error}`);
+      return;
+    }
+    event.sender.send('ipfs-stats-bw-result', stdout);
+  });
+});

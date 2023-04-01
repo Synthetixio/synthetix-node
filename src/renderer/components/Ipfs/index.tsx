@@ -17,6 +17,8 @@ import {
 import PeersCount from './PeersCount';
 import PeerId from './PeerId';
 import Hosting from './Hosting';
+import RateIn from './RateIn';
+import RateOut from './RateOut';
 
 export default function Ipfs() {
   return (
@@ -70,16 +72,20 @@ export default function Ipfs() {
                   <StatLabel mb="0" opacity="0.8">
                     Outgoing
                   </StatLabel>
-                  <StatNumber>X KB/s</StatNumber>
+                  <StatNumber>
+                    <RateOut />
+                  </StatNumber>
                 </Stat>
                 <Stat>
                   <StatLabel mb="0" opacity="0.8">
                     Incoming
                   </StatLabel>
-                  <StatNumber>X KB/s</StatNumber>
+                  <StatNumber>
+                    <RateIn />
+                  </StatNumber>
                 </Stat>
               </Stack>
-              <Box mb="2">
+              <Box mb="2.5">
                 <Text
                   fontSize="sm"
                   textTransform="uppercase"
@@ -101,7 +107,7 @@ export default function Ipfs() {
                 >
                   Synthetix Cluster IPNS
                 </Text>
-                <Code>
+                <Code fontSize="xs">
                   k51qzi5uqu5dmdzyb1begj16z2v5btbyzo1lnkdph0kn84o9gmc2uokpi4w54c
                 </Code>
               </Box>
