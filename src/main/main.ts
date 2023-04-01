@@ -79,6 +79,8 @@ const createWindow = async () => {
         ? path.join(__dirname, 'preload.js')
         : path.join(__dirname, '../../.erb/dll/preload.js'),
     },
+    nodeIntegration: false,
+    contextIsolation: true,
   });
 
   mainWindow.loadURL(resolveHtmlPath('index.html'));
@@ -135,3 +137,15 @@ app
     });
   })
   .catch(console.log);
+
+const { exec } = require('child_process');
+
+ipcMain.on('ipfs-peers', (event) => {
+  exec('ipfs swarm peers', (error: any, stdout: any, stderr: any) => {
+    if (error) {
+      console.error(`exec error: ${error}`);
+      return;
+    }
+    event.sender.send('ipfs-peers-result', stdout);
+  });
+});

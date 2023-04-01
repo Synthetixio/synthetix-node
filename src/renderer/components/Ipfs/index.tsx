@@ -14,6 +14,7 @@ import {
   StatLabel,
   StatNumber,
 } from '@chakra-ui/react';
+import PeersCount from './PeersCount';
 
 export default function Ipfs() {
   return (
@@ -51,7 +52,9 @@ export default function Ipfs() {
                   <StatLabel mb="0" opacity="0.8">
                     Peers
                   </StatLabel>
-                  <StatNumber>1,324</StatNumber>
+                  <StatNumber>
+                    <PeersCount />
+                  </StatNumber>
                 </Stat>
                 <Stat>
                   <StatLabel mb="0" opacity="0.8">
