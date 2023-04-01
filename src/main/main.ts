@@ -177,3 +177,16 @@ ipcMain.on('ipfs-stats-bw', (event) => {
     event.sender.send('ipfs-stats-bw-result', stdout);
   });
 });
+
+ipcMain.on('ipfs-follow-state', (event) => {
+  exec(
+    'ipfs-cluster-follow synthetix state',
+    (error: any, stdout: any, stderr: any) => {
+      if (error) {
+        console.error(`exec error: ${error}`);
+        return;
+      }
+      event.sender.send('ipfs-follow-state-result', stdout);
+    }
+  );
+});

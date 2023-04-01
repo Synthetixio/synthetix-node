@@ -19,26 +19,14 @@ import PeerId from './PeerId';
 import Hosting from './Hosting';
 import RateIn from './RateIn';
 import RateOut from './RateOut';
+import Status from './Status';
 
 export default function Ipfs() {
   return (
     <Box pt="5">
       <Box flex="1" p="0">
         <Heading mb="5" size="sm">
-          <Box
-            display="inline-block"
-            mr="1"
-            textColor="green.400"
-            transform="translateY(-1px)"
-          >
-            <Icon viewBox="0 0 200 200">
-              <path
-                fill="currentColor"
-                d="M 100, 100 m -75, 0 a 75,75 0 1,0 150,0 a 75,75 0 1,0 -150,0"
-              />
-            </Icon>
-          </Box>
-          Your IPFS node is following the Synthetix Ecosystem cluster
+          <Status />
         </Heading>
         <Stack direction="row" spacing={6} justifyContent="center" mb="5">
           <Stat>
