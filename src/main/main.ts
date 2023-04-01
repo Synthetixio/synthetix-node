@@ -79,8 +79,6 @@ const createWindow = async () => {
         ? path.join(__dirname, 'preload.js')
         : path.join(__dirname, '../../.erb/dll/preload.js'),
     },
-    nodeIntegration: false,
-    contextIsolation: true,
   });
 
   mainWindow.loadURL(resolveHtmlPath('index.html'));
@@ -147,5 +145,15 @@ ipcMain.on('ipfs-peers', (event) => {
       return;
     }
     event.sender.send('ipfs-peers-result', stdout);
+  });
+});
+
+ipcMain.on('ipfs-id', (event) => {
+  exec('ipfs id', (error: any, stdout: any, stderr: any) => {
+    if (error) {
+      console.error(`exec error: ${error}`);
+      return;
+    }
+    event.sender.send('ipfs-id-result', stdout);
   });
 });

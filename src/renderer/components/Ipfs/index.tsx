@@ -15,6 +15,7 @@ import {
   StatNumber,
 } from '@chakra-ui/react';
 import PeersCount from './PeersCount';
+import PeerId from './PeerId';
 
 export default function Ipfs() {
   return (
@@ -85,7 +86,7 @@ export default function Ipfs() {
                   Your Peer ID
                 </Text>
                 <Code>
-                  dfg4GSSb537F3b7VG236hGdfGSNYefgs43tumjvsRTyj3b78n6sd
+                  <PeerId />
                 </Code>
               </Box>
               <Box>
