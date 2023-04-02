@@ -120,7 +120,7 @@ app.on('ready', () => {
   }
 
   // Create a Tray instance with the icon you want to use for the menu bar
-  tray = new Tray(getAssetPath('icons/16x16.png'));
+  tray = new Tray(getAssetPath('synthetix_icon.png'));
 
   // Create a Menu instance with the options you want
   const contextMenu = Menu.buildFromTemplate([
@@ -224,4 +224,117 @@ ipcMain.on('ipfs-follow-state', (event) => {
       event.sender.send('ipfs-follow-state-result', stdout);
     }
   );
+});
+
+// Copy/paste from https://github.com/Synthetixio/ipfs-follower/blob/master/install-macos.sh for now
+const INSTALL_IPFS_COMMAND = `
+
+`;
+
+const INSTALL_FOLLOW_COMMAND = `
+#!/bin/bash
+
+# Determine macOS architecture
+ARCH=$(uname -m)
+
+# Check if the system is running on ARM or x86_64 architecture
+if [ "$ARCH" = "arm64" ]; then
+  ARCH="arm64"
+elif [ "$ARCH" = "x86_64" ]; then
+  ARCH="amd64"
+else
+  echo "Unsupported architecture."
+  exit 1
+fi
+
+function install_ipfs_cluster_follow() {
+  echo "Checking for existing ipfs-cluster-follow installation..."
+
+  # Get the latest version of ipfs-cluster-follow
+  VERSIONS_URL="https://dist.ipfs.tech/ipfs-cluster-follow/versions"
+  LATEST_VERSION=$(curl -sSL $VERSIONS_URL | tail -n 1)
+  LATEST_VERSION_NUMBER=\${LATEST_VERSION#*v}
+
+  # Check if ipfs-cluster-follow is already installed
+  if command -v ipfs-cluster-follow &> /dev/null; then
+    INSTALLED_VERSION=$(ipfs-cluster-follow --version | awk '{print $3}')
+
+    if [ "$INSTALLED_VERSION" == "$LATEST_VERSION_NUMBER" ]; then
+      echo "ipfs-cluster-follow version $INSTALLED_VERSION is already installed."
+      return
+    else
+      echo "Updating ipfs-cluster-follow from version $INSTALLED_VERSION to $LATEST_VERSION_NUMBER"
+    fi
+  else
+    echo "Installing ipfs-cluster-follow version $LATEST_VERSION_NUMBER"
+  fi
+
+  # Download the latest version
+  DOWNLOAD_URL="https://dist.ipfs.tech/ipfs-cluster-follow/\${LATEST_VERSION}/ipfs-cluster-follow_\${LATEST_VERSION}_darwin-\${ARCH}.tar.gz"
+  echo "DOWNLOAD_URL=$DOWNLOAD_URL"
+  curl -sSL -o ipfs-cluster-follow.tar.gz $DOWNLOAD_URL
+
+  # Extract the binary
+  tar -xzf ipfs-cluster-follow.tar.gz
+  rm ipfs-cluster-follow.tar.gz
+
+  # Move the binary to /usr/local/bin or another directory in your $PATH
+  mv ipfs-cluster-follow/ipfs-cluster-follow /usr/local/bin/
+  rm -r ipfs-cluster-follow
+
+  # Check if the installation was successful
+  if ipfs-cluster-follow --version | grep -q "ipfs-cluster-follow version"; then
+    echo "ipfs-cluster-follow version $(ipfs-cluster-follow --version | awk '{print $4}') installed successfully."
+  else
+    echo "Installation failed."
+    exit 1
+  fi
+}
+
+function configure_ipfs_cluster_follow() {
+  echo "Configuring ipfs-cluster-follow..."
+
+  # Initialize ipfs-cluster-follow
+  ipfs-cluster-follow synthetix init "http://127.0.0.1:8080/ipns/k51qzi5uqu5dmdzyb1begj16z2v5btbyzo1lnkdph0kn84o9gmc2uokpi4w54c"
+
+  echo "ipfs-cluster-follow has been configured successfully."
+}
+
+install_ipfs_cluster_follow
+configure_ipfs_cluster_follow
+
+
+# Check if ipfs-daemon is already loaded
+if launchctl list | grep -q "ipfs-cluster-follow"; then
+  echo "Unloading existing ipfs-cluster-follow service..."
+  launchctl unload ~/Library/LaunchAgents/ipfs-cluster-follow.plist
+fi
+
+# Load and start ipfs-daemon service
+echo "Loading ipfs-cluster-follow service..."
+launchctl load -w ~/Library/LaunchAgents/ipfs-cluster-follow.plist
+
+echo "ipfs-cluster-follow autoloader has been installed successfully."
+
+echo "IPFS and ipfs-cluster-follow have been installed and configured successfully."
+`;
+
+ipcMain.on('install-ipfs', (event) => {
+  exec(INSTALL_IPFS_COMMAND, (error: any, stdout: any, stderr: any) => {
+    if (error) {
+      console.error(`exec error: ${error}`);
+      return;
+    }
+    event.sender.send('install-ipfs-result', stdout);
+  });
+});
+
+ipcMain.on('install-follow', (event) => {
+  exec(INSTALL_FOLLOW_COMMAND, (error: any, stdout: any, stderr: any) => {
+    if (error) {
+      console.error(`exec error: ${error}`);
+      return;
+    }
+    event.sender.send('install-follow-result', stdout);
+  });
 });

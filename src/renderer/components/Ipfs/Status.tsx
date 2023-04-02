@@ -1,5 +1,7 @@
 import { Box, Icon, Text } from '@chakra-ui/react';
 import React, { useState, useEffect } from 'react';
+import InstallFollow from './InstallFollow';
+import InstallIpfs from './InstallIpfs';
 
 const { ipcRenderer } = window.electron;
 
@@ -91,7 +93,7 @@ const Status: React.FC = () => {
               </Icon>
             </Box>
             <Text display="inline-block">
-              Your IPFS node is not following the cluster
+              Your IPFS node is not following the cluster <InstallFollow />
             </Text>
           </>
         );
@@ -113,7 +115,9 @@ const Status: React.FC = () => {
                 />
               </Icon>
             </Box>
-            <Text display="inline-block">Your IPFS node is not running</Text>
+            <Text display="inline-block">
+              Your IPFS node is not running <InstallIpfs />
+            </Text>
           </>
         );
     }
