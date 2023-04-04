@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import type { IpcRendererEvent } from 'electron';
+import React, { useEffect, useState } from 'react';
 
 const { ipcRenderer } = window.electron;
 
@@ -10,11 +11,8 @@ const Hosting: React.FC = () => {
       ipcRenderer.send('ipfs-repo-stat');
     };
 
-    const handleRepoStatResult = (
-      event: Electron.IpcRendererEvent,
-      result: string
-    ) => {
-      const numBytes = parseInt(result.split('\n')[1].split(':')[1].trim());
+    const handleRepoStatResult = (event: IpcRendererEvent, result: string) => {
+      const numBytes = parseInt(result.split('\n')[1].split(':')[1].trim(), 10);
       const numMegabytes = (numBytes / 1000000).toFixed();
       setRepoStat(numMegabytes.toString());
     };

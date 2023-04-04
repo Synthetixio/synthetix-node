@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
+import type { IpcRendererEvent } from 'electron';
 
 const { ipcRenderer } = window.electron;
 
@@ -10,10 +11,7 @@ const IPFSPeerId: React.FC = () => {
       ipcRenderer.send('ipfs-id');
     };
 
-    const handleIdResult = (
-      event: Electron.IpcRendererEvent,
-      result: string
-    ) => {
+    const handleIdResult = (event: IpcRendererEvent, result: string) => {
       setId(JSON.parse(result).ID);
     };
 

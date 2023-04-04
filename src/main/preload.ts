@@ -1,6 +1,7 @@
 // Disable no-unused-vars, broken for spread args
+import type { IpcRendererEvent } from 'electron';
 /* eslint no-unused-vars: off */
-import { contextBridge, ipcRenderer, IpcRendererEvent } from 'electron';
+import { contextBridge, ipcRenderer } from 'electron';
 
 export type Channels = 'ipc-example';
 
@@ -11,13 +12,13 @@ const electronHandler = {
     },
     on: (
       channel: string,
-      listener: (event: Electron.IpcRendererEvent, ...args: any[]) => void
+      listener: (event: IpcRendererEvent, ...args: any[]) => void
     ) => {
       ipcRenderer.on(channel, listener);
     },
     removeListener: (
       channel: string,
-      listener: (event: Electron.IpcRendererEvent, ...args: any[]) => void
+      listener: (event: IpcRendererEvent, ...args: any[]) => void
     ) => {
       ipcRenderer.removeListener(channel, listener);
     },

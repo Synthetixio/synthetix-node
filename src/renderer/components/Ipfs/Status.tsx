@@ -1,5 +1,6 @@
 import { Box, Icon, Text } from '@chakra-ui/react';
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
+import type { IpcRendererEvent } from 'electron';
 import InstallFollow from './InstallFollow';
 import InstallIpfs from './InstallIpfs';
 
@@ -13,10 +14,7 @@ const Status: React.FC = () => {
       ipcRenderer.send('ipfs-id');
     };
 
-    const handleIdResult = (
-      event: Electron.IpcRendererEvent,
-      result: string
-    ) => {
+    const handleIdResult = (event: IpcRendererEvent, result: string) => {
       try {
         const id = JSON.parse(result).ID;
         if (id) {
@@ -29,7 +27,7 @@ const Status: React.FC = () => {
     };
 
     const handleFollowStateResult = (
-      event: Electron.IpcRendererEvent,
+      event: IpcRendererEvent,
       result: string
     ) => {
       if (result.length > 0) {

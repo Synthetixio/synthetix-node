@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
+import type { IpcRendererEvent } from 'electron';
 
 const { ipcRenderer } = window.electron;
 
@@ -10,10 +11,7 @@ const IPFSPeers: React.FC = () => {
       ipcRenderer.send('ipfs-peers');
     };
 
-    const handlePeersResult = (
-      event: Electron.IpcRendererEvent,
-      result: string
-    ) => {
+    const handlePeersResult = (event: IpcRendererEvent, result: string) => {
       setPeers(result);
     };
 

@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
+import type { IpcRendererEvent } from 'electron';
 
 const { ipcRenderer } = window.electron;
 
@@ -10,10 +11,7 @@ const RateIn: React.FC = () => {
       ipcRenderer.send('ipfs-stats-bw');
     };
 
-    const handleRepoStatResult = (
-      event: Electron.IpcRendererEvent,
-      result: string
-    ) => {
+    const handleRepoStatResult = (event: IpcRendererEvent, result: string) => {
       const rateIn = result.split('\n')[3].split(':')[1].trim();
       setStatsBw(rateIn);
     };
