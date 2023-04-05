@@ -5,6 +5,7 @@ import { contextBridge, ipcRenderer } from 'electron';
 
 const electronHandler = {
   ipcRenderer: {
+    invoke: (func: string, ...args: any[]) => ipcRenderer.invoke(func, ...args),
     send: (channel: string, ...args: any[]) => {
       ipcRenderer.send(channel, ...args);
     },

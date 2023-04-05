@@ -14,7 +14,14 @@ const config: ThemeConfig = {
 };
 const theme = extendTheme({ config });
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchInterval: 5000,
+      refetchOnWindowFocus: true,
+    },
+  },
+});
 
 const container = document.getElementById('root')!;
 const root = createRoot(container);

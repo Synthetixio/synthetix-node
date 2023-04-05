@@ -1,5 +1,3 @@
-/* eslint global-require: off, no-console: off, promise/always-return: off */
-
 /**
  * This module executes inside of electron's main process. You can start
  * electron renderer process from here and communicate with the other processes
@@ -13,7 +11,17 @@ import { app, BrowserWindow, ipcMain, Menu, shell, Tray } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
 import { resolveHtmlPath } from './util';
-import { downloadIpfs, ipfs } from './ipfs';
+import {
+  configureIpfs,
+  downloadIpfs,
+  ipfs,
+  ipfsDaemon,
+  ipfsIsRunning,
+  ipfsIsConfigured,
+  ipfsIsInstalled,
+} from './ipfs';
+import fs from 'fs/promises';
+import os from 'os';
 
 const isDebug =
   process.env.NODE_ENV === 'development' || process.env.DEBUG_PROD === 'true';
@@ -125,7 +133,7 @@ app.once('ready', () => {
     },
   ]);
 
-  tray.on('mouse-down', (event) => {
+  tray.on('mouse-down', (_event) => {
     if (mainWindow?.isVisible()) {
       mainWindow.hide();
       return;
@@ -155,6 +163,22 @@ app.on('window-all-closed', () => {
 
 app
   .whenReady()
+  .then(async () => {
+    const [isInstalled, isConfigured, isRunning] = await Promise.all([
+      ipfsIsInstalled(),
+      ipfsIsConfigured(),
+      ipfsIsRunning(),
+    ]);
+    if (isInstalled && !isConfigured) {
+      await configureIpfs();
+      await ipfsDaemon();
+      return;
+    }
+    if (isInstalled && isConfigured && !isRunning) {
+      await ipfsDaemon();
+      return;
+    }
+  })
   .then(() => {
     createWindow();
     app.on('activate', () => {
@@ -165,33 +189,36 @@ app
       }
     });
   })
-  .catch(console.log);
+  .catch(console.error);
 
-ipcMain.on('ipfs-peers', async (event) => {
-  event.sender.send('ipfs-peers-result', await ipfs('swarm peers'));
+ipcMain.handle('install-ipfs', async () => {
+  const version = await downloadIpfs();
+  await configureIpfs();
+  return version;
 });
 
-ipcMain.on('ipfs-id', async (event) => {
-  event.sender.send('ipfs-id-result', await ipfs('id'));
+ipcMain.handle('ipfs-isInstalled', async () => {
+  const [isInstalled, isConfigured] = await Promise.all([
+    ipfsIsInstalled(),
+    ipfsIsConfigured(),
+  ]);
+  return isInstalled && isConfigured;
 });
 
-ipcMain.on('ipfs-repo-stat', async (event) => {
-  event.sender.send('ipfs-repo-stat-result', await ipfs('repo stat'));
-});
+ipcMain.handle('ipfs-isRunning', ipfsIsRunning);
 
-ipcMain.on('ipfs-stats-bw', async (event) => {
-  event.sender.send('ipfs-stats-bw-result', await ipfs('stats bw'));
-});
+ipcMain.handle('run-ipfs', ipfsDaemon);
 
-ipcMain.on('ipfs-follow-state', async (_event) => {
-  // ipfs-cluster-follow synthetix state
-  //    event.sender.send('ipfs-follow-state-result', await ipfsFollower('synthetix state'));
-});
+ipcMain.handle('ipfs-peers', () => ipfs('swarm peers'));
+ipcMain.handle('ipfs-id', () => ipfs('id'));
+ipcMain.handle('ipfs-repo-stat', () => ipfs('repo stat'));
+ipcMain.handle('ipfs-stats-bw', () => ipfs('stats bw'));
 
-ipcMain.on('install-follow', async (_event) => {});
-ipcMain.on('install-ipfs', async (event) => {
-  const installedVersion = await downloadIpfs();
-  event.sender.send('install-ipfs-result', installedVersion);
-});
+// ipcMain.handle('ipfs-follow-state', async (_event) => {
+//   // ipfs-cluster-follow synthetix state
+//   //    event.sender.send('ipfs-follow-state-result', await ipfsFollower('synthetix state'));
+// });
+
+// ipcMain.handle('install-follow', async (_event) => {});
 
 app.once('ready', async () => {});

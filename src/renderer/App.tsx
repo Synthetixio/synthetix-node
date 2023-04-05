@@ -1,5 +1,5 @@
 import { Box, Heading, Text } from '@chakra-ui/react';
-import Ipfs from './components/Ipfs';
+import { Ipfs } from './components/Ipfs';
 
 export default function App() {
   return (
