@@ -1,11 +1,19 @@
 import { exec, spawn } from 'child_process';
 import https from 'https';
-import { createReadStream, createWriteStream, promises as fs } from 'fs';
+import {
+  createReadStream,
+  createWriteStream,
+  promises as fs,
+  readFileSync,
+  rmSync,
+} from 'fs';
 import { pipeline } from 'stream/promises';
 import os from 'os';
 import zlib from 'zlib';
 import tar from 'tar';
 import path from 'path';
+
+const ROOT = path.join(os.homedir(), '.synthetix');
 
 function execCommand(command) {
   return new Promise((resolve, reject) => {
@@ -21,11 +29,12 @@ function execCommand(command) {
 }
 
 export async function ipfsDaemon() {
-  const daemon = spawn('./ipfs', ['daemon'], {
+  const daemon = spawn(path.join(ROOT, 'go-ipfs/ipfs'), ['daemon'], {
     stdio: 'pipe',
   });
   daemon.stderr.on('data', (data) => process.stderr.write(data));
-  await fs.writeFile('./ipfs.pid', `${daemon.pid}`, 'utf8');
+  await fs.mkdir(ROOT, { recursive: true });
+  await fs.writeFile(path.join(ROOT, 'ipfs.pid'), `${daemon.pid}`, 'utf8');
 
   return new Promise((resolve, reject) => {
     const timer = setTimeout(
@@ -42,10 +51,23 @@ export async function ipfsDaemon() {
   });
 }
 
+export function ipfsKill() {
+  try {
+    const pid = parseInt(readFileSync(path.join(ROOT, 'ipfs.pid'), 'utf8'), 10);
+    process.kill(pid);
+    rmSync(path.join(ROOT, 'ipfs.pid'));
+  } catch (_e) {
+    // whatever
+  }
+}
+
 export async function ipfsIsRunning() {
   try {
-    await fs.access('./ipfs.pid', fs.constants.F_OK);
-    const pid = parseInt(await fs.readFile('./ipfs.pid', 'utf8'), 10);
+    await fs.access(path.join(ROOT, 'ipfs.pid'), fs.constants.F_OK);
+    const pid = parseInt(
+      await fs.readFile(path.join(ROOT, 'ipfs.pid'), 'utf8'),
+      10
+    );
     return process.kill(pid, 0);
   } catch (_e) {
     return false;
@@ -63,7 +85,7 @@ export async function ipfsIsConfigured() {
 
 export async function ipfsIsInstalled() {
   try {
-    await fs.access('./ipfs', fs.constants.F_OK);
+    await fs.access(path.join(ROOT, 'go-ipfs/ipfs'), fs.constants.F_OK);
     return true;
   } catch (_e) {
     return false;
@@ -71,7 +93,7 @@ export async function ipfsIsInstalled() {
 }
 
 export async function ipfs(arg) {
-  return execCommand(`./ipfs ${arg}`);
+  return execCommand(`${path.join(ROOT, 'go-ipfs/ipfs')} ${arg}`);
 }
 
 export async function getLatestVersion() {
@@ -94,7 +116,7 @@ export async function getLatestVersion() {
 
 export async function getInstalledVersion() {
   try {
-    const ipfsVersion = await execCommand('./ipfs --version');
+    const ipfsVersion = await ipfs('--version');
     const [, , installedVersion] = ipfsVersion.split(' ');
     return installedVersion;
   } catch (_error) {
@@ -126,26 +148,23 @@ export async function downloadIpfs({ log = console.log } = {}) {
   }
 
   const downloadUrl = `https://dist.ipfs.tech/go-ipfs/${latestVersion}/go-ipfs_${latestVersion}_darwin-${targetArch}.tar.gz`;
-  log(`DOWNLOAD_URL=${downloadUrl}`);
+  log(`IPFS package: ${downloadUrl}`);
 
+  await fs.mkdir(ROOT, { recursive: true });
   await new Promise((resolve, reject) => {
-    const file = createWriteStream('ipfs.tar.gz');
+    const file = createWriteStream(path.join(ROOT, 'ipfs.tar.gz'));
     https.get(downloadUrl, (response) =>
       pipeline(response, file).then(resolve).catch(reject)
     );
   });
 
   await new Promise((resolve, reject) => {
-    createReadStream('ipfs.tar.gz')
+    createReadStream(path.join(ROOT, 'ipfs.tar.gz'))
       .pipe(zlib.createGunzip())
-      .pipe(tar.extract({ cwd: '.' }))
+      .pipe(tar.extract({ cwd: ROOT }))
       .on('error', reject)
       .on('end', resolve);
   });
-
-  await fs.unlink('ipfs.tar.gz');
-  await fs.rename('./go-ipfs/ipfs', './ipfs');
-  await fs.rm('./go-ipfs', { recursive: true, force: true });
 
   const installedVersionCheck = await getInstalledVersion();
   if (installedVersionCheck) {

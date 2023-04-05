@@ -19,6 +19,7 @@ import {
   ipfsIsRunning,
   ipfsIsConfigured,
   ipfsIsInstalled,
+  ipfsKill,
 } from './ipfs';
 import fs from 'fs/promises';
 import os from 'os';
@@ -164,6 +165,7 @@ app.on('window-all-closed', () => {
 app
   .whenReady()
   .then(async () => {
+    // return;
     const [isInstalled, isConfigured, isRunning] = await Promise.all([
       ipfsIsInstalled(),
       ipfsIsConfigured(),
@@ -222,3 +224,4 @@ ipcMain.handle('ipfs-stats-bw', () => ipfs('stats bw'));
 // ipcMain.handle('install-follow', async (_event) => {});
 
 app.once('ready', async () => {});
+app.once('will-quit', ipfsKill);
