@@ -1,5 +1,24 @@
 module.exports = {
-  extends: 'erb',
+  extends: [
+    'eslint:recommended',
+    'plugin:react/recommended',
+    //'plugin:@typescript-eslint/recommended'
+  ],
+  env: {
+    browser: true,
+    node: true,
+  },
+  parser: '@typescript-eslint/parser',
+  parserOptions: {
+    ecmaVersion: 2020,
+    sourceType: 'module',
+    project: './tsconfig.json',
+    tsconfigRootDir: __dirname,
+    createDefaultProgram: true,
+    ecmaFeatures: {
+      jsx: true,
+    },
+  },
   rules: {
     // A temporary hack related to IDE not resolving correct package.json
     'import/no-extraneous-dependencies': 'off',
@@ -15,13 +34,13 @@ module.exports = {
       'error',
       { argsIgnorePattern: '^_', varsIgnorePattern: '^_' },
     ],
-  },
-  parserOptions: {
-    ecmaVersion: 2020,
-    sourceType: 'module',
-    project: './tsconfig.json',
-    tsconfigRootDir: __dirname,
-    createDefaultProgram: true,
+    // Prettier
+    'comma-dangle': 'off',
+    indent: 'off',
+    quotes: 'off',
+    'no-undef': 'error',
+    'prefer-const': 'error',
+    semi: ['error', 'always'],
   },
   settings: {
     'import/resolver': {
@@ -34,6 +53,9 @@ module.exports = {
     },
     'import/parsers': {
       '@typescript-eslint/parser': ['.ts', '.tsx'],
+    },
+    react: {
+      version: 'detect',
     },
   },
 };

@@ -13,6 +13,10 @@ import { app, BrowserWindow, ipcMain, Menu, shell, Tray } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
 import { resolveHtmlPath } from './util';
+import { downloadIpfs, ipfs } from './ipfs';
+
+const isDebug =
+  process.env.NODE_ENV === 'development' || process.env.DEBUG_PROD === 'true';
 
 class AppUpdater {
   constructor() {
@@ -24,12 +28,6 @@ class AppUpdater {
 
 let tray: Tray | null = null;
 let mainWindow: BrowserWindow | null = null;
-
-ipcMain.on('ipc-example', async (event, arg) => {
-  const msgTemplate = (pingPong: string) => `IPC test: ${pingPong}`;
-  console.log(msgTemplate(arg));
-  event.reply('ipc-example', msgTemplate('pong'));
-});
 
 if (process.env.NODE_ENV === 'production') {
   const sourceMapSupport = require('source-map-support');
@@ -46,10 +44,18 @@ const getAssetPath = (...paths: string[]): string => {
 
 const createWindow = async () => {
   mainWindow = new BrowserWindow({
-    show: false,
-    width: 512,
-    height: 364,
-    icon: getAssetPath('icon.png'),
+    show: true,
+    useContentSize: true,
+    center: true,
+    minWidth: 512 * (isDebug ? 3 : 1),
+    minHeight: 364 * (isDebug ? 2 : 1),
+    skipTaskbar: true,
+    fullscreen: false,
+    fullscreenable: false,
+    width: 512 * (isDebug ? 3 : 1),
+    height: 364 * (isDebug ? 2 : 1),
+    frame: false,
+    icon: getAssetPath('icon.icns'),
     webPreferences: {
       preload: app.isPackaged
         ? path.join(__dirname, 'preload.js')
@@ -57,19 +63,11 @@ const createWindow = async () => {
     },
   });
 
+  if (isDebug) {
+    mainWindow.webContents.openDevTools();
+  }
+
   mainWindow.loadURL(resolveHtmlPath('index.html'));
-
-  mainWindow.on('ready-to-show', () => {
-    if (!mainWindow) {
-      throw new Error('"mainWindow" is not defined');
-    }
-    if (process.env.START_MINIMIZED) {
-      mainWindow.minimize();
-    } else {
-      mainWindow.show();
-    }
-  });
-
   mainWindow.on('closed', () => {
     mainWindow = null;
   });
@@ -85,11 +83,11 @@ const createWindow = async () => {
   new AppUpdater();
 };
 
-app.on('ready', () => {
-  // Hide the app from the dock
-  if (app.dock) {
-    app.dock.hide();
-  }
+app.once('ready', () => {
+  // // Hide the app from the dock
+  // if (app.dock) {
+  //   app.dock.hide();
+  // }
 
   // Create a Tray instance with the icon you want to use for the menu bar
   tray = new Tray(getAssetPath('icons/16x16@2x.png'));
@@ -97,8 +95,12 @@ app.on('ready', () => {
   // Create a Menu instance with the options you want
   const contextMenu = Menu.buildFromTemplate([
     {
-      label: 'Open App',
+      label: mainWindow?.isVisible() ? 'Hide App' : 'Open App',
       click: () => {
+        if (mainWindow?.isVisible()) {
+          mainWindow.hide();
+          return;
+        }
         if (!mainWindow) {
           createWindow();
         } else {
@@ -123,6 +125,18 @@ app.on('ready', () => {
     },
   ]);
 
+  tray.on('mouse-down', (event) => {
+    if (mainWindow?.isVisible()) {
+      mainWindow.hide();
+      return;
+    }
+    if (!mainWindow) {
+      createWindow();
+    } else {
+      mainWindow.show();
+    }
+  });
+
   // Set the context menu for the tray icon
   tray?.setContextMenu(contextMenu);
 });
@@ -146,82 +160,38 @@ app
     app.on('activate', () => {
       // On macOS it's common to re-create a window in the app when the
       // dock icon is clicked and there are no other windows open.
-      if (mainWindow === null) createWindow();
+      if (mainWindow === null) {
+        createWindow();
+      }
     });
   })
   .catch(console.log);
 
-const { exec } = require('child_process');
-
-ipcMain.on('ipfs-peers', (event) => {
-  exec('ipfs swarm peers', (error: any, stdout: any, _stderr: any) => {
-    if (error) {
-      console.error(`exec error: ${error}`);
-      return;
-    }
-    event.sender.send('ipfs-peers-result', stdout);
-  });
+ipcMain.on('ipfs-peers', async (event) => {
+  event.sender.send('ipfs-peers-result', await ipfs('swarm peers'));
 });
 
-ipcMain.on('ipfs-id', (event) => {
-  exec('ipfs id', (error: any, stdout: any, _stderr: any) => {
-    if (error) {
-      console.error(`exec error: ${error}`);
-      return;
-    }
-    event.sender.send('ipfs-id-result', stdout);
-  });
+ipcMain.on('ipfs-id', async (event) => {
+  event.sender.send('ipfs-id-result', await ipfs('id'));
 });
 
-ipcMain.on('ipfs-repo-stat', (event) => {
-  exec('ipfs repo stat', (error: any, stdout: any, _stderr: any) => {
-    if (error) {
-      console.error(`exec error: ${error}`);
-      return;
-    }
-    event.sender.send('ipfs-repo-stat-result', stdout);
-  });
+ipcMain.on('ipfs-repo-stat', async (event) => {
+  event.sender.send('ipfs-repo-stat-result', await ipfs('repo stat'));
 });
 
-ipcMain.on('ipfs-stats-bw', (event) => {
-  exec('ipfs stats bw', (error: any, stdout: any, _stderr: any) => {
-    if (error) {
-      console.error(`exec error: ${error}`);
-      return;
-    }
-    event.sender.send('ipfs-stats-bw-result', stdout);
-  });
+ipcMain.on('ipfs-stats-bw', async (event) => {
+  event.sender.send('ipfs-stats-bw-result', await ipfs('stats bw'));
 });
 
-ipcMain.on('ipfs-follow-state', (event) => {
-  exec(
-    'ipfs-cluster-follow synthetix state',
-    (error: any, stdout: any, _stderr: any) => {
-      if (error) {
-        console.error(`exec error: ${error}`);
-        return;
-      }
-      event.sender.send('ipfs-follow-state-result', stdout);
-    }
-  );
+ipcMain.on('ipfs-follow-state', async (_event) => {
+  // ipfs-cluster-follow synthetix state
+  //    event.sender.send('ipfs-follow-state-result', await ipfsFollower('synthetix state'));
 });
 
-ipcMain.on('install-ipfs', (_event) => {
-  // exec(INSTALL_IPFS_COMMAND, (error: any, stdout: any, stderr: any) => {
-  //   if (error) {
-  //     console.error(`exec error: ${error}`);
-  //     return;
-  //   }
-  //   event.sender.send('install-ipfs-result', stdout);
-  // });
+ipcMain.on('install-follow', async (_event) => {});
+ipcMain.on('install-ipfs', async (event) => {
+  const installedVersion = await downloadIpfs();
+  event.sender.send('install-ipfs-result', installedVersion);
 });
 
-ipcMain.on('install-follow', (_event) => {
-  // exec(INSTALL_FOLLOW_COMMAND, (error: any, stdout: any, stderr: any) => {
-  //   if (error) {
-  //     console.error(`exec error: ${error}`);
-  //     return;
-  //   }
-  //   event.sender.send('install-follow-result', stdout);
-  // });
-});
+app.once('ready', async () => {});

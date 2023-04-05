@@ -3,8 +3,6 @@ import type { IpcRendererEvent } from 'electron';
 /* eslint no-unused-vars: off */
 import { contextBridge, ipcRenderer } from 'electron';
 
-export type Channels = 'ipc-example';
-
 const electronHandler = {
   ipcRenderer: {
     send: (channel: string, ...args: any[]) => {
