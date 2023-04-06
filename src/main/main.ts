@@ -16,13 +16,19 @@ import {
   downloadIpfs,
   ipfs,
   ipfsDaemon,
-  ipfsIsRunning,
-  ipfsIsConfigured,
   ipfsIsInstalled,
   ipfsKill,
+  ipfsPid,
 } from './ipfs';
-import fs from 'fs/promises';
-import os from 'os';
+import {
+  configureFollower,
+  downloadFollower,
+  follower,
+  followerDaemon,
+  followerIsInstalled,
+  followerPid,
+  followerKill,
+} from './follower';
 
 const isDebug =
   process.env.NODE_ENV === 'development' || process.env.DEBUG_PROD === 'true';
@@ -56,12 +62,12 @@ const createWindow = async () => {
     show: true,
     useContentSize: true,
     center: true,
-    minWidth: 512 * (isDebug ? 3 : 1),
+    minWidth: 600 * (isDebug ? 3 : 1),
     minHeight: 364 * (isDebug ? 2 : 1),
     skipTaskbar: true,
     fullscreen: false,
     fullscreenable: false,
-    width: 512 * (isDebug ? 3 : 1),
+    width: 600 * (isDebug ? 3 : 1),
     height: 364 * (isDebug ? 2 : 1),
     frame: false,
     icon: getAssetPath('icon.icns'),
@@ -164,23 +170,6 @@ app.on('window-all-closed', () => {
 
 app
   .whenReady()
-  .then(async () => {
-    // return;
-    const [isInstalled, isConfigured, isRunning] = await Promise.all([
-      ipfsIsInstalled(),
-      ipfsIsConfigured(),
-      ipfsIsRunning(),
-    ]);
-    if (isInstalled && !isConfigured) {
-      await configureIpfs();
-      await ipfsDaemon();
-      return;
-    }
-    if (isInstalled && isConfigured && !isRunning) {
-      await ipfsDaemon();
-      return;
-    }
-  })
   .then(() => {
     createWindow();
     app.on('activate', () => {
@@ -193,35 +182,36 @@ app
   })
   .catch(console.error);
 
-ipcMain.handle('install-ipfs', async () => {
-  const version = await downloadIpfs();
+ipcMain.handle('install-ipfs', downloadIpfs);
+ipcMain.handle('install-follower', downloadFollower);
+ipcMain.handle('ipfs-isInstalled', ipfsIsInstalled);
+ipcMain.handle('follower-isInstalled', followerIsInstalled);
+ipcMain.handle('ipfs-isRunning', ipfsPid);
+ipcMain.handle('follower-isRunning', followerPid);
+
+ipcMain.handle('run-ipfs', async () => {
   await configureIpfs();
-  return version;
+  await ipfsDaemon();
 });
 
-ipcMain.handle('ipfs-isInstalled', async () => {
-  const [isInstalled, isConfigured] = await Promise.all([
-    ipfsIsInstalled(),
-    ipfsIsConfigured(),
-  ]);
-  return isInstalled && isConfigured;
+ipcMain.handle('run-follower', async () => {
+  await configureFollower();
+  await followerDaemon();
 });
-
-ipcMain.handle('ipfs-isRunning', ipfsIsRunning);
-
-ipcMain.handle('run-ipfs', ipfsDaemon);
 
 ipcMain.handle('ipfs-peers', () => ipfs('swarm peers'));
 ipcMain.handle('ipfs-id', () => ipfs('id'));
 ipcMain.handle('ipfs-repo-stat', () => ipfs('repo stat'));
 ipcMain.handle('ipfs-stats-bw', () => ipfs('stats bw'));
+ipcMain.handle('ipfs-follower-info', () => follower('synthetix info'));
 
-// ipcMain.handle('ipfs-follow-state', async (_event) => {
-//   // ipfs-cluster-follow synthetix state
-//   //    event.sender.send('ipfs-follow-state-result', await ipfsFollower('synthetix state'));
-// });
+app.on('will-quit', ipfsKill);
+app.on('will-quit', followerKill);
 
-// ipcMain.handle('install-follow', async (_event) => {});
+ipfsDaemon();
+const ipfsCheck = setInterval(ipfsDaemon, 10_000);
+app.on('will-quit', () => clearInterval(ipfsCheck));
 
-app.once('ready', async () => {});
-app.once('will-quit', ipfsKill);
+followerDaemon();
+const followerCheck = setInterval(followerDaemon, 10_000);
+app.on('will-quit', () => clearInterval(followerCheck));

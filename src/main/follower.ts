@@ -1,0 +1,226 @@
+/* eslint-disable no-console */
+
+import { exec, spawn } from 'child_process';
+import https from 'https';
+import {
+  createReadStream,
+  createWriteStream,
+  promises as fs,
+  rmSync,
+} from 'fs';
+import { pipeline } from 'stream/promises';
+import os from 'os';
+import zlib from 'zlib';
+import tar from 'tar';
+import path from 'path';
+import type { IpcMainInvokeEvent } from 'electron';
+import { SYNTHETIX_IPNS } from '../const';
+import { getPid, getPidSync } from './pid';
+
+const ROOT = path.join(os.homedir(), '.synthetix');
+
+function execCommand(command: string): Promise<string> {
+  return new Promise((resolve, reject) => {
+    exec(command, { encoding: 'utf8' }, (error, stdout, stderr) => {
+      if (error) {
+        error.message = `${error.message} (${stderr})`;
+        reject(error);
+      } else {
+        resolve(stdout.trim());
+      }
+    });
+  });
+}
+
+export function followerKill() {
+  try {
+    const pid = getPidSync('ipfs-cluster-follow synthetix run');
+    if (pid) {
+      process.kill(pid);
+    }
+    rmSync(path.join(os.homedir(), '.ipfs-cluster-follow/synthetix/badger'), {
+      recursive: true,
+    });
+    rmSync(
+      path.join(os.homedir(), '.ipfs-cluster-follow/synthetix/api-socket'),
+      { recursive: true }
+    );
+  } catch (_e) {
+    // whatever
+  }
+}
+
+export async function followerPid() {
+  return await getPid('ipfs-cluster-follow synthetix run');
+}
+
+export async function followerIsInstalled() {
+  try {
+    await fs.access(
+      path.join(ROOT, 'ipfs-cluster-follow/ipfs-cluster-follow'),
+      fs.constants.F_OK
+    );
+    return true;
+  } catch (_e) {
+    return false;
+  }
+}
+
+export async function followerDaemon() {
+  const isInstalled = await followerIsInstalled();
+  if (!isInstalled) {
+    return;
+  }
+  const pid = await getPid('ipfs-cluster-follow synthetix run');
+  if (!pid) {
+    await configureFollower();
+
+    try {
+      // Cleanup locks in case of a previous crash
+      await Promise.all([
+        fs.rm(
+          path.join(os.homedir(), '.ipfs-cluster-follow/synthetix/badger'),
+          {
+            recursive: true,
+            force: true,
+          }
+        ),
+        fs.rm(
+          path.join(os.homedir(), '.ipfs-cluster-follow/synthetix/api-socket'),
+          { recursive: true, force: true }
+        ),
+      ]);
+    } catch (e) {
+      console.error(e);
+      // whatever
+    }
+
+    spawn(
+      path.join(ROOT, 'ipfs-cluster-follow/ipfs-cluster-follow'),
+      ['synthetix', 'run'],
+      { stdio: 'inherit', detached: true }
+    );
+  }
+}
+
+export async function follower(arg: string) {
+  return execCommand(
+    `${path.join(ROOT, 'ipfs-cluster-follow/ipfs-cluster-follow')} ${arg}`
+  );
+}
+
+export async function getLatestVersion(): Promise<string> {
+  return new Promise((resolve, reject) => {
+    https
+      .get('https://dist.ipfs.tech/ipfs-cluster-follow/versions', (res) => {
+        let data = '';
+        res.on('data', (chunk) => {
+          data += chunk;
+        });
+        res.on('end', () => {
+          resolve(data.trim().split('\n').pop() || '');
+        });
+      })
+      .on('error', (err) => {
+        reject(err);
+      });
+  });
+}
+
+export async function getInstalledVersion() {
+  try {
+    const version = await follower('--version');
+    const [, , installedVersion] = version.split(' ');
+    return installedVersion;
+  } catch (_error) {
+    return null;
+  }
+}
+
+export async function downloadFollower(
+  _e?: IpcMainInvokeEvent,
+  { log = console.log } = {}
+) {
+  const arch = os.arch();
+  const targetArch = arch === 'x64' ? 'amd64' : 'arm64';
+
+  log('Checking for existing ipfs-cluster-follow installation...');
+
+  const latestVersion = await getLatestVersion();
+  const latestVersionNumber = latestVersion.slice(1);
+  const installedVersion = await getInstalledVersion();
+
+  if (installedVersion === latestVersionNumber) {
+    log(
+      `ipfs-cluster-follow version ${installedVersion} is already installed.`
+    );
+    return;
+  }
+
+  if (installedVersion) {
+    log(
+      `Updating ipfs-cluster-follow from version ${installedVersion} to ${latestVersionNumber}`
+    );
+  } else {
+    log(`Installing ipfs-cluster-follow version ${latestVersionNumber}`);
+  }
+
+  const downloadUrl = `https://dist.ipfs.tech/ipfs-cluster-follow/${latestVersion}/ipfs-cluster-follow_${latestVersion}_darwin-${targetArch}.tar.gz`;
+  log(`ipfs-cluster-follow package: ${downloadUrl}`);
+
+  await fs.mkdir(ROOT, { recursive: true });
+  await new Promise((resolve, reject) => {
+    const file = createWriteStream(
+      path.join(ROOT, 'ipfs-cluster-follow.tar.gz')
+    );
+    https.get(downloadUrl, (response) =>
+      pipeline(response, file).then(resolve).catch(reject)
+    );
+  });
+
+  await new Promise((resolve, reject) => {
+    createReadStream(path.join(ROOT, 'ipfs-cluster-follow.tar.gz'))
+      .pipe(zlib.createGunzip())
+      .pipe(tar.extract({ cwd: ROOT }))
+      .on('error', reject)
+      .on('end', resolve);
+  });
+
+  const installedVersionCheck = await getInstalledVersion();
+  if (installedVersionCheck) {
+    log(
+      `ipfs-cluster-follow version ${installedVersionCheck} installed successfully.`
+    );
+  } else {
+    throw new Error('ipfs-cluster-follow installation failed.');
+  }
+
+  return installedVersionCheck;
+}
+
+export async function isConfigured() {
+  try {
+    const service = await fs.readFile(
+      path.join(os.homedir(), '.ipfs-cluster-follow/synthetix/service.json'),
+      'utf8'
+    );
+    return service.includes(SYNTHETIX_IPNS);
+  } catch (_error) {
+    return false;
+  }
+}
+
+export async function configureFollower({ log = console.log } = {}) {
+  if (await isConfigured()) {
+    return;
+  }
+  try {
+    log(
+      await follower(
+        `synthetix init "http://127.0.0.1:8080/ipns/${SYNTHETIX_IPNS}"`
+      )
+    );
+  } catch (_error) {
+    // ignore
+  }
+}

@@ -1,10 +1,11 @@
+/* eslint-disable no-console */
+
 import { exec, spawn } from 'child_process';
 import https from 'https';
 import {
   createReadStream,
   createWriteStream,
   promises as fs,
-  readFileSync,
   rmSync,
 } from 'fs';
 import { pipeline } from 'stream/promises';
@@ -12,10 +13,12 @@ import os from 'os';
 import zlib from 'zlib';
 import tar from 'tar';
 import path from 'path';
+import type { IpcMainInvokeEvent } from 'electron';
+import { getPid, getPidSync } from './pid';
 
 const ROOT = path.join(os.homedir(), '.synthetix');
 
-function execCommand(command) {
+function execCommand(command: string): Promise<string> {
   return new Promise((resolve, reject) => {
     exec(command, { encoding: 'utf8' }, (error, stdout, stderr) => {
       if (error) {
@@ -28,59 +31,22 @@ function execCommand(command) {
   });
 }
 
-export async function ipfsDaemon() {
-  const daemon = spawn(path.join(ROOT, 'go-ipfs/ipfs'), ['daemon'], {
-    stdio: 'pipe',
-  });
-  daemon.stderr.on('data', (data) => process.stderr.write(data));
-  await fs.mkdir(ROOT, { recursive: true });
-  await fs.writeFile(path.join(ROOT, 'ipfs.pid'), `${daemon.pid}`, 'utf8');
-
-  return new Promise((resolve, reject) => {
-    const timer = setTimeout(
-      () => reject(new Error('Timed out waiting for daemon to start')),
-      30000
-    );
-    daemon.stdout.on('data', (data) => {
-      process.stdout.write(data);
-      if (`${data}`.includes('Daemon is ready')) {
-        clearTimeout(timer);
-        resolve(true);
-      }
-    });
-  });
-}
-
 export function ipfsKill() {
   try {
-    const pid = parseInt(readFileSync(path.join(ROOT, 'ipfs.pid'), 'utf8'), 10);
-    process.kill(pid);
-    rmSync(path.join(ROOT, 'ipfs.pid'));
+    const pid = getPidSync('ipfs daemon');
+    if (pid) {
+      process.kill(pid);
+    }
+    rmSync(path.join(os.homedir(), '.ipfs/repo.lock'), {
+      recursive: true,
+    });
   } catch (_e) {
     // whatever
   }
 }
 
-export async function ipfsIsRunning() {
-  try {
-    await fs.access(path.join(ROOT, 'ipfs.pid'), fs.constants.F_OK);
-    const pid = parseInt(
-      await fs.readFile(path.join(ROOT, 'ipfs.pid'), 'utf8'),
-      10
-    );
-    return process.kill(pid, 0);
-  } catch (_e) {
-    return false;
-  }
-}
-
-export async function ipfsIsConfigured() {
-  try {
-    await fs.access(path.join(os.homedir(), '.ipfs'), fs.constants.F_OK);
-    return true;
-  } catch (_e) {
-    return false;
-  }
+export async function ipfsPid() {
+  return await getPid('ipfs daemon');
 }
 
 export async function ipfsIsInstalled() {
@@ -92,11 +58,26 @@ export async function ipfsIsInstalled() {
   }
 }
 
-export async function ipfs(arg) {
+export async function ipfsDaemon() {
+  const isInstalled = await ipfsIsInstalled();
+  if (!isInstalled) {
+    return;
+  }
+  const pid = await getPid('ipfs daemon');
+  if (!pid) {
+    await configureIpfs();
+    spawn(path.join(ROOT, 'go-ipfs/ipfs'), ['daemon'], {
+      stdio: 'inherit',
+      detached: true,
+    });
+  }
+}
+
+export async function ipfs(arg: string) {
   return execCommand(`${path.join(ROOT, 'go-ipfs/ipfs')} ${arg}`);
 }
 
-export async function getLatestVersion() {
+export async function getLatestVersion(): Promise<string> {
   return new Promise((resolve, reject) => {
     https
       .get('https://dist.ipfs.tech/go-ipfs/versions', (res) => {
@@ -105,7 +86,7 @@ export async function getLatestVersion() {
           data += chunk;
         });
         res.on('end', () => {
-          resolve(data.trim().split('\n').pop());
+          resolve(data.trim().split('\n').pop() || '');
         });
       })
       .on('error', (err) => {
@@ -124,7 +105,10 @@ export async function getInstalledVersion() {
   }
 }
 
-export async function downloadIpfs({ log = console.log } = {}) {
+export async function downloadIpfs(
+  _e?: IpcMainInvokeEvent,
+  { log = console.log } = {}
+) {
   const arch = os.arch();
   const targetArch = arch === 'x64' ? 'amd64' : 'arm64';
 
@@ -177,16 +161,20 @@ export async function downloadIpfs({ log = console.log } = {}) {
 }
 
 export async function configureIpfs({ log = console.log } = {}) {
-  log(await ipfs('init'));
-  log(
-    await ipfs(
-      'config --json API.HTTPHeaders.Access-Control-Allow-Origin \'["*"]\''
-    )
-  );
-  log(
-    await ipfs(
-      'config --json API.HTTPHeaders.Access-Control-Allow-Methods \'["PUT", "POST", "GET"]\''
-    )
-  );
-  log(await ipfs('config profile apply lowpower'));
+  try {
+    log(await ipfs('init'));
+    log(
+      await ipfs(
+        'config --json API.HTTPHeaders.Access-Control-Allow-Origin \'["*"]\''
+      )
+    );
+    log(
+      await ipfs(
+        'config --json API.HTTPHeaders.Access-Control-Allow-Methods \'["PUT", "POST", "GET"]\''
+      )
+    );
+    log(await ipfs('config profile apply lowpower'));
+  } catch (_error) {
+    // whatever
+  }
 }
