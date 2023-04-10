@@ -112,118 +112,9 @@ export function Ipfs() {
     useRunFollower();
 
   return (
-    <Box pt="4">
+    <Box pt="3">
       <Box flex="1" p="0">
-        <Heading mb="3" size="sm">
-          {isIpfsRunning ? (
-            <Text as="span" whiteSpace="nowrap">
-              <StatusIcon textColor="green.400" />
-              <Text display="inline-block">IPFS node running</Text>
-            </Text>
-          ) : (
-            <>
-              {isIpfsInstalled ? (
-                <Text as="span" whiteSpace="nowrap">
-                  <StatusIcon textColor="yellow.400" />
-                  <Text display="inline-block">
-                    Your IPFS node is not running
-                    <Button
-                      colorScheme="yellow"
-                      transform="translateY(-2px)"
-                      ml="2"
-                      size="xs"
-                      onClick={onRunIpfs}
-                      isLoading={isRunIpfsLoading}
-                    >
-                      Run IPFS node
-                      {isRunIpfsLoading ? <Spinner size="xs" /> : null}
-                    </Button>
-                  </Text>
-                </Text>
-              ) : (
-                <Text as="span" whiteSpace="nowrap">
-                  <StatusIcon textColor="red.400" />
-                  <Text display="inline-block">
-                    IPFS node is not installed
-                    <Button
-                      colorScheme="green"
-                      transform="translateY(-2px)"
-                      ml="2"
-                      size="xs"
-                      onClick={onInstallIpfs}
-                      isLoading={isInstallIpfsLoading}
-                    >
-                      Install IPFS node
-                      {isInstallIpfsLoading ? <Spinner size="xs" /> : null}
-                    </Button>
-                  </Text>
-                </Text>
-              )}
-            </>
-          )}
-        </Heading>
-        <Heading mb="3" size="sm">
-          {isFollowerRunning ? (
-            <>
-              {followerInfo.cluster ? (
-                <Text as="span" whiteSpace="nowrap">
-                  <StatusIcon textColor="green.400" />
-                  <Text display="inline-block">
-                    Connected to the Synthetix Cluster
-                  </Text>
-                </Text>
-              ) : (
-                <Text as="span" whiteSpace="nowrap">
-                  <Spinner size="xs" mr="2" />
-                  <Text display="inline-block">
-                    Connecting to the Synthetix Cluster
-                  </Text>
-                </Text>
-              )}
-            </>
-          ) : (
-            <>
-              {isFollowerInstalled ? (
-                <Text as="span" whiteSpace="nowrap">
-                  <StatusIcon textColor="yellow.400" />
-                  <Text display="inline-block">
-                    Synthetix node is not running
-                    <Button
-                      colorScheme="yellow"
-                      transform="translateY(-2px)"
-                      ml="2"
-                      size="xs"
-                      onClick={onRunFollower}
-                      isLoading={isRunFollowerLoading}
-                    >
-                      Connect to Synthetix cluster
-                      {isRunFollowerLoading ? <Spinner size="xs" /> : null}
-                    </Button>
-                  </Text>
-                </Text>
-              ) : (
-                <Text as="span" whiteSpace="nowrap">
-                  <StatusIcon textColor="red.400" />
-                  <Text display="inline-block">
-                    Synthetix node is not installed
-                    <Button
-                      colorScheme="green"
-                      transform="translateY(-2px)"
-                      ml="2"
-                      size="xs"
-                      onClick={onInstallFollower}
-                      isLoading={isInstallFollowerLoading}
-                    >
-                      Install Synthetix cluster connector
-                      {isInstallFollowerLoading ? <Spinner size="xs" /> : null}
-                    </Button>
-                  </Text>
-                </Text>
-              )}
-            </>
-          )}
-        </Heading>
-        <Stack direction="row" spacing={6} justifyContent="center" mb="3">
+        <Stack direction="row" spacing={6} justifyContent="center" mb="2">
           <Stat>
             <StatLabel mb="0" opacity="0.8">
               Hosting
@@ -248,10 +139,142 @@ export function Ipfs() {
             <StatLabel mb="0" opacity="0.8">
               Peers
             </StatLabel>
-            <StatNumber>{peers}</StatNumber>
+            <StatNumber>{peers ? peers : '-'}</StatNumber>
           </Stat>
         </Stack>
-        <Box mb="4" bg="whiteAlpha.300" w="100%" height="1px" />
+        <Box bg="whiteAlpha.200" pt="4" px="4" pb="4" mb="3">
+          <Heading mb="3" size="sm">
+            {isIpfsRunning ? (
+              <Text as="span" whiteSpace="nowrap">
+                <StatusIcon textColor="green.400" />
+                <Text display="inline-block">Your IPFS node running</Text>
+              </Text>
+            ) : (
+              <>
+                {isIpfsInstalled ? (
+                  <Text as="span" whiteSpace="nowrap">
+                    <StatusIcon textColor="yellow.400" />
+                    <Text display="inline-block">
+                      Your IPFS node is not running
+                      <Button
+                        colorScheme="green"
+                        color="white"
+                        bg="green.700"
+                        _hover={{
+                          bg: 'green.600',
+                        }}
+                        transform="translateY(-2px)"
+                        ml="2"
+                        size="xs"
+                        onClick={onRunIpfs}
+                        isLoading={isRunIpfsLoading}
+                      >
+                        Run IPFS node
+                        {isRunIpfsLoading ? <Spinner size="xs" /> : null}
+                      </Button>
+                    </Text>
+                  </Text>
+                ) : (
+                  <Text as="span" whiteSpace="nowrap">
+                    <StatusIcon textColor="red.400" />
+                    <Text display="inline-block">
+                      IPFS node is not installed
+                      <Button
+                        colorScheme="green"
+                        color="white"
+                        bg="green.700"
+                        _hover={{
+                          bg: 'green.600',
+                        }}
+                        transform="translateY(-2px)"
+                        ml="2"
+                        size="xs"
+                        onClick={onInstallIpfs}
+                        isLoading={isInstallIpfsLoading}
+                      >
+                        Install IPFS node
+                        {isInstallIpfsLoading ? <Spinner size="xs" /> : null}
+                      </Button>
+                    </Text>
+                  </Text>
+                )}
+              </>
+            )}
+          </Heading>
+          <Heading size="sm">
+            {isFollowerRunning ? (
+              <>
+                {followerInfo.cluster ? (
+                  <Text as="span" whiteSpace="nowrap">
+                    <StatusIcon textColor="green.400" />
+                    <Text display="inline-block">
+                      You are connected to the Synthetix Cluster
+                    </Text>
+                  </Text>
+                ) : (
+                  <Text as="span" whiteSpace="nowrap">
+                    <Spinner size="xs" mr="2" />
+                    <Text display="inline-block">
+                      Connecting to the Synthetix Cluster...
+                    </Text>
+                  </Text>
+                )}
+              </>
+            ) : (
+              <>
+                {isFollowerInstalled ? (
+                  <Text as="span" whiteSpace="nowrap">
+                    <StatusIcon textColor="yellow.400" />
+                    <Text display="inline-block">
+                      You are not connected to the cluster
+                      <Button
+                        colorScheme="green"
+                        color="white"
+                        bg="green.700"
+                        _hover={{
+                          bg: 'green.600',
+                        }}
+                        transform="translateY(-2px)"
+                        ml="2"
+                        size="xs"
+                        onClick={onRunFollower}
+                        isLoading={isRunFollowerLoading}
+                      >
+                        Connect to the Synthetix Cluster
+                        {isRunFollowerLoading ? <Spinner size="xs" /> : null}
+                      </Button>
+                    </Text>
+                  </Text>
+                ) : (
+                  <Text as="span" whiteSpace="nowrap">
+                    <StatusIcon textColor="red.400" />
+                    <Text display="inline-block">
+                      IPFS cluster is not installed
+                      <Button
+                        colorScheme="green"
+                        color="white"
+                        bg="green.700"
+                        _hover={{
+                          bg: 'green.600',
+                        }}
+                        transform="translateY(-2px)"
+                        ml="2"
+                        size="xs"
+                        onClick={onInstallFollower}
+                        isLoading={isInstallFollowerLoading}
+                      >
+                        Install Synthetix Cluster Connector
+                        {isInstallFollowerLoading ? (
+                          <Spinner size="xs" />
+                        ) : null}
+                      </Button>
+                    </Text>
+                  </Text>
+                )}
+              </>
+            )}
+          </Heading>
+        </Box>
         <Box mb="3">
           <Text
             fontSize="sm"
@@ -263,7 +286,9 @@ export function Ipfs() {
             Your Peer ID
           </Text>
           <Box display="flex" alignItems="center">
-            <Code>{peerId ? peerId : '~'}</Code>
+            <Code>
+              {peerId ? peerId : 'CONNECT YOUR IPFS NODE TO GENERATE A PEER ID'}
+            </Code>
             {peerId && (
               <CopyIcon
                 opacity="0.8"

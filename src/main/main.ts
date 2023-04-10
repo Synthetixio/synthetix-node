@@ -30,8 +30,8 @@ import {
   followerKill,
 } from './follower';
 
-const isDebug =
-  process.env.NODE_ENV === 'development' || process.env.DEBUG_PROD === 'true';
+const isDebug = false;
+//  process.env.NODE_ENV === 'development' || process.env.DEBUG_PROD === 'true';
 
 class AppUpdater {
   constructor() {
@@ -124,10 +124,10 @@ app.once('ready', () => {
       },
     },
     {
-      label: 'DevTools',
+      label: 'Debug',
       click: () => {
         if (mainWindow) {
-          mainWindow.webContents.openDevTools();
+          mainWindow.webContents.openDevTools({ mode: 'detach' });
         }
       },
     },
