@@ -12,7 +12,19 @@ const config: ThemeConfig = {
   initialColorMode: 'dark',
   useSystemColorMode: false,
 };
-const theme = extendTheme({ config });
+import { mode } from '@chakra-ui/theme-tools';
+
+const theme = extendTheme({
+  config,
+  styles: {
+    global: (props: any) => ({
+      body: {
+        bg: mode('#ffffff', '#000000')(props),
+        color: mode('#000000', '#ffffff')(props),
+      },
+    }),
+  },
+});
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -30,6 +42,6 @@ root.render(
     <ChakraProvider theme={theme}>
       <App />
     </ChakraProvider>
-    <ReactQueryDevtools initialIsOpen={false} />
+    {/*<ReactQueryDevtools initialIsOpen={false} />*/}
   </QueryClientProvider>
 );

@@ -11,6 +11,7 @@ import {
   StatNumber,
   Text,
 } from '@chakra-ui/react';
+import { CopyIcon } from '@chakra-ui/icons';
 import { useMutation } from '@tanstack/react-query';
 import { usePeerId } from './usePeerId';
 import { usePeers } from './usePeers';
@@ -23,6 +24,12 @@ import { useIsFollowerRunning } from './useIsFollowerRunning';
 import { useIsFollowerInstalled } from './useIsFollowerInstalled';
 import { useFollowerInfo } from './useFollowerInfo';
 import { SYNTHETIX_IPNS } from '../../../const';
+
+function handleCopy(text: string) {
+  if (text) {
+    navigator.clipboard.writeText(text);
+  }
+}
 
 function StatusIcon(props: any) {
   return (
@@ -105,13 +112,13 @@ export function Ipfs() {
     useRunFollower();
 
   return (
-    <Box pt="5">
+    <Box pt="4">
       <Box flex="1" p="0">
-        <Heading mb="5" size="sm">
+        <Heading mb="3" size="sm">
           {isIpfsRunning ? (
             <Text as="span" whiteSpace="nowrap">
               <StatusIcon textColor="green.400" />
-              <Text display="inline-block">IPFS service is running</Text>
+              <Text display="inline-block">IPFS node running</Text>
             </Text>
           ) : (
             <>
@@ -128,7 +135,7 @@ export function Ipfs() {
                       onClick={onRunIpfs}
                       isLoading={isRunIpfsLoading}
                     >
-                      Run IPFS service
+                      Run IPFS node
                       {isRunIpfsLoading ? <Spinner size="xs" /> : null}
                     </Button>
                   </Text>
@@ -137,7 +144,7 @@ export function Ipfs() {
                 <Text as="span" whiteSpace="nowrap">
                   <StatusIcon textColor="red.400" />
                   <Text display="inline-block">
-                    IPFS service is not installed
+                    IPFS node is not installed
                     <Button
                       colorScheme="green"
                       transform="translateY(-2px)"
@@ -146,7 +153,7 @@ export function Ipfs() {
                       onClick={onInstallIpfs}
                       isLoading={isInstallIpfsLoading}
                     >
-                      Install IPFS service
+                      Install IPFS node
                       {isInstallIpfsLoading ? <Spinner size="xs" /> : null}
                     </Button>
                   </Text>
@@ -154,21 +161,22 @@ export function Ipfs() {
               )}
             </>
           )}
-          <Box display="inline" ml={5} />
+        </Heading>
+        <Heading mb="3" size="sm">
           {isFollowerRunning ? (
             <>
               {followerInfo.cluster ? (
                 <Text as="span" whiteSpace="nowrap">
                   <StatusIcon textColor="green.400" />
                   <Text display="inline-block">
-                    Connected to Synthetix cluster
+                    Connected to the Synthetix Cluster
                   </Text>
                 </Text>
               ) : (
                 <Text as="span" whiteSpace="nowrap">
-                  <StatusIcon textColor="yellow.400" />
+                  <Spinner size="xs" mr="2" />
                   <Text display="inline-block">
-                    Connecting to Synthetix cluster <Spinner size="xs" />
+                    Connecting to the Synthetix Cluster
                   </Text>
                 </Text>
               )}
@@ -215,13 +223,7 @@ export function Ipfs() {
             </>
           )}
         </Heading>
-        <Stack direction="row" spacing={6} justifyContent="center" mb="5">
-          <Stat>
-            <StatLabel mb="0" opacity="0.8">
-              Peers
-            </StatLabel>
-            <StatNumber>{peers}</StatNumber>
-          </Stat>
+        <Stack direction="row" spacing={6} justifyContent="center" mb="3">
           <Stat>
             <StatLabel mb="0" opacity="0.8">
               Hosting
@@ -242,23 +244,35 @@ export function Ipfs() {
             </StatLabel>
             <StatNumber>{rateIn ? rateIn : '-'}</StatNumber>
           </Stat>
+          <Stat>
+            <StatLabel mb="0" opacity="0.8">
+              Peers
+            </StatLabel>
+            <StatNumber>{peers}</StatNumber>
+          </Stat>
         </Stack>
-        <Box
-          mb="5"
-          cursor={peerId ? 'context-menu' : 'default'}
-          onClick={() =>
-            peerId ? navigator.clipboard.writeText(peerId) : null
-          }
-        >
+        <Box mb="4" bg="whiteAlpha.300" w="100%" height="1px" />
+        <Box mb="3">
           <Text
             fontSize="sm"
             textTransform="uppercase"
             letterSpacing="1px"
             opacity="0.8"
+            mb="1"
           >
             Your Peer ID
           </Text>
-          <Code>{peerId ? peerId : '~'}</Code>
+          <Box display="flex" alignItems="center">
+            <Code>{peerId ? peerId : '~'}</Code>
+            {peerId && (
+              <CopyIcon
+                opacity="0.8"
+                ml="2"
+                cursor="pointer"
+                onClick={() => handleCopy(peerId)}
+              />
+            )}
+          </Box>
         </Box>
         <Box>
           <Text
@@ -266,20 +280,21 @@ export function Ipfs() {
             textTransform="uppercase"
             letterSpacing="1px"
             opacity="0.8"
+            mb="1"
           >
             Synthetix Cluster IPNS
           </Text>
-          <Code
-            fontSize="xs"
-            cursor={SYNTHETIX_IPNS ? 'context-menu' : 'default'}
-            onClick={() =>
-              SYNTHETIX_IPNS
-                ? navigator.clipboard.writeText(SYNTHETIX_IPNS)
-                : null
-            }
-          >
-            {SYNTHETIX_IPNS}
-          </Code>
+          <Box display="flex" alignItems="center">
+            <Code fontSize="sm">{SYNTHETIX_IPNS}</Code>
+            {SYNTHETIX_IPNS && (
+              <CopyIcon
+                opacity="0.8"
+                ml="2"
+                cursor="pointer"
+                onClick={() => handleCopy(SYNTHETIX_IPNS)}
+              />
+            )}
+          </Box>
         </Box>
       </Box>
     </Box>
