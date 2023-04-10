@@ -30,8 +30,8 @@ import {
   followerKill,
 } from './follower';
 
-const isDebug = false;
-//  process.env.NODE_ENV === 'development' || process.env.DEBUG_PROD === 'true';
+const isDebug =
+  process.env.NODE_ENV === 'development' || process.env.DEBUG_PROD === 'true';
 
 class AppUpdater {
   constructor() {
