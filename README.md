@@ -1,6 +1,6 @@
 # Synthetix Node
 
-![Synthetix IPFS Node](./screenshot.png)
+![Synthetix Node](./synthetix-node.png)
 
 The Synthetix ecosystem has been progressively moving towards reliance on ENS/IPFS over DNS/HTTP for web hosting. For example, Kwenta is available via [eth.limo](http://eth.limo) at [kwenta.eth.limo](https://kwenta.eth.limo/), and you can access it directly in [Brave](https://brave.com/) at [kwenta.eth](http://kwenta.eth/). Synthetix’s Core Contributors are also using IPFS to store and share protocol deployment data using [Cannon](https://usecannon.com).
 
@@ -14,7 +14,7 @@ _If you are involved in the Synthetix ecosystem and interested in pinning web ap
 
 ## Running the Node
 
-Download the macOS app [here](./dist/synthetix-node.dmg). (Windows and Linux versions are in development.)
+Download the macOS app from [Releases page](https://github.com/Synthetixio/snx-node/releases). (Windows and Linux versions are in development.)
 
 **You will need to Command-click the app and select "Open" from the context menu to run the app. If you are concerned with security, clone this repository, review the implementation, and use the instructions below to start a development build.**
 
