@@ -29,9 +29,23 @@ npm i
 npm start
 ```
 
-### Create icns file from pngs
-
+### Generate Electron app icons from svg
 ```sh
+node ./assets/gen-icons.js ./assets/icon.svg ./assets/icons
+```
+
+### Generate icns file (for MacOS) from svg
+```sh
+node ./assets/gen-set.js ./assets/icon.svg ./assets/icon.iconset
+
+cd assets
+iconutil -c icns icon.iconset
+```
+
+### Generate png and ico files (for Linux and Windows) from svg
+```sh
+node ./assets/gen-ico.js ./assets/icon.svg
+
 cd assets
 iconutil -c icns icon.iconset
 ```

@@ -7,12 +7,12 @@ import {
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import App from './App';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+import { mode } from '@chakra-ui/theme-tools';
 
 const config: ThemeConfig = {
   initialColorMode: 'dark',
   useSystemColorMode: false,
 };
-import { mode } from '@chakra-ui/theme-tools';
 
 const theme = extendTheme({
   config,
@@ -42,6 +42,6 @@ root.render(
     <ChakraProvider theme={theme}>
       <App />
     </ChakraProvider>
-    {/*<ReactQueryDevtools initialIsOpen={false} />*/}
+    <ReactQueryDevtools initialIsOpen={false} />
   </QueryClientProvider>
 );
