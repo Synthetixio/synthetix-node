@@ -107,7 +107,7 @@
   },
   "build": {
     "productName": "Synthetix Node",
-    "appId": "org.erb.SynthetixIPFSNode",
+    "appId": "org.erb.SynthetixNode",
     "asar": true,
     "asarUnpack": "**\\*.{node,dll}",
     "files": [
