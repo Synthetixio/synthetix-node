@@ -7,23 +7,14 @@ import {
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import App from './App';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
-import { mode } from '@chakra-ui/theme-tools';
 
 const config: ThemeConfig = {
   initialColorMode: 'dark',
-  useSystemColorMode: false,
+  useSystemColorMode: true,
 };
 
 const theme = extendTheme({
   config,
-  styles: {
-    global: (props: any) => ({
-      body: {
-        bg: mode('#ffffff', '#000000')(props),
-        color: mode('#000000', '#ffffff')(props),
-      },
-    }),
-  },
 });
 
 const queryClient = new QueryClient({
