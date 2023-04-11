@@ -124,10 +124,10 @@ app.once('ready', () => {
       },
     },
     {
-      label: 'DevTools',
+      label: 'Debug',
       click: () => {
         if (mainWindow) {
-          mainWindow.webContents.openDevTools();
+          mainWindow.webContents.openDevTools({ mode: 'detach' });
         }
       },
     },

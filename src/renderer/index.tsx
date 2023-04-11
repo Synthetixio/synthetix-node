@@ -10,9 +10,12 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 
 const config: ThemeConfig = {
   initialColorMode: 'dark',
-  useSystemColorMode: false,
+  useSystemColorMode: true,
 };
-const theme = extendTheme({ config });
+
+const theme = extendTheme({
+  config,
+});
 
 const queryClient = new QueryClient({
   defaultOptions: {
