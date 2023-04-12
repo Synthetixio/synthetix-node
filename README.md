@@ -22,7 +22,7 @@ If you would rather run this in a Docker container or run scripts manually, chec
 
 ## Development
 
-## Get Started
+### Get Started
 
 ```sh
 npm i
@@ -33,3 +33,27 @@ npm start
 ```sh
 npm run iconsgen
 ```
+
+### Releasing new version
+
+Unfortunately version is hardcoded in react-electron-bolierplate, so we need to update it manually.
+
+```sh
+pushd .
+cd ./release/app
+NEXT_VERSION=$(npm version patch)
+popd
+git add .
+git commit -m $NEXT_VERSION
+git tag -a -m $NEXT_VERSION $NEXT_VERSION
+git push --follow-tags
+```
+
+Then we need to create Github release:
+
+```sh
+open ./release/build
+open https://github.com/Synthetixio/snx-node/releases/new
+```
+
+Fill in the details of the new release and upload artifacts from `./release/build` folder.
