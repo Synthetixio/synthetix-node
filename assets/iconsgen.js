@@ -28,7 +28,7 @@ async function icns(inputFile, outputDir) {
     );
     await createResizedImage(
       inputFile,
-      path.join(iconsetDir, `icon_${size}x${size}@2.png`),
+      path.join(iconsetDir, `icon_${size}x${size}@2x.png`),
       size * 2
     );
   }
@@ -57,8 +57,13 @@ async function main(inputFile, outputDir) {
     );
     await createResizedImage(
       inputFile,
-      path.join(outputDir, 'icons', `${size}x${size}@2.png`),
+      path.join(outputDir, 'icons', `${size}x${size}@2x.png`),
       size * 2
+    );
+    await createResizedImage(
+      inputFile,
+      path.join(outputDir, 'icons', `${size}x${size}@3x.png`),
+      size * 3
     );
   }
 }
