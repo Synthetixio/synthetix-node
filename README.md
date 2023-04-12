@@ -31,21 +31,5 @@ npm start
 
 ### Generate Electron app icons from svg
 ```sh
-node ./assets/gen-icons.js ./assets/icon.svg ./assets/icons
-```
-
-### Generate icns file (for MacOS) from svg
-```sh
-cd assets
-node gen-set.js icon.svg icon.iconset
-iconutil -c icns icon.iconset
-rm -r icon.iconset
-```
-
-### Generate png and ico files (for Linux and Windows) from svg
-```sh
-node ./assets/gen-ico.js ./assets/icon.svg
-
-cd assets
-iconutil -c icns icon.iconset
+npm run iconsgen
 ```

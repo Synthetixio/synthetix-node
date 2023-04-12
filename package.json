@@ -15,7 +15,8 @@
     "start": "ts-node ./.erb/scripts/check-port-in-use.js && npm run start:renderer",
     "start:main": "NODE_ENV=development electronmon -r ts-node/register/transpile-only .",
     "start:preload": "NODE_ENV=development TS_NODE_TRANSPILE_ONLY=true webpack --config ./.erb/configs/webpack.config.preload.dev.ts",
-    "start:renderer": "NODE_ENV=development TS_NODE_TRANSPILE_ONLY=true webpack serve --config ./.erb/configs/webpack.config.renderer.dev.ts"
+    "start:renderer": "NODE_ENV=development TS_NODE_TRANSPILE_ONLY=true webpack serve --config ./.erb/configs/webpack.config.renderer.dev.ts",
+    "iconsgen": "node ./assets/iconsgen.js ./assets/icon.svg ./assets"
   },
   "browserslist": [],
   "prettier": {
