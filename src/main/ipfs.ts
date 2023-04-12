@@ -173,7 +173,7 @@ export async function configureIpfs({ log = console.log } = {}) {
         'config --json API.HTTPHeaders.Access-Control-Allow-Methods \'["PUT", "POST", "GET"]\''
       )
     );
-    log(await ipfs('config profile apply lowpower'));
+    // log(await ipfs('config profile apply lowpower'));
   } catch (_error) {
     // whatever
   }
