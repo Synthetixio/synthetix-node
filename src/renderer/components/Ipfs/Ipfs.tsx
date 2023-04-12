@@ -147,7 +147,7 @@ export function Ipfs() {
             {isIpfsRunning ? (
               <Text as="span" whiteSpace="nowrap">
                 <StatusIcon textColor="green.400" />
-                <Text display="inline-block">Your IPFS node running</Text>
+                <Text display="inline-block">Your IPFS node is running</Text>
               </Text>
             ) : (
               <>
