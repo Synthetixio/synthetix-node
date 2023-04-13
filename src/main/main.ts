@@ -105,7 +105,7 @@ app.once('ready', () => {
   // }
 
   // Create a Tray instance with the icon you want to use for the menu bar
-  tray = new Tray(getAssetPath('tray_icon@3x.png'));
+  tray = new Tray(getAssetPath('tray@3x.png'));
 
   // Create a Menu instance with the options you want
   const contextMenu = Menu.buildFromTemplate([

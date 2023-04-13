@@ -5,16 +5,12 @@ const os = require('os');
 const cp = require('child_process');
 
 async function createResizedImage(inputPath, outputPath, size) {
-  try {
-    await sharp(inputPath)
-      .resize(size, size, {
-        fit: 'contain',
-        background: { r: 0, g: 0, b: 0, alpha: 0 },
-      })
-      .toFile(outputPath);
-  } catch (err) {
-    console.error(`Error resizing image to ${size}x${size}:`, err);
-  }
+  await sharp(inputPath)
+    .resize(size, size, {
+      fit: 'contain',
+      background: { r: 0, g: 0, b: 0, alpha: 0 },
+    })
+    .toFile(outputPath);
 }
 
 async function icns(inputFile, outputDir) {
@@ -45,6 +41,15 @@ async function icns(inputFile, outputDir) {
 }
 
 async function main(inputFile, outputDir) {
+  await sharp(inputFile)
+    .resize(24 * 3, 24 * 3, {
+      fit: 'contain',
+      background: { r: 0, g: 0, b: 0, alpha: 0 },
+    })
+    .greyscale()
+    .modulate({ brightness: 2 })
+    .toFile(path.join(outputDir, `tray@3x.png`));
+
   await icns(inputFile, outputDir);
   await createResizedImage(inputFile, path.join(outputDir, 'icon.ico'), 256);
   await createResizedImage(inputFile, path.join(outputDir, 'icon.png'), 256);
