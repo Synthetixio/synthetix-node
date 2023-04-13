@@ -51,7 +51,7 @@ export function Dapps() {
           <DappButton ens="kwenta.eth" label="Kwenta" icon={kwentaIcon} />
           <DappButton
             ens="staking.synthetix.eth"
-            label="Staking"
+            label="Staking V2"
             icon={stakingIcon}
           />
         </Stack>
