@@ -20,7 +20,7 @@ import { useIsIpfsRunning } from './useIsIpfsRunning';
 import { useIsIpfsInstalled } from './useIsIpfsInstalled';
 import { useIsFollowerInstalled } from './useIsFollowerInstalled';
 import { useFollowerInfo } from './useFollowerInfo';
-import { SYNTHETIX_IPNS } from '../../../const';
+import { SYNTHETIX_IPNS } from '../../const';
 
 function handleCopy(text: string) {
   if (text) {

@@ -1,5 +1,6 @@
 import { Box, Heading, Text, Image } from '@chakra-ui/react';
-import { Ipfs } from './components/Ipfs';
+import { Ipfs } from './Ipfs';
+import { Dapps } from './DApps';
 import icon from '../../assets/icon.svg';
 
 export default function App() {
@@ -20,6 +21,9 @@ export default function App() {
       </Box>
       <Box px="5" flex="1" overflowY="auto">
         <Ipfs />
+      </Box>
+      <Box p="1">
+        <Dapps />
       </Box>
       <Box background="whiteAlpha.100" p="1">
         <Text align="center" opacity="0.5" fontSize="xs">
