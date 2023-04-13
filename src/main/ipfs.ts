@@ -12,6 +12,7 @@ import { pipeline } from 'stream/promises';
 import os from 'os';
 import zlib from 'zlib';
 import tar from 'tar';
+import http from 'http';
 import path from 'path';
 import type { IpcMainInvokeEvent } from 'electron';
 import { getPid, getPidSync } from './pid';
@@ -177,4 +178,20 @@ export async function configureIpfs({ log = console.log } = {}) {
   } catch (_error) {
     // whatever
   }
+}
+
+export async function ipfsIsRunning() {
+  return new Promise((resolve, _reject) => {
+    http
+      .get('http://127.0.0.1:5001', (res) => {
+        const { statusCode } = res;
+        if (statusCode === 404) {
+          resolve(true);
+        } else {
+          resolve(false);
+        }
+        res.resume();
+      })
+      .once('error', (_error) => resolve(false));
+  });
 }

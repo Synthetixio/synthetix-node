@@ -1,10 +1,10 @@
 import { useQuery } from '@tanstack/react-query';
-import { useIsFollowerInstalled } from './useIsFollowerInstalled';
+import { useIsFollowerRunning } from './useIsFollowerRunning';
 
 const { ipcRenderer } = window?.electron || {};
 
 export function useFollowerInfo() {
-  const { data: isInstalled } = useIsFollowerInstalled();
+  const { data: isRunning } = useIsFollowerRunning();
   return useQuery({
     queryKey: ['follower', 'info'],
     queryFn: async () => {
@@ -22,7 +22,7 @@ export function useFollowerInfo() {
       ipfs: false,
       cluster: false,
     },
-    enabled: Boolean(ipcRenderer && isInstalled),
+    enabled: Boolean(ipcRenderer && isRunning),
     refetchInterval: 30_000,
   });
 }
