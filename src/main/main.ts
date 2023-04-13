@@ -17,8 +17,8 @@ import {
   ipfs,
   ipfsDaemon,
   ipfsIsInstalled,
+  ipfsIsRunning,
   ipfsKill,
-  ipfsPid,
 } from './ipfs';
 import {
   configureFollower,
@@ -26,8 +26,8 @@ import {
   follower,
   followerDaemon,
   followerIsInstalled,
-  followerPid,
   followerKill,
+  followerPid,
 } from './follower';
 
 const isDebug =
@@ -184,9 +184,10 @@ app
 
 ipcMain.handle('install-ipfs', downloadIpfs);
 ipcMain.handle('install-follower', downloadFollower);
+
 ipcMain.handle('ipfs-isInstalled', ipfsIsInstalled);
 ipcMain.handle('follower-isInstalled', followerIsInstalled);
-ipcMain.handle('ipfs-isRunning', ipfsPid);
+ipcMain.handle('ipfs-isRunning', ipfsIsRunning);
 ipcMain.handle('follower-isRunning', followerPid);
 
 ipcMain.handle('run-ipfs', async () => {
@@ -208,10 +209,12 @@ ipcMain.handle('ipfs-follower-info', () => follower('synthetix info'));
 app.on('will-quit', ipfsKill);
 app.on('will-quit', followerKill);
 
+downloadIpfs();
 ipfsDaemon();
 const ipfsCheck = setInterval(ipfsDaemon, 10_000);
 app.on('will-quit', () => clearInterval(ipfsCheck));
 
+downloadFollower();
 followerDaemon();
 const followerCheck = setInterval(followerDaemon, 10_000);
 app.on('will-quit', () => clearInterval(followerCheck));

@@ -1,10 +1,10 @@
 import { useQuery } from '@tanstack/react-query';
-import { useIsIpfsInstalled } from './useIsIpfsInstalled';
+import { useIsIpfsRunning } from './useIsIpfsRunning';
 
 const { ipcRenderer } = window?.electron || {};
 
 export function usePeerId() {
-  const { data: isInstalled } = useIsIpfsInstalled();
+  const { data: isRunning } = useIsIpfsRunning();
   return useQuery({
     queryKey: ['ipfs', 'id'],
     queryFn: async () => {
@@ -16,6 +16,6 @@ export function usePeerId() {
     },
     initialData: () => '',
     placeholderData: '',
-    enabled: Boolean(ipcRenderer && isInstalled),
+    enabled: Boolean(ipcRenderer && isRunning),
   });
 }
