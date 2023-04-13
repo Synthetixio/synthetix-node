@@ -1,5 +1,3 @@
-/* eslint-disable no-console */
-
 import { exec, spawn } from 'child_process';
 import https from 'https';
 import {
@@ -14,6 +12,7 @@ import zlib from 'zlib';
 import tar from 'tar';
 import path from 'path';
 import type { IpcMainInvokeEvent } from 'electron';
+import logger from 'electron-log';
 import { SYNTHETIX_IPNS } from '../const';
 import { getPid, getPidSync } from './pid';
 
@@ -91,7 +90,7 @@ export async function followerDaemon() {
         ),
       ]);
     } catch (e) {
-      console.error(e);
+      logger.error(e);
       // whatever
     }
 
@@ -139,7 +138,7 @@ export async function getInstalledVersion() {
 
 export async function downloadFollower(
   _e?: IpcMainInvokeEvent,
-  { log = console.log } = {}
+  { log = logger.log } = {}
 ) {
   const arch = os.arch();
   const targetArch = arch === 'x64' ? 'amd64' : 'arm64';
@@ -210,7 +209,7 @@ export async function isConfigured() {
   }
 }
 
-export async function configureFollower({ log = console.log } = {}) {
+export async function configureFollower({ log = logger.log } = {}) {
   if (await isConfigured()) {
     return;
   }

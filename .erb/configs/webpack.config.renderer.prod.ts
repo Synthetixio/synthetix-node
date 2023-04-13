@@ -6,20 +6,12 @@ import path from 'path';
 import webpack from 'webpack';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
-import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
-import CssMinimizerPlugin from 'css-minimizer-webpack-plugin';
 import { merge } from 'webpack-merge';
-import TerserPlugin from 'terser-webpack-plugin';
 import baseConfig from './webpack.config.base';
 import webpackPaths from './webpack.paths';
-import checkNodeEnv from '../scripts/check-node-env';
-import deleteSourceMaps from '../scripts/delete-source-maps';
-
-checkNodeEnv('production');
-deleteSourceMaps();
 
 const configuration: webpack.Configuration = {
-  devtool: 'source-map',
+  devtool: false,
 
   mode: 'production',
 
@@ -39,7 +31,7 @@ const configuration: webpack.Configuration = {
   module: {
     rules: [
       {
-        test: /\.s?(a|c)ss$/,
+        test: /\.css$/,
         use: [
           MiniCssExtractPlugin.loader,
           {
@@ -50,14 +42,13 @@ const configuration: webpack.Configuration = {
               importLoaders: 1,
             },
           },
-          'sass-loader',
         ],
-        include: /\.module\.s?(c|a)ss$/,
+        include: /\.module\.css$/,
       },
       {
-        test: /\.s?(a|c)ss$/,
-        use: [MiniCssExtractPlugin.loader, 'css-loader', 'sass-loader'],
-        exclude: /\.module\.s?(c|a)ss$/,
+        test: /\.css$/,
+        use: [MiniCssExtractPlugin.loader, 'css-loader'],
+        exclude: /\.module\.css$/,
       },
       // Fonts
       {
@@ -92,13 +83,7 @@ const configuration: webpack.Configuration = {
   },
 
   optimization: {
-    minimize: true,
-    minimizer: [
-      new TerserPlugin({
-        parallel: true,
-      }),
-      new CssMinimizerPlugin(),
-    ],
+    minimize: false,
   },
 
   plugins: [
@@ -118,11 +103,6 @@ const configuration: webpack.Configuration = {
 
     new MiniCssExtractPlugin({
       filename: 'style.css',
-    }),
-
-    new BundleAnalyzerPlugin({
-      analyzerMode: process.env.ANALYZE === 'true' ? 'server' : 'disabled',
-      analyzerPort: 8889,
     }),
 
     new HtmlWebpackPlugin({

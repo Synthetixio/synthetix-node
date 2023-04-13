@@ -8,8 +8,8 @@
  */
 import path from 'path';
 import { app, BrowserWindow, ipcMain, Menu, shell, Tray } from 'electron';
-import { autoUpdater } from 'electron-updater';
-import log from 'electron-log';
+// import { autoUpdater } from 'electron-updater';
+import logger from 'electron-log';
 import { resolveHtmlPath } from './util';
 import {
   configureIpfs,
@@ -19,6 +19,7 @@ import {
   ipfsIsInstalled,
   ipfsIsRunning,
   ipfsKill,
+  waitForIpfs,
 } from './ipfs';
 import {
   configureFollower,
@@ -29,20 +30,28 @@ import {
   followerKill,
   followerPid,
 } from './follower';
+import { getDappUrl } from './dapps';
+
+logger.transports.file.level = 'info';
 
 const isDebug =
   process.env.NODE_ENV === 'development' || process.env.DEBUG_PROD === 'true';
 
-class AppUpdater {
-  constructor() {
-    log.transports.file.level = 'info';
-    autoUpdater.logger = log;
-    autoUpdater.checkForUpdatesAndNotify();
-  }
-}
+// class AppUpdater {
+//   constructor() {
+//     log.transports.file.level = 'info';
+//     autoUpdater.logger = log;
+//     autoUpdater.checkForUpdatesAndNotify();
+//   }
+// }
 
 let tray: Tray | null = null;
 let mainWindow: BrowserWindow | null = null;
+
+const dapps: { [key: string]: string | undefined } = {
+  'kwenta.eth': undefined,
+  'staking.synthetix.eth': undefined,
+};
 
 if (process.env.NODE_ENV === 'production') {
   const sourceMapSupport = require('source-map-support');
@@ -57,18 +66,22 @@ const getAssetPath = (...paths: string[]): string => {
   return path.join(RESOURCES_PATH, ...paths);
 };
 
-const createWindow = async () => {
+function updateContextMenu() {
+  tray?.setContextMenu(generateContextMenu());
+}
+
+function createWindow() {
   mainWindow = new BrowserWindow({
     show: true,
     useContentSize: true,
     center: true,
-    minWidth: 600 * (isDebug ? 3 : 1),
-    minHeight: 364 * (isDebug ? 2 : 1),
+    minWidth: 600,
+    minHeight: 470,
     skipTaskbar: true,
     fullscreen: false,
     fullscreenable: false,
-    width: 600 * (isDebug ? 3 : 1),
-    height: 364 * (isDebug ? 2 : 1),
+    width: 600,
+    height: 470,
     frame: false,
     icon: getAssetPath('icon.icns'),
     webPreferences: {
@@ -79,7 +92,7 @@ const createWindow = async () => {
   });
 
   if (isDebug) {
-    mainWindow.webContents.openDevTools();
+    mainWindow.webContents.openDevTools({ mode: 'detach' });
   }
 
   mainWindow.loadURL(resolveHtmlPath('index.html'));
@@ -93,27 +106,26 @@ const createWindow = async () => {
     return { action: 'deny' };
   });
 
+  mainWindow.webContents.on('devtools-opened', updateContextMenu);
+  mainWindow.webContents.on('devtools-closed', updateContextMenu);
+  mainWindow.on('hide', updateContextMenu);
+  mainWindow.on('show', updateContextMenu);
+
   // Remove this if your app does not use auto updates
   // eslint-disable-next-line
-  new AppUpdater();
-};
+  // new AppUpdater();
+}
 
-app.once('ready', () => {
-  // // Hide the app from the dock
-  // if (app.dock) {
-  //   app.dock.hide();
-  // }
-
-  // Create a Tray instance with the icon you want to use for the menu bar
-  tray = new Tray(getAssetPath('tray@3x.png'));
-
-  // Create a Menu instance with the options you want
-  const contextMenu = Menu.buildFromTemplate([
+function generateContextMenu() {
+  return Menu.buildFromTemplate([
     {
       label: mainWindow?.isVisible() ? 'Hide App' : 'Open App',
       click: () => {
         if (mainWindow?.isVisible()) {
           mainWindow.hide();
+          if (mainWindow.webContents.isDevToolsOpened()) {
+            mainWindow.webContents.closeDevTools();
+          }
           return;
         }
         if (!mainWindow) {
@@ -124,13 +136,32 @@ app.once('ready', () => {
       },
     },
     {
-      label: 'Debug',
+      label:
+        mainWindow && mainWindow.webContents.isDevToolsOpened()
+          ? 'Close DevTools'
+          : 'Open DevTools',
       click: () => {
         if (mainWindow) {
-          mainWindow.webContents.openDevTools({ mode: 'detach' });
+          if (mainWindow.webContents.isDevToolsOpened()) {
+            mainWindow.webContents.closeDevTools();
+          } else {
+            mainWindow.webContents.openDevTools({ mode: 'detach' });
+          }
         }
       },
     },
+    { type: 'separator' },
+    ...Object.entries(dapps).map(([name, url]) => {
+      return {
+        enabled: Boolean(url),
+        label: name,
+        click: () => {
+          if (url) {
+            shell.openExternal(url);
+          }
+        },
+      };
+    }),
     { type: 'separator' },
     {
       label: 'Quit',
@@ -139,21 +170,33 @@ app.once('ready', () => {
       },
     },
   ]);
+}
+
+app.once('ready', () => {
+  // // Hide the app from the dock
+  // if (app.dock) {
+  //   app.dock.hide();
+  // }
+
+  // Create a Tray instance with the icon you want to use for the menu bar
+  tray = new Tray(getAssetPath('tray@3x.png'));
 
   tray.on('mouse-down', (_event) => {
     if (mainWindow?.isVisible()) {
-      mainWindow.hide();
-      return;
+      mainWindow?.focus();
+      //     mainWindow.hide();
+      //     return;
     }
-    if (!mainWindow) {
-      createWindow();
-    } else {
-      mainWindow.show();
-    }
+    //   if (!mainWindow) {
+    //     createWindow();
+    //   } else {
+    //     mainWindow.show();
+    //     mainWindow.webContents.focus();
+    //   }
   });
 
   // Set the context menu for the tray icon
-  tray?.setContextMenu(contextMenu);
+  tray?.setContextMenu(generateContextMenu());
 });
 
 /**
@@ -180,7 +223,7 @@ app
       }
     });
   })
-  .catch(console.error);
+  .catch(logger.error);
 
 ipcMain.handle('install-ipfs', downloadIpfs);
 ipcMain.handle('install-follower', downloadFollower);
@@ -218,3 +261,19 @@ downloadFollower();
 followerDaemon();
 const followerCheck = setInterval(followerDaemon, 10_000);
 app.on('will-quit', () => clearInterval(followerCheck));
+
+ipcMain.handle('dapp', async (_event, ens: string) => {
+  if (!(ens in dapps)) {
+    dapps[ens] = undefined;
+  }
+  return dapps[ens];
+});
+async function updateAllDapps() {
+  for (const ens of Object.keys(dapps)) {
+    dapps[ens] = await getDappUrl(ens);
+    updateContextMenu();
+  }
+}
+const dappsUpdater = setInterval(updateAllDapps, 600_000); // 10 minutes
+app.on('will-quit', () => clearInterval(dappsUpdater));
+waitForIpfs().then(updateAllDapps).catch(logger.error);

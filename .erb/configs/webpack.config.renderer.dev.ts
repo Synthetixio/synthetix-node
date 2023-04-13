@@ -9,13 +9,6 @@ import { execSync, spawn } from 'child_process';
 import ReactRefreshWebpackPlugin from '@pmmmwh/react-refresh-webpack-plugin';
 import baseConfig from './webpack.config.base';
 import webpackPaths from './webpack.paths';
-import checkNodeEnv from '../scripts/check-node-env';
-
-// When an ESLint server is running, we can't set the NODE_ENV so we'll check if it's
-// at the dev webpack config is not accidentally run in a production environment
-if (process.env.NODE_ENV === 'production') {
-  checkNodeEnv('development');
-}
 
 const port = process.env.PORT || 1212;
 const manifest = path.resolve(webpackPaths.dllPath, 'renderer.json');
@@ -39,7 +32,7 @@ if (
 }
 
 const configuration: webpack.Configuration = {
-  devtool: 'inline-source-map',
+  devtool: false,
 
   mode: 'development',
 
@@ -63,7 +56,7 @@ const configuration: webpack.Configuration = {
   module: {
     rules: [
       {
-        test: /\.s?(c|a)ss$/,
+        test: /\.css$/,
         use: [
           'style-loader',
           {
@@ -74,14 +67,13 @@ const configuration: webpack.Configuration = {
               importLoaders: 1,
             },
           },
-          'sass-loader',
         ],
-        include: /\.module\.s?(c|a)ss$/,
+        include: /\.module\.css$/,
       },
       {
-        test: /\.s?css$/,
-        use: ['style-loader', 'css-loader', 'sass-loader'],
-        exclude: /\.module\.s?(c|a)ss$/,
+        test: /\.css$/,
+        use: ['style-loader', 'css-loader'],
+        exclude: /\.module\.css$/,
       },
       // Fonts
       {
