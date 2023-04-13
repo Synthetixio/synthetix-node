@@ -157,11 +157,11 @@ export function Ipfs() {
                     <Text display="inline-block">
                       Your IPFS node is not running
                       <Button
-                        colorScheme="green"
+                        colorScheme="teal"
                         color="white"
-                        bg="green.700"
+                        bg="#00B0D6"
                         _hover={{
-                          bg: 'green.600',
+                          bg: '#00D1FF',
                         }}
                         transform="translateY(-2px)"
                         ml="2"
@@ -180,11 +180,11 @@ export function Ipfs() {
                     <Text display="inline-block">
                       IPFS node is not installed
                       <Button
-                        colorScheme="green"
+                        colorScheme="teal"
                         color="white"
-                        bg="green.700"
+                        bg="#00B0D6"
                         _hover={{
-                          bg: 'green.600',
+                          bg: '#00D1FF',
                         }}
                         transform="translateY(-2px)"
                         ml="2"
@@ -228,11 +228,11 @@ export function Ipfs() {
                     <Text display="inline-block">
                       You are not connected to the cluster
                       <Button
-                        colorScheme="green"
+                        colorScheme="teal"
                         color="white"
-                        bg="green.700"
+                        bg="#00B0D6"
                         _hover={{
-                          bg: 'green.600',
+                          bg: '#00D1FF',
                         }}
                         transform="translateY(-2px)"
                         ml="2"
@@ -250,24 +250,28 @@ export function Ipfs() {
                     <StatusIcon textColor="red.400" />
                     <Text display="inline-block">
                       IPFS cluster is not installed
-                      <Button
-                        colorScheme="green"
-                        color="white"
-                        bg="green.700"
-                        _hover={{
-                          bg: 'green.600',
-                        }}
-                        transform="translateY(-2px)"
-                        ml="2"
-                        size="xs"
-                        onClick={onInstallFollower}
-                        isLoading={isInstallFollowerLoading}
-                      >
-                        Install Synthetix Cluster Connector
-                        {isInstallFollowerLoading ? (
-                          <Spinner size="xs" />
-                        ) : null}
-                      </Button>
+                      {isIpfsInstalled ? (
+                        <Button
+                          colorScheme="teal"
+                          color="white"
+                          bg="#00B0D6"
+                          _hover={{
+                            bg: '#00D1FF',
+                          }}
+                          transform="translateY(-2px)"
+                          ml="2"
+                          size="xs"
+                          onClick={onInstallFollower}
+                          isLoading={isInstallFollowerLoading}
+                        >
+                          Install Synthetix Cluster Connector
+                          {isInstallFollowerLoading ? (
+                            <Spinner size="xs" />
+                          ) : null}
+                        </Button>
+                      ) : (
+                        ''
+                      )}
                     </Text>
                   </Text>
                 )}

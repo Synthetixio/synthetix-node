@@ -15,7 +15,7 @@ export default function App() {
         py="3"
         display="flex"
       >
-        <Image src={icon} height="16px" mt="1" mr="2" />
+        <Image src={icon} height="26px" mr="2" />
         <Heading size="md">Synthetix Node</Heading>
       </Box>
       <Box px="5" flex="1" overflowY="auto">
