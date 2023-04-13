@@ -1,30 +1,60 @@
-// @ts-nocheck
-
-import { ethers } from 'ethers';
 import logger from 'electron-log';
-import { mainnet } from '@wagmi/chains';
+import fetch from 'node-fetch';
+import { createPublicClient, http } from 'viem';
+import { mainnet } from 'viem/chains';
+import { namehash, normalize } from 'viem/ens';
+// @ts-ignore
+import * as contentHash from '@ensdomains/content-hash';
 import { ipfs } from './ipfs';
 
-export async function resolveEns(ens: string): string {
-  const provider = new ethers.providers.JsonRpcProvider(
-    mainnet.rpcUrls.public.http[0]
-  );
-  const resolver = await provider.getResolver(ens);
-  const ipnsUrl = await resolver.getContentHash();
-  return ipnsUrl.slice(7); // remove ipns://
+Object.assign(global, { fetch });
+
+const client = createPublicClient({
+  chain: mainnet,
+  transport: http(),
+});
+
+const resolverAbi = [
+  {
+    constant: true,
+    inputs: [{ internalType: 'bytes32', name: 'node', type: 'bytes32' }],
+    name: 'contenthash',
+    outputs: [{ internalType: 'bytes', name: '', type: 'bytes' }],
+    payable: false,
+    stateMutability: 'view',
+    type: 'function',
+  },
+];
+
+export async function resolveEns(
+  ens: string
+): Promise<{ codec: string; hash: string }> {
+  const name = normalize(ens);
+  const resolverAddress = await client.getEnsResolver({ name });
+  const hash = await client.readContract({
+    address: resolverAddress,
+    abi: resolverAbi,
+    functionName: 'contenthash',
+    args: [namehash(name)],
+  });
+  const codec = contentHash.getCodec(hash);
+  return {
+    codec,
+    hash: contentHash.decode(hash),
+  };
 }
 
-export async function resolveQm(ipns: string): string {
+export async function resolveQm(ipns: string): Promise<string> {
   const ipfsPath = await ipfs(`resolve /ipns/${ipns}`);
   const qm = ipfsPath.slice(6); // remove /ipfs/
   return qm; // Qm
 }
 
-export async function convertCid(qm: string): string {
+export async function convertCid(qm: string): Promise<string> {
   return await ipfs(`cid base32 ${qm}`);
 }
 
-export async function isPinned(qm: string): boolean {
+export async function isPinned(qm: string): Promise<boolean> {
   try {
     const result = await ipfs(`pin ls --type recursive ${qm}`);
     return result.includes(qm);
@@ -33,11 +63,19 @@ export async function isPinned(qm: string): boolean {
   }
 }
 
-export async function getDappUrl(ens: string): Promise<string> {
+export async function getDappUrl(ens: string): Promise<string | undefined> {
   try {
-    const ipns = await resolveEns(ens);
-    const qm = await resolveQm(ipns);
-    logger.log('DApp resolved', ens, 'IPNS:', ipns, 'CID:', qm);
+    const { codec, hash } = await resolveEns(ens);
+    logger.log('DApp resolved', ens, 'codec:', codec, 'hash:', hash);
+    const qm =
+      codec === 'ipns-ns'
+        ? await resolveQm(hash)
+        : codec === 'ipfs-ns'
+        ? hash
+        : undefined;
+    if (!qm) {
+      throw new Error(`Codec "${codec}" not supported`);
+    }
     const isKwentaPinned = await isPinned(qm);
     if (!isKwentaPinned) {
       logger.log('DApp pinning...', ens);
