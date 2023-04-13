@@ -52,13 +52,10 @@ git add .
 git commit -m $NEXT_VERSION
 git tag -a -m $NEXT_VERSION $NEXT_VERSION
 git push --follow-tags
+
+# build app
+npm run package
+
+# create release and upload artifacts
+gh release create $NEXT_VERSION --generate-notes ./release/build/*.dmg
 ```
-
-Then we need to create Github release:
-
-```sh
-open ./release/build
-open https://github.com/Synthetixio/snx-node/releases/new
-```
-
-Fill in the details of the new release and upload artifacts from `./release/build` folder.
