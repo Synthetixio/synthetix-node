@@ -1,5 +1,3 @@
-/* eslint-disable no-console */
-
 import { exec, spawn } from 'child_process';
 import https from 'https';
 import {
@@ -16,6 +14,7 @@ import http from 'http';
 import path from 'path';
 import type { IpcMainInvokeEvent } from 'electron';
 import { getPid, getPidSync } from './pid';
+import logger from 'electron-log';
 
 const ROOT = path.join(os.homedir(), '.synthetix');
 
@@ -108,7 +107,7 @@ export async function getInstalledVersion() {
 
 export async function downloadIpfs(
   _e?: IpcMainInvokeEvent,
-  { log = console.log } = {}
+  { log = logger.log } = {}
 ) {
   const arch = os.arch();
   const targetArch = arch === 'x64' ? 'amd64' : 'arm64';
@@ -161,7 +160,7 @@ export async function downloadIpfs(
   return installedVersionCheck;
 }
 
-export async function configureIpfs({ log = console.log } = {}) {
+export async function configureIpfs({ log = logger.log } = {}) {
   try {
     log(await ipfs('init'));
     log(

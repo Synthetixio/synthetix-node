@@ -1,7 +1,7 @@
-/* eslint-disable no-console */
 // @ts-nocheck
 
 import { ethers } from 'ethers';
+import logger from 'electron-log';
 import { mainnet } from '@wagmi/chains';
 import { ipfs } from './ipfs';
 
@@ -37,17 +37,18 @@ export async function getDappUrl(ens: string): Promise<string> {
   try {
     const ipns = await resolveEns(ens);
     const qm = await resolveQm(ipns);
-    console.log('DApp resolved', ens, 'IPNS:', ipns, 'CID:', qm);
+    logger.log('DApp resolved', ens, 'IPNS:', ipns, 'CID:', qm);
     const isKwentaPinned = await isPinned(qm);
     if (!isKwentaPinned) {
-      console.log('Pinning...', ens);
+      logger.log('DApp pinning...', ens);
       await ipfs(`pin add --progress ${qm}`);
     }
     const bafy = await convertCid(qm);
     const url = `http://${bafy}.ipfs.localhost:8080`;
+    logger.log('DApp local URL:', url);
     return url;
   } catch (e) {
-    console.error(e);
-    return '';
+    logger.error(e);
+    return undefined;
   }
 }

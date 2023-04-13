@@ -9,7 +9,7 @@
 import path from 'path';
 import { app, BrowserWindow, ipcMain, Menu, shell, Tray } from 'electron';
 // import { autoUpdater } from 'electron-updater';
-// import log from 'electron-log';
+import logger from 'electron-log';
 import { resolveHtmlPath } from './util';
 import {
   configureIpfs,
@@ -31,6 +31,8 @@ import {
   followerPid,
 } from './follower';
 import { getDappUrl } from './dapps';
+
+logger.transports.file.level = 'info';
 
 const isDebug =
   process.env.NODE_ENV === 'development' || process.env.DEBUG_PROD === 'true';
@@ -89,8 +91,6 @@ function createWindow() {
     },
   });
 
-  // console.log();
-  // console.log();
   if (isDebug) {
     mainWindow.webContents.openDevTools({ mode: 'detach' });
   }
@@ -223,7 +223,7 @@ app
       }
     });
   })
-  .catch(console.error);
+  .catch(logger.error);
 
 ipcMain.handle('install-ipfs', downloadIpfs);
 ipcMain.handle('install-follower', downloadFollower);
@@ -276,4 +276,4 @@ async function updateAllDapps() {
 }
 const dappsUpdater = setInterval(updateAllDapps, 600_000); // 10 minutes
 app.on('will-quit', () => clearInterval(dappsUpdater));
-waitForIpfs().then(updateAllDapps);
+waitForIpfs().then(updateAllDapps).catch(logger.error);
