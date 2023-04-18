@@ -13,7 +13,7 @@ import tar from 'tar';
 import http from 'http';
 import path from 'path';
 import type { IpcMainInvokeEvent } from 'electron';
-import { getPid, getPidSync } from './pid';
+import { getPid, getPidsSync } from './pid';
 import logger from 'electron-log';
 
 const ROOT = path.join(os.homedir(), '.synthetix');
@@ -33,10 +33,11 @@ function execCommand(command: string): Promise<string> {
 
 export function ipfsKill() {
   try {
-    const pid = getPidSync('ipfs daemon');
-    if (pid) {
+    getPidsSync('.synthetix/go-ipfs/ipfs').forEach((pid) => {
+      logger.log('Killing ipfs', pid);
       process.kill(pid);
-    }
+    });
+    logger.log('Removing ~/.ipfs/repo.lock');
     rmSync(path.join(os.homedir(), '.ipfs/repo.lock'), {
       recursive: true,
     });
@@ -46,7 +47,7 @@ export function ipfsKill() {
 }
 
 export async function ipfsPid() {
-  return await getPid('ipfs daemon');
+  return await getPid('.synthetix/go-ipfs/ipfs daemon');
 }
 
 export async function ipfsIsInstalled() {
@@ -63,7 +64,7 @@ export async function ipfsDaemon() {
   if (!isInstalled) {
     return;
   }
-  const pid = await getPid('ipfs daemon');
+  const pid = await getPid('.synthetix/go-ipfs/ipfs daemon');
   if (!pid) {
     await configureIpfs();
     spawn(path.join(ROOT, 'go-ipfs/ipfs'), ['daemon'], {

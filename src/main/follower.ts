@@ -14,7 +14,7 @@ import path from 'path';
 import type { IpcMainInvokeEvent } from 'electron';
 import logger from 'electron-log';
 import { SYNTHETIX_IPNS } from '../const';
-import { getPid, getPidSync } from './pid';
+import { getPid, getPidsSync } from './pid';
 
 const ROOT = path.join(os.homedir(), '.synthetix');
 
@@ -33,13 +33,17 @@ function execCommand(command: string): Promise<string> {
 
 export function followerKill() {
   try {
-    const pid = getPidSync('ipfs-cluster-follow synthetix run');
-    if (pid) {
-      process.kill(pid);
-    }
+    getPidsSync('.synthetix/ipfs-cluster-follow/ipfs-cluster-follow').forEach(
+      (pid) => {
+        logger.log('Killing ipfs-cluster-follow', pid);
+        process.kill(pid);
+      }
+    );
+    logger.log('Removing ~/.ipfs-cluster-follow/synthetix/badger');
     rmSync(path.join(os.homedir(), '.ipfs-cluster-follow/synthetix/badger'), {
       recursive: true,
     });
+    logger.log('Removing ~/.ipfs-cluster-follow/synthetix/api-socket');
     rmSync(
       path.join(os.homedir(), '.ipfs-cluster-follow/synthetix/api-socket'),
       { recursive: true }
@@ -50,7 +54,9 @@ export function followerKill() {
 }
 
 export async function followerPid() {
-  return await getPid('ipfs-cluster-follow synthetix run');
+  return await getPid(
+    '.synthetix/ipfs-cluster-follow/ipfs-cluster-follow synthetix run'
+  );
 }
 
 export async function followerIsInstalled() {
@@ -70,7 +76,9 @@ export async function followerDaemon() {
   if (!isInstalled) {
     return;
   }
-  const pid = await getPid('ipfs-cluster-follow synthetix run');
+  const pid = await getPid(
+    '.synthetix/ipfs-cluster-follow/ipfs-cluster-follow synthetix run'
+  );
   if (!pid) {
     await configureFollower();
 
