@@ -51,6 +51,8 @@ export function Ipfs() {
   const rateIn = useRateIn();
   const rateOut = useRateOut();
   const hostingSize = useHostingSize();
+
+  // eslint-disable-next-line no-console
   console.log({
     isIpfsInstalled,
     isIpfsRunning,
