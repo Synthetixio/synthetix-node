@@ -103,6 +103,7 @@
   "build": {
     "productName": "SynthetixNode",
     "appId": "org.erb.SynthetixNode",
+    "artifactName": "${productName}-${os}-${arch}.${ext}",
     "asar": true,
     "asarUnpack": "**\\*.{node,dll}",
     "files": [
