@@ -31,6 +31,7 @@ import {
   followerPid,
 } from './follower';
 import { getDappUrl } from './dapps';
+import * as settings from './settings';
 
 logger.transports.file.level = 'info';
 
@@ -67,7 +68,29 @@ const getAssetPath = (...paths: string[]): string => {
 };
 
 function updateContextMenu() {
-  tray?.setContextMenu(generateContextMenu());
+  const menu = generateMenuItems();
+  if (tray && !tray.isDestroyed()) {
+    tray.setContextMenu(
+      Menu.buildFromTemplate([
+        menu.app,
+        menu.devTools,
+        menu.dock,
+        { type: 'separator' },
+        ...menu.dapps,
+        { type: 'separator' },
+        menu.quit,
+      ])
+    );
+  }
+  app.dock.setMenu(
+    Menu.buildFromTemplate([
+      menu.app,
+      menu.devTools,
+      menu.tray,
+      { type: 'separator' },
+      ...menu.dapps,
+    ])
+  );
 }
 
 function createWindow() {
@@ -116,9 +139,9 @@ function createWindow() {
   // new AppUpdater();
 }
 
-function generateContextMenu() {
-  return Menu.buildFromTemplate([
-    {
+function generateMenuItems() {
+  return {
+    app: {
       label: mainWindow?.isVisible() ? 'Hide App' : 'Open App',
       click: () => {
         if (mainWindow?.isVisible()) {
@@ -135,7 +158,7 @@ function generateContextMenu() {
         }
       },
     },
-    {
+    devTools: {
       label:
         mainWindow && mainWindow.webContents.isDevToolsOpened()
           ? 'Close DevTools'
@@ -150,8 +173,38 @@ function generateContextMenu() {
         }
       },
     },
-    { type: 'separator' },
-    ...Object.entries(dapps).map(([name, url]) => {
+    dock: {
+      label: app.dock && app.dock.isVisible() ? 'Hide Dock' : 'Show Dock',
+      click: async () => {
+        if (app.dock) {
+          if (app.dock.isVisible()) {
+            await settings.set('dock', false);
+            app.dock.hide();
+          } else {
+            await settings.set('dock', true);
+            app.dock.show();
+          }
+        }
+      },
+    },
+    tray: {
+      label: tray && !tray.isDestroyed() ? 'Hide Tray icon' : 'Show Tray icon',
+      click: async () => {
+        if (tray && !tray.isDestroyed()) {
+          await settings.set('tray', false);
+          tray.destroy();
+          updateContextMenu();
+        } else {
+          await settings.set('tray', true);
+          createTray();
+          updateContextMenu();
+        }
+      },
+    },
+    separator: {
+      type: 'separator',
+    },
+    dapps: Object.entries(dapps).map(([name, url]) => {
       return {
         enabled: Boolean(url),
         label: name,
@@ -162,42 +215,37 @@ function generateContextMenu() {
         },
       };
     }),
-    { type: 'separator' },
-    {
+    quit: {
       label: 'Quit',
       click: () => {
         app.quit();
       },
     },
-  ]);
+  };
 }
 
-app.once('ready', () => {
-  // // Hide the app from the dock
-  // if (app.dock) {
-  //   app.dock.hide();
-  // }
+app.once('ready', async () => {
+  // Hide the app from the dock
+  if (app.dock && !(await settings.get('dock'))) {
+    app.dock.hide();
+  }
 
+  if (await settings.get('tray')) {
+    createTray();
+  }
+
+  updateContextMenu();
+});
+
+function createTray() {
   // Create a Tray instance with the icon you want to use for the menu bar
   tray = new Tray(getAssetPath('tray@3x.png'));
-
   tray.on('mouse-down', (_event) => {
     if (mainWindow?.isVisible()) {
       mainWindow?.focus();
-      //     mainWindow.hide();
-      //     return;
     }
-    //   if (!mainWindow) {
-    //     createWindow();
-    //   } else {
-    //     mainWindow.show();
-    //     mainWindow.webContents.focus();
-    //   }
   });
-
-  // Set the context menu for the tray icon
-  tray?.setContextMenu(generateContextMenu());
-});
+}
 
 /**
  * Add event listeners...
