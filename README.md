@@ -21,7 +21,7 @@ Open terminal and run the following command:
 curl https://raw.githubusercontent.com/Synthetixio/snx-node/main/install-macos.sh | bash
 ```
 
-## Manual installation
+### Manual Installation
 Download the macOS app from the [Latest release page](https://github.com/Synthetixio/snx-node/releases/latest). (Windows and Linux versions are in development.) Select the ARM64 version if you are using a Mac with [Apple silicon](https://support.apple.com/en-us/HT211814).
 
 Unzip and copy SynthetixNode to your Applications folder.
@@ -31,7 +31,7 @@ Because of the latest MacOS security policies it is no longer possible to execut
 xattr -d com.apple.quarantine /Applications/SynthetixNode.app
 ```
 
-## Build from sources
+### Build From Source Code
 If you are concerned with security, clone this repository, review the implementation, and use the instructions below **Development** to start a development build.
 
 If you would rather run this in a Docker container or run scripts manually, check out the [ipfs-follower repository](https://github.com/Synthetixio/ipfs-follower).
