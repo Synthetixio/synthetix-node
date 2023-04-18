@@ -6,6 +6,7 @@ import { namehash, normalize } from 'viem/ens';
 // @ts-ignore
 import * as contentHash from '@ensdomains/content-hash';
 import { ipfs } from './ipfs';
+import { getPid } from './pid';
 
 Object.assign(global, { fetch });
 
@@ -66,7 +67,7 @@ export async function isPinned(qm: string): Promise<boolean> {
 export async function getDappUrl(ens: string): Promise<string | undefined> {
   try {
     const { codec, hash } = await resolveEns(ens);
-    logger.log('DApp resolved', ens, 'codec:', codec, 'hash:', hash);
+    logger.log(ens, 'resolved', codec, hash);
     const qm =
       codec === 'ipns-ns'
         ? await resolveQm(hash)
@@ -76,14 +77,18 @@ export async function getDappUrl(ens: string): Promise<string | undefined> {
     if (!qm) {
       throw new Error(`Codec "${codec}" not supported`);
     }
-    const isKwentaPinned = await isPinned(qm);
-    if (!isKwentaPinned) {
-      logger.log('DApp pinning...', ens);
+    if (await getPid(`pin add --progress ${qm}`)) {
+      logger.log(ens, 'pinning already in progres...');
+      return undefined;
+    }
+    const isDappPinned = await isPinned(qm);
+    if (!isDappPinned) {
+      logger.log(ens, 'pinning...', qm);
       await ipfs(`pin add --progress ${qm}`);
     }
     const bafy = await convertCid(qm);
     const url = `http://${bafy}.ipfs.localhost:8080`;
-    logger.log('DApp local URL:', url);
+    logger.log(ens, 'local URL:', url);
     return url;
   } catch (e) {
     logger.error(e);

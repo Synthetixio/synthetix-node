@@ -269,10 +269,14 @@ ipcMain.handle('dapp', async (_event, ens: string) => {
   return dapps[ens];
 });
 async function updateAllDapps() {
-  for (const ens of Object.keys(dapps)) {
-    dapps[ens] = await getDappUrl(ens);
-    updateContextMenu();
-  }
+  Object.keys(dapps).forEach((ens) =>
+    getDappUrl(ens).then((url) => {
+      if (url) {
+        dapps[ens] = url;
+        updateContextMenu();
+      }
+    })
+  );
 }
 const dappsUpdater = setInterval(updateAllDapps, 600_000); // 10 minutes
 app.on('will-quit', () => clearInterval(dappsUpdater));

@@ -1,13 +1,19 @@
 import { exec, execSync } from 'child_process';
 
-export function findPid(processes: string, search: string): number | undefined {
-  const ipfsProcess = processes
+export function extractPids(processes: string): number[] {
+  return processes
+    .trim()
     .split('\n')
-    .find((line) => line.includes(search) && !line.includes('grep'));
-  if (ipfsProcess) {
-    const [pid] = ipfsProcess.split(' ');
-    return parseInt(pid, 10);
-  }
+    .filter((line) => !line.includes('grep'))
+    .map((line) => {
+      const [raw] = line.trim().split(' ');
+      return parseInt(raw, 10);
+    });
+}
+
+export function findPid(processes: string): number | undefined {
+  const [ipfsProcess] = extractPids(processes);
+  return ipfsProcess;
 }
 
 export function getPidSync(search: string): number | undefined {
@@ -15,9 +21,20 @@ export function getPidSync(search: string): number | undefined {
     const processes = execSync(`ps -ax | grep "${search}"`, {
       encoding: 'utf8',
     });
-    return findPid(processes, search);
+    return findPid(processes);
   } catch (_e) {
     // whatever
+  }
+}
+
+export function getPidsSync(search: string): number[] {
+  try {
+    const processes = execSync(`ps -ax | grep '${search}'`, {
+      encoding: 'utf8',
+    });
+    return extractPids(processes);
+  } catch (_e) {
+    return [];
   }
 }
 
@@ -36,8 +53,8 @@ function execCommand(command: string): Promise<string> {
 
 export async function getPid(search: string): Promise<number | undefined> {
   try {
-    const processes = await execCommand(`ps -ax | grep "${search}"`);
-    return findPid(processes, search);
+    const processes = await execCommand(`ps -ax | grep '${search}'`);
+    return findPid(processes);
   } catch (_e) {
     // whatever
   }
