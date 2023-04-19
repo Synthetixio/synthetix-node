@@ -24,9 +24,9 @@ curl https://synthetixio.github.io/synthetix-node/install-macos.sh | bash
 ### Manual Installation
 Download the macOS app from the [Latest release page](https://github.com/Synthetixio/snx-node/releases/latest). (Windows and Linux versions are in development.) Select the ARM64 version if you are using a Mac with [Apple silicon](https://support.apple.com/en-us/HT211814).
 
-Unzip and copy SynthetixNode to your Applications folder.
+Unzip and copy SynthetixNode to your Applications folder. There will be no pop-up to do so. Make sure to move it manually before proceeding to the next step.
 
-Because of the latest MacOS security policies it is no longer possible to execute unsigned apps, so you should clear quarantine flag from the app before running it:
+Due to the latest MacOS security policies, it is no longer possible to execute unsigned apps. Therefore, you should clear the quarantine flag from the app before running it. Run the following command in terminal:
 ```sh
 xattr -d com.apple.quarantine /Applications/SynthetixNode.app
 ```
