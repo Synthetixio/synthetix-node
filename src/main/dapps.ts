@@ -64,7 +64,7 @@ export async function isPinned(qm: string): Promise<boolean> {
   }
 }
 
-export async function getDappUrl(ens: string): Promise<string | undefined> {
+export async function getDappHost(ens: string): Promise<string | undefined> {
   try {
     const { codec, hash } = await resolveEns(ens);
     logger.log(ens, 'resolved', codec, hash);
@@ -87,8 +87,8 @@ export async function getDappUrl(ens: string): Promise<string | undefined> {
       await ipfs(`pin add --progress ${qm}`);
     }
     const bafy = await convertCid(qm);
-    const url = `http://${bafy}.ipfs.localhost:8080`;
-    logger.log(ens, 'local URL:', url);
+    const url = `${bafy}.ipfs.localhost`;
+    logger.log(ens, 'local IPFS host:', url);
     return url;
   } catch (e) {
     logger.error(e);

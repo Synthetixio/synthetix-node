@@ -18,7 +18,7 @@ Anyone with a computer and an internet connection can join the swarm. It’s fin
 
 Open terminal and run the following command:
 ```sh
-curl https://raw.githubusercontent.com/Synthetixio/snx-node/main/install-macos.sh | bash
+curl https://synthetixio.github.io/synthetix-node/install-macos.sh | bash
 ```
 
 ### Manual Installation
