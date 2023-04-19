@@ -16,10 +16,12 @@ Anyone with a computer and an internet connection can join the swarm. It’s fin
 
 ## Running the Node
 
-Open terminal and run the following command:
+On macOS, open your terminal and run the following command:
 ```sh
 curl https://synthetixio.github.io/synthetix-node/install-macos.sh | bash
 ```
+
+This will download the correct release of `SynthetixNode.app` to your Applications directory and start it.
 
 ### Manual Installation
 Download the macOS app from the [Latest release page](https://github.com/Synthetixio/snx-node/releases/latest). (Windows and Linux versions are in development.) Select the ARM64 version if you are using a Mac with [Apple silicon](https://support.apple.com/en-us/HT211814).
