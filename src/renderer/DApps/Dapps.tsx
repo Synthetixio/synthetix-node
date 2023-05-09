@@ -8,34 +8,35 @@ import {
   Stack,
 } from '@chakra-ui/react';
 import { ExternalLinkIcon } from '@chakra-ui/icons';
-import kwentaIcon from './kwenta.svg';
-import stakingIcon from './staking.svg';
 import { useDapp } from './useDapp';
+import { DAPPS, DappType } from '../../dapps';
+import { useQuery } from '@tanstack/react-query';
 
-function DappButton({
-  ens,
-  label,
-  icon,
-}: {
-  ens: string;
-  label: string;
-  icon: string;
-}) {
-  const { data: url } = useDapp(ens);
+function DappButton({ dapp }: { dapp: DappType }) {
+  const { data: url } = useDapp(dapp.id);
+  const { data: src } = useQuery({
+    queryKey: ['icon', dapp.id],
+    queryFn: async () => {
+      const { default: icon } = await dapp.icon();
+      return icon;
+    },
+    initialData: () => '',
+    placeholderData: '',
+  });
   return (
     <Button
       as={Link}
       href={url}
       target="_blank"
-      aria-label={label}
+      aria-label={dapp.label}
       variant="outline"
       colorScheme="teal"
-      leftIcon={<Image src={icon} alt={label} width="1em" />}
+      leftIcon={<Image src={src} alt={dapp.label} width="1em" />}
       rightIcon={url ? <ExternalLinkIcon /> : <Spinner size="xs" />}
       isDisabled={!url}
       _hover={{ textDecoration: 'none' }}
     >
-      {label}
+      {dapp.label}
     </Button>
   );
 }
@@ -48,12 +49,9 @@ export function Dapps() {
           Available DApps:
         </Heading>
         <Stack direction="row" spacing={6} justifyContent="start" mb="2">
-          <DappButton ens="kwenta.eth" label="Kwenta" icon={kwentaIcon} />
-          <DappButton
-            ens="staking.synthetix.eth"
-            label="Staking V2"
-            icon={stakingIcon}
-          />
+          {DAPPS.map((dapp) => (
+            <DappButton key={dapp.id} dapp={dapp} />
+          ))}
         </Stack>
       </Box>
     </Box>

@@ -62,6 +62,15 @@ const configuration: webpack.Configuration = {
     __dirname: false,
     __filename: false,
   },
+  module: {
+    rules: [
+      // Images
+      {
+        test: /\.(svg)$/i,
+        type: 'asset/resource',
+      },
+    ],
+  },
 };
 
 export default merge(baseConfig, configuration);

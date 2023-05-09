@@ -2,11 +2,11 @@ import { useQuery } from '@tanstack/react-query';
 
 const { ipcRenderer } = window?.electron || {};
 
-export function useDapp(ens: string) {
+export function useDapp(id: string) {
   return useQuery({
-    queryKey: ['dapp', ens],
+    queryKey: ['dapp', id],
     queryFn: async () => {
-      const url = await ipcRenderer.invoke('dapp', ens);
+      const url = await ipcRenderer.invoke('dapp', id);
       if (!url) {
         return null;
       }
