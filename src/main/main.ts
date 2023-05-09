@@ -35,6 +35,8 @@ import * as settings from './settings';
 import http from 'http';
 import { proxy } from './proxy';
 
+import { DAPPS } from '../dapps';
+
 logger.transports.file.level = 'info';
 
 const isDebug =
@@ -50,15 +52,6 @@ const isDebug =
 
 let tray: Tray | null = null;
 let mainWindow: BrowserWindow | null = null;
-
-const dapps: { [key: string]: string | undefined } = {
-  'kwenta.eth': undefined,
-  'staking.synthetix.eth': undefined,
-};
-const localDapps: { [key: string]: string | undefined } = {
-  'kwenta.eth': 'kwenta',
-  'staking.synthetix.eth': 'staking',
-};
 
 if (process.env.NODE_ENV === 'production') {
   const sourceMapSupport = require('source-map-support');
@@ -210,11 +203,11 @@ function generateMenuItems() {
     separator: {
       type: 'separator',
     },
-    dapps: Object.entries(localDapps).map(([name, shortcut]) => {
+    dapps: DAPPS.map((dapp) => {
       return {
-        enabled: Boolean(dapps[name]),
-        label: name,
-        click: () => shell.openExternal(`http://${shortcut}.localhost:8888`),
+        enabled: Boolean(dapp.url),
+        label: dapp.label,
+        click: () => shell.openExternal(`http://${dapp.id}.localhost:8888`),
       };
     }),
     quit: {
@@ -312,31 +305,32 @@ followerDaemon();
 const followerCheck = setInterval(followerDaemon, 10_000);
 app.on('will-quit', () => clearInterval(followerCheck));
 
-ipcMain.handle('dapp', async (_event, ens: string) =>
-  dapps[ens] ? `http://${localDapps[ens]}.localhost:8888` : null
-);
+ipcMain.handle('dapp', async (_event, id: string) => {
+  const dapp = DAPPS.find((dapp) => dapp.id === id);
+  return dapp && dapp.url ? `http://${dapp.id}.localhost:8888` : null;
+});
+
 async function updateAllDapps() {
-  Object.keys(dapps).forEach((ens) =>
-    getDappHost(ens).then((url) => {
+  DAPPS.forEach((dapp) =>
+    getDappHost(dapp).then((url) => {
       if (url) {
-        dapps[ens] = url;
+        dapp.url = url;
         updateContextMenu();
       }
     })
   );
 }
+
 const dappsUpdater = setInterval(updateAllDapps, 600_000); // 10 minutes
 app.on('will-quit', () => clearInterval(dappsUpdater));
 waitForIpfs().then(updateAllDapps).catch(logger.error);
 
 http
   .createServer((req, res) => {
-    const shortcut = `${req.headers.host}`.replace('.localhost:8888', '');
-    const host = Object.keys(localDapps).find(
-      (key) => localDapps[key] === shortcut
-    );
-    if (host && host in dapps && dapps[host]) {
-      req.headers.host = dapps[host];
+    const id = `${req.headers.host}`.replace('.localhost:8888', '');
+    const dapp = DAPPS.find((dapp) => dapp.id === id);
+    if (dapp && dapp.url) {
+      req.headers.host = dapp.url;
       proxy({ host: '127.0.0.1', port: 8080 }, req, res);
       return;
     }
