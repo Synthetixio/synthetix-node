@@ -30,12 +30,11 @@ import {
   followerKill,
   followerPid,
 } from './follower';
-import { resolveDapp, cleanupOldDapps } from './dapps';
+import { resolveDapp, cleanupOldDapps, DAPPS } from './dapps';
+import { SYNTHETIX_NODE_APP_CONFIG } from '../const';
 import * as settings from './settings';
 import http from 'http';
 import { proxy } from './proxy';
-
-import { DAPPS } from '../dapps';
 
 logger.transports.file.level = 'info';
 
@@ -305,23 +304,46 @@ followerDaemon();
 const followerCheck = setInterval(followerDaemon, 10_000);
 app.on('will-quit', () => clearInterval(followerCheck));
 
+ipcMain.handle('dapps', async () => DAPPS);
 ipcMain.handle('dapp', async (_event, id: string) => {
   const dapp = DAPPS.find((dapp) => dapp.id === id);
   return dapp && dapp.url ? `http://${dapp.id}.localhost:8888` : null;
 });
 
-async function updateAllDapps() {
+async function resolveAllDapps() {
   DAPPS.forEach((dapp) => resolveDapp(dapp).then(updateContextMenu));
 }
-
-const dappsUpdater = setInterval(updateAllDapps, 600_000); // 10 minutes
-app.on('will-quit', () => clearInterval(dappsUpdater));
-waitForIpfs().then(updateAllDapps).catch(logger.error);
+const dappsResolver = setInterval(resolveAllDapps, 600_000); // 10 minutes
+app.on('will-quit', () => clearInterval(dappsResolver));
+waitForIpfs().then(resolveAllDapps).catch(logger.error);
 
 const dappsCleaner = setInterval(cleanupOldDapps, 600_000);
 // const dappsCleaner = setInterval(cleanupOldDapps, 600_000); // 10 minutes
 app.on('will-quit', () => clearInterval(dappsCleaner));
 waitForIpfs().then(cleanupOldDapps).catch(logger.error);
+
+async function updateConfig() {
+  const config = JSON.parse(
+    await ipfs(`cat /ipns/${SYNTHETIX_NODE_APP_CONFIG}`)
+  );
+  logger.log('App config fetched', config);
+  if (config.dapps) {
+    const oldDapps = DAPPS.splice(0);
+    for (const dapp of config.dapps) {
+      const oldDapp = oldDapps.find((d) => d.id === dapp.id);
+      if (oldDapp) {
+        DAPPS.push(Object.assign({}, oldDapp, dapp));
+      } else {
+        DAPPS.push(dapp);
+      }
+    }
+    logger.log('Dapps updated', DAPPS);
+    await resolveAllDapps();
+  }
+}
+const dappsUpdater = setInterval(updateConfig, 600_000); // 10 minutes
+app.on('will-quit', () => clearInterval(dappsUpdater));
+waitForIpfs().then(updateConfig).catch(logger.error);
 
 http
   .createServer((req, res) => {
