@@ -30,7 +30,7 @@ import {
   followerKill,
   followerPid,
 } from './follower';
-import { getDappHost } from './dapps';
+import { resolveDapp, cleanupOldDapps } from './dapps';
 import * as settings from './settings';
 import http from 'http';
 import { proxy } from './proxy';
@@ -311,19 +311,17 @@ ipcMain.handle('dapp', async (_event, id: string) => {
 });
 
 async function updateAllDapps() {
-  DAPPS.forEach((dapp) =>
-    getDappHost(dapp).then((url) => {
-      if (url) {
-        dapp.url = url;
-        updateContextMenu();
-      }
-    })
-  );
+  DAPPS.forEach((dapp) => resolveDapp(dapp).then(updateContextMenu));
 }
 
 const dappsUpdater = setInterval(updateAllDapps, 600_000); // 10 minutes
 app.on('will-quit', () => clearInterval(dappsUpdater));
 waitForIpfs().then(updateAllDapps).catch(logger.error);
+
+const dappsCleaner = setInterval(cleanupOldDapps, 600_000);
+// const dappsCleaner = setInterval(cleanupOldDapps, 600_000); // 10 minutes
+app.on('will-quit', () => clearInterval(dappsCleaner));
+waitForIpfs().then(cleanupOldDapps).catch(logger.error);
 
 http
   .createServer((req, res) => {

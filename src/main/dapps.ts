@@ -5,7 +5,7 @@ import { mainnet } from 'viem/chains';
 import { namehash, normalize } from 'viem/ens';
 // @ts-ignore
 import * as contentHash from '@ensdomains/content-hash';
-import { DappType } from '../dapps';
+import { DAPPS, DappType } from '../dapps';
 import { ipfs } from './ipfs';
 import { getPid } from './pid';
 
@@ -74,7 +74,7 @@ export async function isPinned(qm: string): Promise<boolean> {
   }
 }
 
-export async function getDappHost(dapp: DappType): Promise<string | undefined> {
+export async function resolveDapp(dapp: DappType): Promise<void> {
   try {
     const { codec, hash } = await resolveEns(dapp);
     logger.log(dapp.id, 'resolved', codec, hash);
@@ -84,6 +84,9 @@ export async function getDappHost(dapp: DappType): Promise<string | undefined> {
         : codec === 'ipfs-ns'
         ? hash
         : undefined;
+    if (qm) {
+      Object.assign(dapp, { qm });
+    }
     if (qm !== hash) {
       logger.log(dapp.id, 'resolved CID', qm);
     }
@@ -92,7 +95,7 @@ export async function getDappHost(dapp: DappType): Promise<string | undefined> {
     }
     if (await getPid(`pin add --progress ${qm}`)) {
       logger.log(dapp.id, 'pinning already in progres...');
-      return undefined;
+      return;
     }
     const isDappPinned = await isPinned(qm);
     if (!isDappPinned) {
@@ -100,11 +103,44 @@ export async function getDappHost(dapp: DappType): Promise<string | undefined> {
       await ipfs(`pin add --progress ${qm}`);
     }
     const bafy = await convertCid(qm);
+    Object.assign(dapp, { bafy });
+
     const url = `${bafy}.ipfs.localhost`;
+    Object.assign(dapp, { url });
+
     logger.log(dapp.id, 'local IPFS host:', url);
-    return url;
   } catch (e) {
     logger.error(e);
-    return undefined;
+    return;
+  }
+}
+
+export async function cleanupOldDapps() {
+  const hashes = DAPPS.map((dapp) => dapp.qm);
+  logger.log('Current DAPPs hashes', hashes);
+  if (hashes.some((hash) => !hash)) {
+    // We only want to cleanup when all the dapps aer resolved
+    return;
+  }
+  try {
+    const pins = JSON.parse(await ipfs('pin ls --enc=json --type=recursive'));
+    const pinnedHashes = Object.keys(pins.Keys);
+    logger.log('Existing IPFS pins', pinnedHashes);
+    const toUnpin = pinnedHashes.filter((hash) => !hashes.includes(hash));
+    logger.log('Hashes to unpin', toUnpin);
+    if (toUnpin.length > 0) {
+      for (const hash of toUnpin) {
+        logger.log(`Unpinning ${hash}`);
+        await ipfs(`pin rm ${hash}`);
+      }
+      const pinsAfter = JSON.parse(
+        await ipfs('pin ls --enc=json --type=recursive')
+      );
+      logger.log('Updated IPFS pins', pinsAfter);
+      // Clenup the repo
+      await ipfs('repo gc');
+    }
+  } catch (e) {
+    // do nothing
   }
 }
