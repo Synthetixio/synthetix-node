@@ -72,3 +72,25 @@ gh release create $NEXT_VERSION --generate-notes ./release/build/*.zip
 # re-upload artifacts if needed
 gh release upload $NEXT_VERSION ./release/build/*.zip
 ```
+
+### Publishing new config
+```sh
+# 1. Ensure you have IPFS_USER and IPFS_PASS env vars set
+export IPFS_USER=
+export IPFS_PASS=
+
+# 2. Use `synthetix-node-app-config` IPNS key
+export IPNS_KEY=synthetix-node-app-config
+
+# 3. Add and pin config.json to local IPFS node
+export IPFS_CID=$(ipfs add --progress=false --pin=true --recursive --quieter config.json)
+
+# 4. Pin config.json to Synthetix IPFS node
+curl --silent --request POST --user "$IPFS_USER:$IPFS_PASS" "https://ipfs.synthetix.io:5001/api/v0/pin/add?recursive=true&progress=true&arg=$IPFS_CID" | jq
+
+# 5. Publish config.json to Synthetix IPNS key
+curl --silent --request POST --user "$IPFS_USER:$IPFS_PASS" "https://ipfs.synthetix.io:5001/api/v0/name/publish?key=$IPNS_KEY&arg=$IPFS_CID" | jq
+
+# 6. Pin config.json to Synthetix IPFS Cluster
+curl --silent --request POST --user "$IPFS_USER:$IPFS_PASS" "https://ipfs.synthetix.io/api/v0/pin/add?arg=$IPFS_CID"
+```

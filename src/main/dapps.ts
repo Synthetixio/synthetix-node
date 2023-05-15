@@ -5,11 +5,13 @@ import { mainnet } from 'viem/chains';
 import { namehash, normalize } from 'viem/ens';
 // @ts-ignore
 import * as contentHash from '@ensdomains/content-hash';
-import { DAPPS, DappType } from '../dapps';
 import { ipfs } from './ipfs';
 import { getPid } from './pid';
+import { DappType } from '../types';
 
 Object.assign(global, { fetch });
+
+export const DAPPS: DappType[] = [];
 
 const client = createPublicClient({
   chain: mainnet,
@@ -118,7 +120,7 @@ export async function resolveDapp(dapp: DappType): Promise<void> {
 export async function cleanupOldDapps() {
   const hashes = DAPPS.map((dapp) => dapp.qm);
   logger.log('Current DAPPs hashes', hashes);
-  if (hashes.some((hash) => !hash)) {
+  if (hashes.length < 1 || hashes.some((hash) => !hash)) {
     // We only want to cleanup when all the dapps aer resolved
     return;
   }

@@ -8,32 +8,21 @@ import {
   Stack,
 } from '@chakra-ui/react';
 import { ExternalLinkIcon } from '@chakra-ui/icons';
-import { useDapp } from './useDapp';
-import { DAPPS, DappType } from '../../dapps';
-import { useQuery } from '@tanstack/react-query';
+import { useDapps } from './useDapps';
+import { DappType } from '../../types';
 
 function DappButton({ dapp }: { dapp: DappType }) {
-  const { data: url } = useDapp(dapp.id);
-  const { data: src } = useQuery({
-    queryKey: ['icon', dapp.id],
-    queryFn: async () => {
-      const { default: icon } = await dapp.icon();
-      return icon;
-    },
-    initialData: () => '',
-    placeholderData: '',
-  });
   return (
     <Button
       as={Link}
-      href={url}
+      href={dapp.url}
       target="_blank"
       aria-label={dapp.label}
       variant="outline"
       colorScheme="teal"
-      leftIcon={<Image src={src} alt={dapp.label} width="1em" />}
-      rightIcon={url ? <ExternalLinkIcon /> : <Spinner size="xs" />}
-      isDisabled={!url}
+      leftIcon={<Image src={dapp.icon} alt={dapp.label} width="1em" />}
+      rightIcon={dapp.url ? <ExternalLinkIcon /> : <Spinner size="xs" />}
+      isDisabled={!dapp.url}
       _hover={{ textDecoration: 'none' }}
     >
       {dapp.label}
@@ -42,6 +31,7 @@ function DappButton({ dapp }: { dapp: DappType }) {
 }
 
 export function Dapps() {
+  const { data: dapps } = useDapps();
   return (
     <Box pt="4" px="4" pb="4">
       <Box flex="1" p="0">
@@ -49,7 +39,7 @@ export function Dapps() {
           Available DApps:
         </Heading>
         <Stack direction="row" spacing={6} justifyContent="start" mb="2">
-          {DAPPS.map((dapp) => (
+          {dapps.map((dapp: DappType) => (
             <DappButton key={dapp.id} dapp={dapp} />
           ))}
         </Stack>
