@@ -1,5 +1,7 @@
 # Synthetix Node
 
+[![CircleCI](https://dl.circleci.com/status-badge/img/gh/Synthetixio/synthetix-node/tree/master.svg?style=svg)](https://dl.circleci.com/status-badge/redirect/gh/Synthetixio/synthetix-node/tree/master)
+
 ![Synthetix Node](./synthetix-node.png)
 
 The Synthetix ecosystem has been progressively moving towards reliance on ENS/IPFS over DNS/HTTP for web hosting. For example, Kwenta is available via [eth.limo](http://eth.limo) at [kwenta.eth.limo](https://kwenta.eth.limo), and you can access it directly in [Brave](https://brave.com) or [Opera](https://www.opera.com) at [kwenta.eth](http://kwenta.eth). Synthetix’s Core Contributors are also using IPFS to store and share protocol deployment data using [Cannon](https://usecannon.com).
