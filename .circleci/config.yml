@@ -82,6 +82,7 @@ jobs:
       - npm-install
       - run: npm run lint:check
       - run: npm run pretty:check
+      - run: npm run config:check
 
   ipfs-deploy:
     docker:
@@ -98,7 +99,7 @@ jobs:
       - run:
           name: 'Check if changes been made'
           command: |
-            diff <(curl -L -s "http://127.0.0.1:8080/ipns/k2k4r8jhn5r54sf708bnlxun971q0pteab82iw98544sj1e0hi3hp9q6" -s) ./config.json
+            diff <(ipfs cat /ipns/k2k4r8jhn5r54sf708bnlxun971q0pteab82iw98544sj1e0hi3hp9q6) ./config.json
 
 workflows:
   version: 2.1

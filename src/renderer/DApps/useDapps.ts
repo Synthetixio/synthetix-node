@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { DappType } from '../../types';
+import { DappsSchema } from '../../config';
 
 const { ipcRenderer } = window?.electron || {};
 
@@ -7,8 +7,7 @@ export function useDapps() {
   return useQuery({
     queryKey: ['dapps'],
     queryFn: async () => {
-      const dapps = await ipcRenderer.invoke('dapps');
-      return dapps as DappType[];
+      return DappsSchema.parse(await ipcRenderer.invoke('dapps'));
     },
     initialData: () => [],
     placeholderData: [],
