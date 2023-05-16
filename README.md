@@ -1,5 +1,7 @@
 # Synthetix Node
 
+[![CircleCI](https://dl.circleci.com/status-badge/img/gh/Synthetixio/synthetix-node/tree/master.svg?style=svg)](https://dl.circleci.com/status-badge/redirect/gh/Synthetixio/synthetix-node/tree/master)
+
 ![Synthetix Node](./synthetix-node.png)
 
 The Synthetix ecosystem has been progressively moving towards reliance on ENS/IPFS over DNS/HTTP for web hosting. For example, Kwenta is available via [eth.limo](http://eth.limo) at [kwenta.eth.limo](https://kwenta.eth.limo), and you can access it directly in [Brave](https://brave.com) or [Opera](https://www.opera.com) at [kwenta.eth](http://kwenta.eth). Synthetix’s Core Contributors are also using IPFS to store and share protocol deployment data using [Cannon](https://usecannon.com).
@@ -17,6 +19,7 @@ Anyone with a computer and an internet connection can join the swarm. It’s fin
 ## Running the Node
 
 On macOS, open your terminal and run the following command:
+
 ```sh
 curl https://synthetixio.github.io/synthetix-node/install-macos.sh | bash
 ```
@@ -24,16 +27,19 @@ curl https://synthetixio.github.io/synthetix-node/install-macos.sh | bash
 This will download the correct release of `SynthetixNode.app` to your Applications directory and start it.
 
 ### Manual Installation
+
 Download the macOS app from the [Latest release page](https://github.com/Synthetixio/snx-node/releases/latest). (Windows and Linux versions are in development.) Select the ARM64 version if you are using a Mac with [Apple silicon](https://support.apple.com/en-us/HT211814).
 
 Unzip and copy SynthetixNode to your Applications folder. There will be no pop-up to do so. Make sure to move it manually before proceeding to the next step.
 
 Due to the latest MacOS security policies, it is no longer possible to execute unsigned apps. Therefore, you should clear the quarantine flag from the app before running it. Run the following command in terminal:
+
 ```sh
 xattr -d com.apple.quarantine /Applications/SynthetixNode.app
 ```
 
 ### Build From Source Code
+
 If you are concerned with security, clone this repository, review the implementation, and use the instructions below **Development** to start a development build.
 
 If you would rather run this in a Docker container or run scripts manually, check out the [ipfs-follower repository](https://github.com/Synthetixio/ipfs-follower).
@@ -41,17 +47,20 @@ If you would rather run this in a Docker container or run scripts manually, chec
 ## Development
 
 ### Get Started
+
 ```sh
 npm install
 npm start
 ```
 
 ### Regenerate Electron app icons from svg
+
 ```sh
 npm run iconsgen
 ```
 
 ### Releasing new version
+
 ```sh
 pushd .
 cd ./release/app
@@ -74,6 +83,7 @@ gh release upload $NEXT_VERSION ./release/build/*.zip
 ```
 
 ### Publishing new config
+
 ```sh
 # 1. Ensure you have IPFS_USER and IPFS_PASS env vars set
 export IPFS_USER=

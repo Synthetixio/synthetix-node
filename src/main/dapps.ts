@@ -7,7 +7,7 @@ import { namehash, normalize } from 'viem/ens';
 import * as contentHash from '@ensdomains/content-hash';
 import { ipfs } from './ipfs';
 import { getPid } from './pid';
-import { DappType } from '../types';
+import { DappType } from '../config';
 
 Object.assign(global, { fetch });
 

@@ -1,0 +1,117 @@
+version: 2.1
+
+parameters:
+  node-version:
+    type: string
+    default: '16.17.0'
+
+commands:
+  npm-install:
+    steps:
+      - restore_cache:
+          keys:
+            - node_modules-{{ .Environment.CACHE_VERSION }}-{{ checksum "package-lock.json" }}
+            - node_modules-{{ .Environment.CACHE_VERSION }}-
+      - run: npm install
+      - save_cache:
+          key: node_modules-{{ .Environment.CACHE_VERSION }}-{{ checksum "package-lock.json" }}
+          paths:
+            - node_modules
+
+  ipfs-install:
+    steps:
+      - run:
+          name: 'Install IPFS'
+          command: |
+            LATEST_VERSION=$(curl -sSL https://dist.ipfs.tech/go-ipfs/versions | tail -n 1)
+            LATEST_VERSION_NUMBER=${LATEST_VERSION#*v}
+            DOWNLOAD_URL="https://dist.ipfs.tech/go-ipfs/${LATEST_VERSION}/go-ipfs_${LATEST_VERSION}_linux-amd64.tar.gz"
+            echo "DOWNLOAD_URL=$DOWNLOAD_URL"
+            curl -sSL -o ipfs.tar.gz $DOWNLOAD_URL
+            tar -xzf ipfs.tar.gz
+            sudo cp -f ./go-ipfs/ipfs /usr/local/bin/
+            ipfs init
+
+  ipfs-daemon:
+    steps:
+      - run:
+          name: 'Run IPFS Daemon'
+          command: ipfs daemon
+          background: true
+      - run:
+          name: 'Wait for IPFS Daemon to start'
+          command: wget --retry-connrefused --waitretry=20 --read-timeout=20 --timeout=15 -t 10 --post-data '' "http://localhost:5001/api/v0/version"
+
+  ipfs-deploy:
+    parameters:
+      source-path:
+        type: string
+      ipfs-api:
+        type: string
+      ipns-key:
+        type: string
+      ipfs-cluster-api:
+        type: string
+    steps:
+      - run:
+          name: 'Add to local IPFS node'
+          command: |
+            ipfs add --progress=true --pin=true --recursive "<< parameters.source-path >>"
+      - run:
+          name: 'Save IPFS_CID'
+          command: |
+            export IPFS_CID=$(ipfs add --progress=false --pin=true --recursive --quieter "<< parameters.source-path >>")
+            echo $IPFS_CID
+            echo "export IPFS_CID=$IPFS_CID" >> $BASH_ENV
+      - run:
+          name: 'Pin to the remote IPFS node'
+          command: curl --silent --request POST --user "$IPFS_USER:$IPFS_PASS" "<< parameters.ipfs-api >>/pin/add?recursive=true&progress=true&arg=$IPFS_CID"
+      - run:
+          name: 'Publish IPFS_CID to IPNS key << parameters.ipns-key >>'
+          command: curl --silent --request POST --user "$IPFS_USER:$IPFS_PASS" "<< parameters.ipfs-api >>/name/publish?key=<< parameters.ipns-key >>&arg=$IPFS_CID" | jq
+      - run:
+          name: 'Pin to Synthetix IPFS cluster'
+          command: curl --silent --request POST --user "$IPFS_USER:$IPFS_PASS" "<< parameters.ipfs-cluster-api >>/pin/add?arg=$IPFS_CID" | jq
+
+jobs:
+  checks:
+    docker:
+      - image: cimg/node:<< pipeline.parameters.node-version >>
+    steps:
+      - checkout
+      - npm-install
+      - run: npm run lint:check
+      - run: npm run pretty:check
+      - run: npm run config:check
+
+  ipfs-deploy:
+    docker:
+      - image: cimg/node:<< pipeline.parameters.node-version >>
+    steps:
+      - checkout
+      - ipfs-install
+      - ipfs-daemon
+      - ipfs-deploy:
+          source-path: './config.json'
+          ipfs-api: 'https://ipfs.synthetix.io:5001/api/v0'
+          ipfs-cluster-api: 'https://ipfs.synthetix.io/api/v0'
+          ipns-key: 'synthetix-node-app-config'
+      - run:
+          name: 'Check if changes been made'
+          command: |
+            diff <(ipfs cat /ipns/k2k4r8jhn5r54sf708bnlxun971q0pteab82iw98544sj1e0hi3hp9q6) ./config.json
+
+workflows:
+  version: 2.1
+
+  build:
+    jobs:
+      - checks
+
+      - ipfs-deploy:
+          requires: [checks]
+          filters:
+            branches:
+              only:
+                - master
+                - ipfs-deploy

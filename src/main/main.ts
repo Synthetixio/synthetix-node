@@ -304,7 +304,12 @@ followerDaemon();
 const followerCheck = setInterval(followerDaemon, 10_000);
 app.on('will-quit', () => clearInterval(followerCheck));
 
-ipcMain.handle('dapps', async () => DAPPS);
+ipcMain.handle('dapps', async () => {
+  return DAPPS.map((dapp) => ({
+    ...dapp,
+    url: dapp.url ? `http://${dapp.id}.localhost:8888` : null,
+  }));
+});
 ipcMain.handle('dapp', async (_event, id: string) => {
   const dapp = DAPPS.find((dapp) => dapp.id === id);
   return dapp && dapp.url ? `http://${dapp.id}.localhost:8888` : null;
@@ -317,8 +322,7 @@ const dappsResolver = setInterval(resolveAllDapps, 600_000); // 10 minutes
 app.on('will-quit', () => clearInterval(dappsResolver));
 waitForIpfs().then(resolveAllDapps).catch(logger.error);
 
-const dappsCleaner = setInterval(cleanupOldDapps, 600_000);
-// const dappsCleaner = setInterval(cleanupOldDapps, 600_000); // 10 minutes
+const dappsCleaner = setInterval(cleanupOldDapps, 600_000); // 10 minutes
 app.on('will-quit', () => clearInterval(dappsCleaner));
 waitForIpfs().then(cleanupOldDapps).catch(logger.error);
 

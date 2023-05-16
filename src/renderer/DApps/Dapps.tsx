@@ -9,7 +9,7 @@ import {
 } from '@chakra-ui/react';
 import { ExternalLinkIcon } from '@chakra-ui/icons';
 import { useDapps } from './useDapps';
-import { DappType } from '../../types';
+import { DappType } from '../../config';
 
 function DappButton({ dapp }: { dapp: DappType }) {
   return (
