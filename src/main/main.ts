@@ -30,7 +30,7 @@ import {
   followerKill,
   followerPid,
 } from './follower';
-import { resolveDapp, cleanupOldDapps, DAPPS } from './dapps';
+import { resolveDapp, DAPPS } from './dapps';
 import { SYNTHETIX_NODE_APP_CONFIG } from '../const';
 import * as settings from './settings';
 import http from 'http';
@@ -321,10 +321,6 @@ async function resolveAllDapps() {
 const dappsResolver = setInterval(resolveAllDapps, 600_000); // 10 minutes
 app.on('will-quit', () => clearInterval(dappsResolver));
 waitForIpfs().then(resolveAllDapps).catch(logger.error);
-
-const dappsCleaner = setInterval(cleanupOldDapps, 600_000); // 10 minutes
-app.on('will-quit', () => clearInterval(dappsCleaner));
-waitForIpfs().then(cleanupOldDapps).catch(logger.error);
 
 async function updateConfig() {
   const config = JSON.parse(
