@@ -1,11 +1,6 @@
 import { exec, spawn } from 'child_process';
 import https from 'https';
-import {
-  createReadStream,
-  createWriteStream,
-  promises as fs,
-  rmSync,
-} from 'fs';
+import { createReadStream, createWriteStream, promises as fs } from 'fs';
 import { pipeline } from 'stream/promises';
 import os from 'os';
 import zlib from 'zlib';
@@ -29,14 +24,6 @@ export function followerKill() {
         process.kill(pid);
       }
     );
-    logger.log('Removing ~/.ipfs-cluster-follow/synthetix/badger');
-    rmSync(path.join(IPFS_FOLLOW_PATH, 'synthetix/badger'), {
-      recursive: true,
-    });
-    logger.log('Removing ~/.ipfs-cluster-follow/synthetix/api-socket');
-    rmSync(path.join(IPFS_FOLLOW_PATH, 'synthetix/api-socket'), {
-      recursive: true,
-    });
   } catch (_e) {
     // whatever
   }
