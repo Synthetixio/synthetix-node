@@ -14,22 +14,12 @@ import path from 'path';
 import type { IpcMainInvokeEvent } from 'electron';
 import logger from 'electron-log';
 import { SYNTHETIX_IPNS } from '../const';
+import { ROOT } from './settings';
 import { getPid, getPidsSync } from './pid';
 
-const ROOT = path.join(os.homedir(), '.synthetix');
-
-function execCommand(command: string): Promise<string> {
-  return new Promise((resolve, reject) => {
-    exec(command, { encoding: 'utf8' }, (error, stdout, stderr) => {
-      if (error) {
-        error.message = `${error.message} (${stderr})`;
-        reject(error);
-      } else {
-        resolve(stdout.trim());
-      }
-    });
-  });
-}
+// Change if we ever want to store all follower info in a custom folder
+const HOME = os.homedir();
+const IPFS_FOLLOW_PATH = path.join(HOME, '.ipfs-cluster-follow');
 
 export function followerKill() {
   try {
@@ -40,14 +30,13 @@ export function followerKill() {
       }
     );
     logger.log('Removing ~/.ipfs-cluster-follow/synthetix/badger');
-    rmSync(path.join(os.homedir(), '.ipfs-cluster-follow/synthetix/badger'), {
+    rmSync(path.join(IPFS_FOLLOW_PATH, 'synthetix/badger'), {
       recursive: true,
     });
     logger.log('Removing ~/.ipfs-cluster-follow/synthetix/api-socket');
-    rmSync(
-      path.join(os.homedir(), '.ipfs-cluster-follow/synthetix/api-socket'),
-      { recursive: true }
-    );
+    rmSync(path.join(IPFS_FOLLOW_PATH, 'synthetix/api-socket'), {
+      recursive: true,
+    });
   } catch (_e) {
     // whatever
   }
@@ -85,17 +74,14 @@ export async function followerDaemon() {
     try {
       // Cleanup locks in case of a previous crash
       await Promise.all([
-        fs.rm(
-          path.join(os.homedir(), '.ipfs-cluster-follow/synthetix/badger'),
-          {
-            recursive: true,
-            force: true,
-          }
-        ),
-        fs.rm(
-          path.join(os.homedir(), '.ipfs-cluster-follow/synthetix/api-socket'),
-          { recursive: true, force: true }
-        ),
+        fs.rm(path.join(IPFS_FOLLOW_PATH, 'synthetix/badger'), {
+          recursive: true,
+          force: true,
+        }),
+        fs.rm(path.join(IPFS_FOLLOW_PATH, 'synthetix/api-socket'), {
+          recursive: true,
+          force: true,
+        }),
       ]);
     } catch (e) {
       logger.error(e);
@@ -105,15 +91,30 @@ export async function followerDaemon() {
     spawn(
       path.join(ROOT, 'ipfs-cluster-follow/ipfs-cluster-follow'),
       ['synthetix', 'run'],
-      { stdio: 'inherit', detached: true }
+      {
+        stdio: 'inherit',
+        detached: true,
+        env: { HOME },
+      }
     );
   }
 }
 
-export async function follower(arg: string) {
-  return execCommand(
-    `${path.join(ROOT, 'ipfs-cluster-follow/ipfs-cluster-follow')} ${arg}`
-  );
+export async function follower(arg: string): Promise<string> {
+  return new Promise((resolve, reject) => {
+    exec(
+      `${path.join(ROOT, 'ipfs-cluster-follow/ipfs-cluster-follow')} ${arg}`,
+      { encoding: 'utf8', env: { HOME } },
+      (error, stdout, stderr) => {
+        if (error) {
+          error.message = `${error.message} (${stderr})`;
+          reject(error);
+        } else {
+          resolve(stdout.trim());
+        }
+      }
+    );
+  });
 }
 
 export async function getLatestVersion(): Promise<string> {
@@ -208,12 +209,26 @@ export async function downloadFollower(
 export async function isConfigured() {
   try {
     const service = await fs.readFile(
-      path.join(os.homedir(), '.ipfs-cluster-follow/synthetix/service.json'),
+      path.join(IPFS_FOLLOW_PATH, 'synthetix/service.json'),
       'utf8'
     );
     return service.includes(SYNTHETIX_IPNS);
   } catch (_error) {
     return false;
+  }
+}
+
+export async function followerId() {
+  try {
+    const identity = JSON.parse(
+      await fs.readFile(
+        path.join(IPFS_FOLLOW_PATH, 'synthetix/identity.json'),
+        'utf8'
+      )
+    );
+    return identity.id;
+  } catch (_error) {
+    return '';
   }
 }
 

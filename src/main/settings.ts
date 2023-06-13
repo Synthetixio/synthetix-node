@@ -2,7 +2,7 @@ import { promises as fs } from 'fs';
 import os from 'os';
 import path from 'path';
 
-const ROOT = path.join(os.homedir(), '.synthetix');
+export const ROOT = path.join(os.homedir(), '.synthetix');
 const DEFAULTS = Object.freeze({
   tray: true,
   dock: true,

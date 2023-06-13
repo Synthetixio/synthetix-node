@@ -8,7 +8,7 @@ export function usePeerId() {
   return useQuery({
     queryKey: ['ipfs', 'id'],
     queryFn: async () => {
-      const { ID: id } = JSON.parse(await ipcRenderer.invoke('ipfs-id'));
+      const id = await ipcRenderer.invoke('ipfs-id');
       if (!id) {
         return '';
       }
