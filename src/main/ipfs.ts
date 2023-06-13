@@ -14,22 +14,12 @@ import http from 'http';
 import path from 'path';
 import type { IpcMainInvokeEvent } from 'electron';
 import { getPid, getPidsSync } from './pid';
+import { ROOT } from './settings';
 import logger from 'electron-log';
 
-const ROOT = path.join(os.homedir(), '.synthetix');
-
-function execCommand(command: string): Promise<string> {
-  return new Promise((resolve, reject) => {
-    exec(command, { encoding: 'utf8' }, (error, stdout, stderr) => {
-      if (error) {
-        error.message = `${error.message} (${stderr})`;
-        reject(error);
-      } else {
-        resolve(stdout.trim());
-      }
-    });
-  });
-}
+const HOME = os.homedir();
+// Change if we ever want IPFS to store its data in non-standart path
+const IPFS_PATH = path.join(HOME, '.ipfs');
 
 export function ipfsKill() {
   try {
@@ -37,10 +27,8 @@ export function ipfsKill() {
       logger.log('Killing ipfs', pid);
       process.kill(pid);
     });
-    logger.log('Removing ~/.ipfs/repo.lock');
-    rmSync(path.join(os.homedir(), '.ipfs/repo.lock'), {
-      recursive: true,
-    });
+    logger.log('Removing .ipfs/repo.lock');
+    rmSync(path.join(IPFS_PATH, 'repo.lock'), { recursive: true });
   } catch (_e) {
     // whatever
   }
@@ -70,12 +58,26 @@ export async function ipfsDaemon() {
     spawn(path.join(ROOT, 'go-ipfs/ipfs'), ['daemon'], {
       stdio: 'inherit',
       detached: true,
+      env: { IPFS_PATH },
     });
   }
 }
 
-export async function ipfs(arg: string) {
-  return execCommand(`${path.join(ROOT, 'go-ipfs/ipfs')} ${arg}`);
+export async function ipfs(arg: string): Promise<string> {
+  return new Promise((resolve, reject) => {
+    exec(
+      `${path.join(ROOT, 'go-ipfs/ipfs')} ${arg}`,
+      { encoding: 'utf8', env: { IPFS_PATH } },
+      (error, stdout, stderr) => {
+        if (error) {
+          error.message = `${error.message} (${stderr})`;
+          reject(error);
+        } else {
+          resolve(stdout.trim());
+        }
+      }
+    );
+  });
 }
 
 export async function getLatestVersion(): Promise<string> {
@@ -135,7 +137,7 @@ export async function downloadIpfs(
   const downloadUrl = `https://dist.ipfs.tech/go-ipfs/${latestVersion}/go-ipfs_${latestVersion}_darwin-${targetArch}.tar.gz`;
   log(`IPFS package: ${downloadUrl}`);
 
-  await fs.rm(path.join(os.homedir(), '.ipfs/config'), { recursive: true });
+  await fs.rm(path.join(IPFS_PATH, 'config'), { recursive: true });
   await fs.mkdir(ROOT, { recursive: true });
   await new Promise((resolve, reject) => {
     const file = createWriteStream(path.join(ROOT, 'ipfs.tar.gz'));
