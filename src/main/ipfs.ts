@@ -135,6 +135,7 @@ export async function downloadIpfs(
   const downloadUrl = `https://dist.ipfs.tech/go-ipfs/${latestVersion}/go-ipfs_${latestVersion}_darwin-${targetArch}.tar.gz`;
   log(`IPFS package: ${downloadUrl}`);
 
+  await fs.rm(path.join(os.homedir(), '.ipfs/config'), { recursive: true });
   await fs.mkdir(ROOT, { recursive: true });
   await new Promise((resolve, reject) => {
     const file = createWriteStream(path.join(ROOT, 'ipfs.tar.gz'));
