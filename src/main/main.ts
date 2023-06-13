@@ -25,13 +25,14 @@ import {
   configureFollower,
   downloadFollower,
   follower,
-  followerId,
   followerDaemon,
+  followerId,
   followerIsInstalled,
   followerKill,
   followerPid,
 } from './follower';
-import { resolveDapp, DAPPS } from './dapps';
+import { DAPPS, resolveDapp } from './dapps';
+import { fetchPeers } from './peers';
 import { SYNTHETIX_NODE_APP_CONFIG } from '../const';
 import * as settings from './settings';
 import http from 'http';
@@ -104,7 +105,7 @@ function createWindow() {
     fullscreenable: false,
     width: 600,
     height: 470,
-    frame: false,
+    // frame: false,
     icon: getAssetPath('icon.icns'),
     webPreferences: {
       preload: app.isPackaged
@@ -319,6 +320,7 @@ ipcMain.handle('dapp', async (_event, id: string) => {
 async function resolveAllDapps() {
   DAPPS.forEach((dapp) => resolveDapp(dapp).then(updateContextMenu));
 }
+
 const dappsResolver = setInterval(resolveAllDapps, 600_000); // 10 minutes
 app.on('will-quit', () => clearInterval(dappsResolver));
 waitForIpfs().then(resolveAllDapps).catch(logger.error);
@@ -342,9 +344,12 @@ async function updateConfig() {
     await resolveAllDapps();
   }
 }
+
 const dappsUpdater = setInterval(updateConfig, 600_000); // 10 minutes
 app.on('will-quit', () => clearInterval(dappsUpdater));
 waitForIpfs().then(updateConfig).catch(logger.error);
+
+ipcMain.handle('peers', async () => fetchPeers());
 
 http
   .createServer((req, res) => {

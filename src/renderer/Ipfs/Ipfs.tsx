@@ -1,16 +1,24 @@
 import {
   Box,
   Code,
+  Drawer,
+  DrawerBody,
+  DrawerCloseButton,
+  DrawerContent,
+  DrawerHeader,
+  DrawerOverlay,
   Heading,
   Icon,
+  IconButton,
   Spinner,
   Stack,
   Stat,
   StatLabel,
   StatNumber,
   Text,
+  Tooltip,
 } from '@chakra-ui/react';
-import { CopyIcon } from '@chakra-ui/icons';
+import { ArrowRightIcon, CheckIcon, CopyIcon } from '@chakra-ui/icons';
 import { usePeerId } from './usePeerId';
 import { usePeers } from './usePeers';
 import { useRateIn } from './useRateIn';
@@ -21,6 +29,7 @@ import { useIsIpfsInstalled } from './useIsIpfsInstalled';
 import { useIsFollowerInstalled } from './useIsFollowerInstalled';
 import { useFollowerInfo } from './useFollowerInfo';
 import { SYNTHETIX_IPNS } from '../../const';
+import React from 'react';
 
 function handleCopy(text: string) {
   if (text) {
@@ -65,9 +74,11 @@ export function Ipfs() {
     hostingSize,
   });
 
+  const [peersOpened, setPeersOpened] = React.useState(false);
+
   return (
     <Box pt="3">
-      <Box flex="1" p="0">
+      <Box flex="1" p="0" whiteSpace="nowrap">
         <Stack direction="row" spacing={6} justifyContent="center" mb="2">
           <Stat>
             <StatLabel mb="0" opacity="0.8">
@@ -89,11 +100,74 @@ export function Ipfs() {
             </StatLabel>
             <StatNumber>{rateIn ? rateIn : '-'}</StatNumber>
           </Stat>
-          <Stat>
+          <Stat cursor="pointer" onClick={() => setPeersOpened(true)}>
             <StatLabel mb="0" opacity="0.8">
-              Peers
+              Cluster peers{' '}
+              <IconButton
+                aria-label="Open online peers"
+                size="xs"
+                icon={<ArrowRightIcon />}
+                onClick={() => setPeersOpened(true)}
+              />
             </StatLabel>
-            <StatNumber>{peers ? peers : '-'}</StatNumber>
+
+            <StatNumber>
+              {peers ? peers.length : '-'}{' '}
+              <Drawer
+                isOpen={peersOpened}
+                placement="right"
+                onClose={() => setPeersOpened(false)}
+              >
+                <DrawerOverlay />
+                <DrawerContent maxWidth="26em">
+                  <DrawerCloseButton />
+                  <DrawerHeader>Online peers</DrawerHeader>
+                  <DrawerBody>
+                    <Stack direction="column" margin="0" overflow="scroll">
+                      {peers.map((peer: { id: string }, i: number) => (
+                        <Code
+                          key={peer.id}
+                          fontSize="10px"
+                          display="block"
+                          backgroundColor="transparent"
+                          whiteSpace="nowrap"
+                        >
+                          {`${i}`.padStart(3, '0')}.{' '}
+                          <Tooltip
+                            hasArrow
+                            placement="top"
+                            openDelay={200}
+                            fontSize="xs"
+                            label={
+                              peer.id === peerId
+                                ? 'Your connected Peer ID'
+                                : 'Copy Peer ID'
+                            }
+                          >
+                            <Text
+                              as="span"
+                              borderBottom="1px solid green.400"
+                              borderBottomColor={
+                                peer.id === peerId ? 'green.400' : 'transparent'
+                              }
+                              borderBottomStyle="solid"
+                              borderBottomWidth="1px"
+                              cursor="pointer"
+                              onClick={() => handleCopy(peer.id)}
+                            >
+                              {peer.id}
+                            </Text>
+                          </Tooltip>{' '}
+                          {peer.id === peerId ? (
+                            <CheckIcon color="green.400" />
+                          ) : null}
+                        </Code>
+                      ))}
+                    </Stack>
+                  </DrawerBody>
+                </DrawerContent>
+              </Drawer>
+            </StatNumber>
           </Stat>
         </Stack>
         <Box bg="whiteAlpha.200" pt="4" px="4" pb="4" mb="3">

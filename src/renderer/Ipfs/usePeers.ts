@@ -8,14 +8,16 @@ export function usePeers() {
   return useQuery({
     queryKey: ['ipfs', 'peers'],
     queryFn: async () => {
-      const peers = await ipcRenderer.invoke('ipfs-peers');
+      const peers = await ipcRenderer.invoke('peers');
       if (!peers) {
-        return 0;
+        return [];
       }
-      return peers.trim().split('\n').length;
+      return peers;
     },
-    initialData: () => 0,
-    placeholderData: 0,
+    initialData: () => [],
+    placeholderData: [],
     enabled: Boolean(ipcRenderer && isRunning),
+    refetchInterval: 30_000,
+    refetchOnWindowFocus: true,
   });
 }
