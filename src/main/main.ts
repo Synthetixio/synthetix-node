@@ -73,6 +73,7 @@ function updateContextMenu() {
     tray.setContextMenu(
       Menu.buildFromTemplate([
         menu.app,
+        menu.autoStart,
         menu.devTools,
         menu.dock,
         { type: 'separator' },
@@ -85,6 +86,7 @@ function updateContextMenu() {
   app.dock.setMenu(
     Menu.buildFromTemplate([
       menu.app,
+      menu.autoStart,
       menu.devTools,
       menu.tray,
       { type: 'separator' },
@@ -156,6 +158,18 @@ function generateMenuItems() {
         } else {
           mainWindow.show();
         }
+        updateContextMenu();
+      },
+    },
+    autoStart: {
+      label: app.getLoginItemSettings().openAtLogin
+        ? 'Disable AutoStart'
+        : 'Enable AutoStart',
+      click: () => {
+        const settings = app.getLoginItemSettings();
+        settings.openAtLogin = !settings.openAtLogin;
+        app.setLoginItemSettings(settings);
+        updateContextMenu();
       },
     },
     devTools: {
@@ -171,6 +185,7 @@ function generateMenuItems() {
             mainWindow.webContents.openDevTools({ mode: 'detach' });
           }
         }
+        updateContextMenu();
       },
     },
     dock: {
@@ -185,6 +200,7 @@ function generateMenuItems() {
             app.dock.show();
           }
         }
+        updateContextMenu();
       },
     },
     tray: {
@@ -193,12 +209,11 @@ function generateMenuItems() {
         if (tray && !tray.isDestroyed()) {
           await settings.set('tray', false);
           tray.destroy();
-          updateContextMenu();
         } else {
           await settings.set('tray', true);
           createTray();
-          updateContextMenu();
         }
+        updateContextMenu();
       },
     },
     separator: {
