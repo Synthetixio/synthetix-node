@@ -25,6 +25,7 @@ import {
   configureFollower,
   downloadFollower,
   follower,
+  followerId,
   followerDaemon,
   followerIsInstalled,
   followerKill,
@@ -286,7 +287,7 @@ ipcMain.handle('run-follower', async () => {
 });
 
 ipcMain.handle('ipfs-peers', () => ipfs('swarm peers'));
-ipcMain.handle('ipfs-id', () => ipfs('id'));
+ipcMain.handle('ipfs-id', () => followerId());
 ipcMain.handle('ipfs-repo-stat', () => ipfs('repo stat'));
 ipcMain.handle('ipfs-stats-bw', () => ipfs('stats bw'));
 ipcMain.handle('ipfs-follower-info', () => follower('synthetix info'));
