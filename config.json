@@ -22,7 +22,7 @@
     {
       "id": "spongly",
       "label": "Spongly",
-      "icon": ""
+      "icon": "https://synthetixio.github.io/synthetix-node/src/spongly.svg"
       "ipns": "spongly.eth"
     }
   ]
