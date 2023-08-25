@@ -1,4 +1,5 @@
 {
+  "name": "synthetix-node",
   "description": "Synthetix Node",
   "repository": "synthetixio/snx-node",
   "license": "MIT",
