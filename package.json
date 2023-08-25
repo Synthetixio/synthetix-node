@@ -1,4 +1,5 @@
 {
+  "name": "synthetix-node",
   "description": "Synthetix Node",
   "repository": "synthetixio/snx-node",
   "license": "MIT",
@@ -12,8 +13,10 @@
     "config:check": "ts-node ./src/config-check.ts ./config.json",
     "lint": "eslint --fix .",
     "lint:check": "eslint .",
-    "pretty": "prettier --write .",
-    "pretty:check": "prettier --check .",
+    "pretty": "prettier --write . './**/*.svg'",
+    "pretty:check": "prettier --check . './**/*.svg'",
+    "svg": "svgo --recursive . && prettier --write './**/*.svg'",
+    "svg:check": "npm run svg && git diff --exit-code",
     "package": "ts-node ./.erb/scripts/clean.js dist && npm run build && CSC_IDENTITY_AUTO_DISCOVERY=false electron-builder build --publish never",
     "rebuild": "electron-rebuild --parallel --types prod,dev,optional --module-dir release/app",
     "start": "ts-node ./.erb/scripts/check-port-in-use.js && npm run start:renderer",
@@ -23,20 +26,6 @@
     "iconsgen": "node ./assets/iconsgen.js ./assets/icon.svg ./assets"
   },
   "browserslist": [],
-  "prettier": {
-    "singleQuote": true,
-    "overrides": [
-      {
-        "files": [
-          ".prettierrc",
-          ".eslintrc"
-        ],
-        "options": {
-          "parser": "json"
-        }
-      }
-    ]
-  },
   "dependencies": {
     "@chakra-ui/icons": "^2.0.18",
     "@chakra-ui/react": "^2.5.5",
@@ -90,11 +79,12 @@
     "file-loader": "^6.2.0",
     "html-webpack-plugin": "^5.5.0",
     "mini-css-extract-plugin": "^2.7.2",
-    "prettier": "^2.8.4",
+    "prettier": "^2.8.8",
     "react-refresh": "^0.14.0",
     "rimraf": "^5.0.0",
     "sharp": "^0.32.0",
     "style-loader": "^3.3.1",
+    "svgo": "^3.0.2",
     "ts-loader": "^9.4.2",
     "ts-node": "^10.9.1",
     "tsconfig-paths-webpack-plugin": "^4.0.0",

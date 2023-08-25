@@ -84,9 +84,7 @@ export function Ipfs() {
             <StatLabel mb="0" opacity="0.8">
               Hosting
             </StatLabel>
-            <StatNumber>
-              {hostingSize ? `${hostingSize.toFixed(2)} Mb` : '-'}
-            </StatNumber>
+            <StatNumber>{hostingSize ? `${hostingSize.toFixed(2)} Mb` : '-'}</StatNumber>
           </Stat>
           <Stat>
             <StatLabel mb="0" opacity="0.8">
@@ -113,11 +111,7 @@ export function Ipfs() {
 
             <StatNumber>
               {peers ? peers.length : '-'}{' '}
-              <Drawer
-                isOpen={peersOpened}
-                placement="right"
-                onClose={() => setPeersOpened(false)}
-              >
+              <Drawer isOpen={peersOpened} placement="right" onClose={() => setPeersOpened(false)}>
                 <DrawerOverlay />
                 <DrawerContent maxWidth="26em">
                   <DrawerCloseButton />
@@ -138,18 +132,12 @@ export function Ipfs() {
                             placement="top"
                             openDelay={200}
                             fontSize="xs"
-                            label={
-                              peer.id === peerId
-                                ? 'Your connected Peer ID'
-                                : 'Copy Peer ID'
-                            }
+                            label={peer.id === peerId ? 'Your connected Peer ID' : 'Copy Peer ID'}
                           >
                             <Text
                               as="span"
                               borderBottom="1px solid green.400"
-                              borderBottomColor={
-                                peer.id === peerId ? 'green.400' : 'transparent'
-                              }
+                              borderBottomColor={peer.id === peerId ? 'green.400' : 'transparent'}
                               borderBottomStyle="solid"
                               borderBottomWidth="1px"
                               cursor="pointer"
@@ -158,9 +146,7 @@ export function Ipfs() {
                               {peer.id}
                             </Text>
                           </Tooltip>{' '}
-                          {peer.id === peerId ? (
-                            <CheckIcon color="green.400" />
-                          ) : null}
+                          {peer.id === peerId ? <CheckIcon color="green.400" /> : null}
                         </Code>
                       ))}
                     </Stack>
@@ -182,9 +168,7 @@ export function Ipfs() {
             {isIpfsInstalled && !isIpfsRunning ? (
               <Text as="span" whiteSpace="nowrap">
                 <Spinner size="xs" mr="2" />
-                <Text display="inline-block">
-                  Your IPFS node is starting...
-                </Text>
+                <Text display="inline-block">Your IPFS node is starting...</Text>
               </Text>
             ) : null}
 
@@ -200,63 +184,38 @@ export function Ipfs() {
             {isFollowerInstalled && followerInfo.cluster ? (
               <Text as="span" whiteSpace="nowrap">
                 <StatusIcon textColor="green.400" />
-                <Text display="inline-block">
-                  You are connected to the Synthetix Cluster
-                </Text>
+                <Text display="inline-block">You are connected to the Synthetix Cluster</Text>
               </Text>
             ) : null}
 
             {isFollowerInstalled && !followerInfo.cluster ? (
               <Text as="span" whiteSpace="nowrap">
                 <Spinner size="xs" mr="2" />
-                <Text display="inline-block">
-                  Connecting to the Synthetix Cluster...
-                </Text>
+                <Text display="inline-block">Connecting to the Synthetix Cluster...</Text>
               </Text>
             ) : null}
 
             {!isFollowerInstalled ? (
               <Text as="span" whiteSpace="nowrap">
                 <Spinner size="xs" mr="2" />
-                <Text display="inline-block">
-                  Synthetix Cluster Connector is installing...
-                </Text>
+                <Text display="inline-block">Synthetix Cluster Connector is installing...</Text>
               </Text>
             ) : null}
           </Heading>
         </Box>
         <Box mb="3">
-          <Text
-            fontSize="sm"
-            textTransform="uppercase"
-            letterSpacing="1px"
-            opacity="0.8"
-            mb="1"
-          >
+          <Text fontSize="sm" textTransform="uppercase" letterSpacing="1px" opacity="0.8" mb="1">
             Your Peer ID
           </Text>
           <Box display="flex" alignItems="center">
-            <Code>
-              {peerId ? peerId : 'CONNECT YOUR IPFS NODE TO GENERATE A PEER ID'}
-            </Code>
+            <Code>{peerId ? peerId : 'CONNECT YOUR IPFS NODE TO GENERATE A PEER ID'}</Code>
             {peerId && (
-              <CopyIcon
-                opacity="0.8"
-                ml="2"
-                cursor="pointer"
-                onClick={() => handleCopy(peerId)}
-              />
+              <CopyIcon opacity="0.8" ml="2" cursor="pointer" onClick={() => handleCopy(peerId)} />
             )}
           </Box>
         </Box>
         <Box>
-          <Text
-            fontSize="sm"
-            textTransform="uppercase"
-            letterSpacing="1px"
-            opacity="0.8"
-            mb="1"
-          >
+          <Text fontSize="sm" textTransform="uppercase" letterSpacing="1px" opacity="0.8" mb="1">
             Synthetix Cluster IPNS
           </Text>
           <Box display="flex" alignItems="center">

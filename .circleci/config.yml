@@ -77,12 +77,15 @@ jobs:
   checks:
     docker:
       - image: cimg/node:<< pipeline.parameters.node-version >>
+    working_directory: ~/app
     steps:
       - checkout
       - npm-install
       - run: npm run lint:check
       - run: npm run pretty:check
       - run: npm run config:check
+      - run: npm run svg:check
+      - run: npm run package
 
   ipfs-deploy:
     docker:

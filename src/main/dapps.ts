@@ -30,9 +30,7 @@ const resolverAbi = [
   },
 ];
 
-export async function resolveEns(
-  dapp: DappType
-): Promise<{ codec: string; hash: string }> {
+export async function resolveEns(dapp: DappType): Promise<{ codec: string; hash: string }> {
   if (dapp.ipns) {
     return {
       codec: 'ipns-ns',
@@ -80,12 +78,7 @@ export async function resolveDapp(dapp: DappType): Promise<void> {
   try {
     const { codec, hash } = await resolveEns(dapp);
     logger.log(dapp.id, 'resolved', codec, hash);
-    const qm =
-      codec === 'ipns-ns'
-        ? await resolveQm(hash)
-        : codec === 'ipfs-ns'
-        ? hash
-        : undefined;
+    const qm = codec === 'ipns-ns' ? await resolveQm(hash) : codec === 'ipfs-ns' ? hash : undefined;
     if (qm) {
       Object.assign(dapp, { qm });
     }
@@ -135,9 +128,7 @@ export async function cleanupOldDapps() {
         logger.log(`Unpinning ${hash}`);
         await ipfs(`pin rm ${hash}`);
       }
-      const pinsAfter = JSON.parse(
-        await ipfs('pin ls --enc=json --type=recursive')
-      );
+      const pinsAfter = JSON.parse(await ipfs('pin ls --enc=json --type=recursive'));
       logger.log('Updated IPFS pins', pinsAfter);
       // Clenup the repo
       await ipfs('repo gc');

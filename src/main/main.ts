@@ -40,8 +40,7 @@ import { proxy } from './proxy';
 
 logger.transports.file.level = 'info';
 
-const isDebug =
-  process.env.NODE_ENV === 'development' || process.env.DEBUG_PROD === 'true';
+const isDebug = process.env.NODE_ENV === 'development' || process.env.DEBUG_PROD === 'true';
 
 // class AppUpdater {
 //   constructor() {
@@ -162,9 +161,7 @@ function generateMenuItems() {
       },
     },
     autoStart: {
-      label: app.getLoginItemSettings().openAtLogin
-        ? 'Disable AutoStart'
-        : 'Enable AutoStart',
+      label: app.getLoginItemSettings().openAtLogin ? 'Disable AutoStart' : 'Enable AutoStart',
       click: () => {
         const settings = app.getLoginItemSettings();
         settings.openAtLogin = !settings.openAtLogin;
@@ -341,9 +338,7 @@ app.on('will-quit', () => clearInterval(dappsResolver));
 waitForIpfs().then(resolveAllDapps).catch(logger.error);
 
 async function updateConfig() {
-  const config = JSON.parse(
-    await ipfs(`cat /ipns/${SYNTHETIX_NODE_APP_CONFIG}`)
-  );
+  const config = JSON.parse(await ipfs(`cat /ipns/${SYNTHETIX_NODE_APP_CONFIG}`));
   logger.log('App config fetched', config);
   if (config.dapps) {
     const oldDapps = DAPPS.splice(0);

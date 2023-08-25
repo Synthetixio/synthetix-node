@@ -1,8 +1,4 @@
-import {
-  downloadFollower,
-  followerDaemon,
-  followerKill,
-} from '../main/follower';
+import { downloadFollower, followerDaemon, followerKill } from '../main/follower';
 
 async function main() {
   await downloadFollower();
