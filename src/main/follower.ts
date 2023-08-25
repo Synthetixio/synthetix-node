@@ -195,8 +195,10 @@ export async function configureFollower({ log = logger.log } = {}) {
     return;
   }
   try {
+    await fs.rm(path.join(IPFS_FOLLOW_PATH, 'synthetix'), { recursive: true, force: true });
     log(await follower(`synthetix init "http://127.0.0.1:8080/ipns/${SYNTHETIX_IPNS}"`));
-  } catch (_error) {
-    // ignore
+  } catch (e) {
+    logger.error(e);
+    // whatever
   }
 }
