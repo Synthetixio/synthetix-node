@@ -18,11 +18,11 @@
       "label": "Perps V2 Watcher",
       "icon": "https://synthetixio.github.io/synthetix-node/src/synthetix.svg",
       "ipns": "k2k4r8pf9z20v99lm731p2d8vp0lg6w3sics8iot60mvjyret5tzfefl"
-    }
+    },
     {
       "id": "spongly",
       "label": "Spongly",
-      "icon": "https://synthetixio.github.io/synthetix-node/src/spongly.svg"
+      "icon": "https://synthetixio.github.io/synthetix-node/src/spongly.svg",
       "ipns": "spongly.eth"
     }
   ]
