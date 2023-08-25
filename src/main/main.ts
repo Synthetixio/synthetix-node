@@ -355,9 +355,21 @@ async function updateConfig() {
   }
 }
 
-const dappsUpdater = setInterval(updateConfig, 600_000); // 10 minutes
-app.on('will-quit', () => clearInterval(dappsUpdater));
-waitForIpfs().then(updateConfig).catch(logger.error);
+let dappsUpdaterTimer: any = null;
+async function debouncedDappsUpdater() {
+  if (dappsUpdaterTimer) {
+    clearTimeout(dappsUpdaterTimer);
+    dappsUpdaterTimer = null;
+  }
+  try {
+    await updateConfig();
+  } catch (error) {
+    logger.error(error);
+  }
+  // On initial load keep updater interval short and extend to 10m when dapps are already resolved
+  dappsUpdaterTimer = setTimeout(debouncedDappsUpdater, DAPPS.length > 0 ? 600_000 : 10_000);
+}
+waitForIpfs().then(debouncedDappsUpdater).catch(logger.error);
 
 ipcMain.handle('peers', async () => fetchPeers());
 
