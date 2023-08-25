@@ -1,11 +1,6 @@
 import { exec, spawn } from 'child_process';
 import https from 'https';
-import {
-  createReadStream,
-  createWriteStream,
-  promises as fs,
-  rmSync,
-} from 'fs';
+import { createReadStream, createWriteStream, promises as fs, rmSync } from 'fs';
 import { pipeline } from 'stream/promises';
 import os from 'os';
 import zlib from 'zlib';
@@ -108,10 +103,7 @@ export async function getInstalledVersion() {
   }
 }
 
-export async function downloadIpfs(
-  _e?: IpcMainInvokeEvent,
-  { log = logger.log } = {}
-) {
+export async function downloadIpfs(_e?: IpcMainInvokeEvent, { log = logger.log } = {}) {
   const arch = os.arch();
   const targetArch = arch === 'x64' ? 'amd64' : 'arm64';
 
@@ -127,9 +119,7 @@ export async function downloadIpfs(
   }
 
   if (installedVersion) {
-    log(
-      `Updating ipfs from version ${installedVersion} to ${latestVersionNumber}`
-    );
+    log(`Updating ipfs from version ${installedVersion} to ${latestVersionNumber}`);
   } else {
     log(`Installing ipfs version ${latestVersionNumber}`);
   }
@@ -141,9 +131,7 @@ export async function downloadIpfs(
   await fs.mkdir(ROOT, { recursive: true });
   await new Promise((resolve, reject) => {
     const file = createWriteStream(path.join(ROOT, 'ipfs.tar.gz'));
-    https.get(downloadUrl, (response) =>
-      pipeline(response, file).then(resolve).catch(reject)
-    );
+    https.get(downloadUrl, (response) => pipeline(response, file).then(resolve).catch(reject));
   });
 
   await new Promise((resolve, reject) => {
@@ -167,11 +155,7 @@ export async function downloadIpfs(
 export async function configureIpfs({ log = logger.log } = {}) {
   try {
     log(await ipfs('init'));
-    log(
-      await ipfs(
-        'config --json API.HTTPHeaders.Access-Control-Allow-Origin \'["*"]\''
-      )
-    );
+    log(await ipfs('config --json API.HTTPHeaders.Access-Control-Allow-Origin \'["*"]\''));
     log(
       await ipfs(
         'config --json API.HTTPHeaders.Access-Control-Allow-Methods \'["PUT", "POST", "GET"]\''

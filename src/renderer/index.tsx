@@ -1,9 +1,5 @@
 import { createRoot } from 'react-dom/client';
-import {
-  ChakraProvider,
-  extendTheme,
-  type ThemeConfig,
-} from '@chakra-ui/react';
+import { ChakraProvider, extendTheme, type ThemeConfig } from '@chakra-ui/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import App from './App';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';

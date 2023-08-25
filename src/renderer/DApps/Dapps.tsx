@@ -1,12 +1,4 @@
-import {
-  Box,
-  Button,
-  Heading,
-  Image,
-  Link,
-  Spinner,
-  Stack,
-} from '@chakra-ui/react';
+import { Box, Button, Heading, Image, Link, Spinner, Stack } from '@chakra-ui/react';
 import { ExternalLinkIcon } from '@chakra-ui/icons';
 import { useDapps } from './useDapps';
 import { DappType } from '../../config';

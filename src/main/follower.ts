@@ -18,29 +18,22 @@ const IPFS_FOLLOW_PATH = path.join(HOME, '.ipfs-cluster-follow');
 
 export function followerKill() {
   try {
-    getPidsSync('.synthetix/ipfs-cluster-follow/ipfs-cluster-follow').forEach(
-      (pid) => {
-        logger.log('Killing ipfs-cluster-follow', pid);
-        process.kill(pid);
-      }
-    );
+    getPidsSync('.synthetix/ipfs-cluster-follow/ipfs-cluster-follow').forEach((pid) => {
+      logger.log('Killing ipfs-cluster-follow', pid);
+      process.kill(pid);
+    });
   } catch (_e) {
     // whatever
   }
 }
 
 export async function followerPid() {
-  return await getPid(
-    '.synthetix/ipfs-cluster-follow/ipfs-cluster-follow synthetix run'
-  );
+  return await getPid('.synthetix/ipfs-cluster-follow/ipfs-cluster-follow synthetix run');
 }
 
 export async function followerIsInstalled() {
   try {
-    await fs.access(
-      path.join(ROOT, 'ipfs-cluster-follow/ipfs-cluster-follow'),
-      fs.constants.F_OK
-    );
+    await fs.access(path.join(ROOT, 'ipfs-cluster-follow/ipfs-cluster-follow'), fs.constants.F_OK);
     return true;
   } catch (_e) {
     return false;
@@ -52,9 +45,7 @@ export async function followerDaemon() {
   if (!isInstalled) {
     return;
   }
-  const pid = await getPid(
-    '.synthetix/ipfs-cluster-follow/ipfs-cluster-follow synthetix run'
-  );
+  const pid = await getPid('.synthetix/ipfs-cluster-follow/ipfs-cluster-follow synthetix run');
   if (!pid) {
     await configureFollower();
 
@@ -75,15 +66,11 @@ export async function followerDaemon() {
       // whatever
     }
 
-    spawn(
-      path.join(ROOT, 'ipfs-cluster-follow/ipfs-cluster-follow'),
-      ['synthetix', 'run'],
-      {
-        stdio: 'inherit',
-        detached: true,
-        env: { HOME },
-      }
-    );
+    spawn(path.join(ROOT, 'ipfs-cluster-follow/ipfs-cluster-follow'), ['synthetix', 'run'], {
+      stdio: 'inherit',
+      detached: true,
+      env: { HOME },
+    });
   }
 }
 
@@ -132,10 +119,7 @@ export async function getInstalledVersion() {
   }
 }
 
-export async function downloadFollower(
-  _e?: IpcMainInvokeEvent,
-  { log = logger.log } = {}
-) {
+export async function downloadFollower(_e?: IpcMainInvokeEvent, { log = logger.log } = {}) {
   const arch = os.arch();
   const targetArch = arch === 'x64' ? 'amd64' : 'arm64';
 
@@ -146,16 +130,12 @@ export async function downloadFollower(
   const installedVersion = await getInstalledVersion();
 
   if (installedVersion === latestVersionNumber) {
-    log(
-      `ipfs-cluster-follow version ${installedVersion} is already installed.`
-    );
+    log(`ipfs-cluster-follow version ${installedVersion} is already installed.`);
     return;
   }
 
   if (installedVersion) {
-    log(
-      `Updating ipfs-cluster-follow from version ${installedVersion} to ${latestVersionNumber}`
-    );
+    log(`Updating ipfs-cluster-follow from version ${installedVersion} to ${latestVersionNumber}`);
   } else {
     log(`Installing ipfs-cluster-follow version ${latestVersionNumber}`);
   }
@@ -165,12 +145,8 @@ export async function downloadFollower(
 
   await fs.mkdir(ROOT, { recursive: true });
   await new Promise((resolve, reject) => {
-    const file = createWriteStream(
-      path.join(ROOT, 'ipfs-cluster-follow.tar.gz')
-    );
-    https.get(downloadUrl, (response) =>
-      pipeline(response, file).then(resolve).catch(reject)
-    );
+    const file = createWriteStream(path.join(ROOT, 'ipfs-cluster-follow.tar.gz'));
+    https.get(downloadUrl, (response) => pipeline(response, file).then(resolve).catch(reject));
   });
 
   await new Promise((resolve, reject) => {
@@ -183,9 +159,7 @@ export async function downloadFollower(
 
   const installedVersionCheck = await getInstalledVersion();
   if (installedVersionCheck) {
-    log(
-      `ipfs-cluster-follow version ${installedVersionCheck} installed successfully.`
-    );
+    log(`ipfs-cluster-follow version ${installedVersionCheck} installed successfully.`);
   } else {
     throw new Error('ipfs-cluster-follow installation failed.');
   }
@@ -208,10 +182,7 @@ export async function isConfigured() {
 export async function followerId() {
   try {
     const identity = JSON.parse(
-      await fs.readFile(
-        path.join(IPFS_FOLLOW_PATH, 'synthetix/identity.json'),
-        'utf8'
-      )
+      await fs.readFile(path.join(IPFS_FOLLOW_PATH, 'synthetix/identity.json'), 'utf8')
     );
     return identity.id;
   } catch (_error) {
@@ -224,11 +195,7 @@ export async function configureFollower({ log = logger.log } = {}) {
     return;
   }
   try {
-    log(
-      await follower(
-        `synthetix init "http://127.0.0.1:8080/ipns/${SYNTHETIX_IPNS}"`
-      )
-    );
+    log(await follower(`synthetix init "http://127.0.0.1:8080/ipns/${SYNTHETIX_IPNS}"`));
   } catch (_error) {
     // ignore
   }

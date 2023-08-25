@@ -10,9 +10,7 @@ const DEFAULTS = Object.freeze({
 
 export async function read() {
   try {
-    return JSON.parse(
-      await fs.readFile(path.join(ROOT, 'setting.json'), 'utf8')
-    );
+    return JSON.parse(await fs.readFile(path.join(ROOT, 'setting.json'), 'utf8'));
   } catch (_error) {
     return DEFAULTS;
   }
@@ -20,11 +18,7 @@ export async function read() {
 
 export async function write(settings: typeof DEFAULTS) {
   try {
-    await fs.writeFile(
-      path.join(ROOT, 'setting.json'),
-      JSON.stringify(settings, null, 2),
-      'utf8'
-    );
+    await fs.writeFile(path.join(ROOT, 'setting.json'), JSON.stringify(settings, null, 2), 'utf8');
   } catch (_error) {
     // whatever
   }
