@@ -1,4 +1,4 @@
-import { Box, Button, Heading, Image, Link, Spinner, Flex } from '@chakra-ui/react';
+import { Box, Button, Heading, Image, Link, Spinner, Flex, Skeleton } from '@chakra-ui/react';
 import { ExternalLinkIcon } from '@chakra-ui/icons';
 import { useDapps } from './useDapps';
 import { DappType } from '../../config';
@@ -31,9 +31,11 @@ export function Dapps() {
           Available DApps:
         </Heading>
         <Flex direction="row" gap={2} justifyContent="start" mb="2" flexWrap="wrap">
-          {dapps.map((dapp: DappType) => (
-            <DappButton key={dapp.id} dapp={dapp} />
-          ))}
+          {dapps.length > 0 ? (
+            dapps.map((dapp: DappType) => <DappButton key={dapp.id} dapp={dapp} />)
+          ) : (
+            <Skeleton w="full" height={8} />
+          )}
         </Flex>
       </Box>
     </Box>

@@ -36,7 +36,7 @@ import { fetchPeers } from './peers';
 import { SYNTHETIX_NODE_APP_CONFIG } from '../const';
 import * as settings from './settings';
 import http from 'http';
-import { proxy } from './proxy';
+import fetch from 'node-fetch';
 
 logger.transports.file.level = 'info';
 
@@ -374,13 +374,27 @@ waitForIpfs().then(debouncedDappsUpdater).catch(logger.error);
 ipcMain.handle('peers', async () => fetchPeers());
 
 http
-  .createServer((req, res) => {
+  .createServer(async (req, res) => {
     const id = `${req.headers.host}`.replace('.localhost:8888', '');
     const dapp = DAPPS.find((dapp) => dapp.id === id);
-    if (dapp && dapp.url) {
-      req.headers.host = dapp.url;
-      proxy({ host: '127.0.0.1', port: 8080 }, req, res);
-      return;
+    if (dapp && dapp.qm) {
+      try {
+        const response = await fetch(`http://127.0.0.1:8080/ipfs/${dapp.qm}${req.url}`);
+        if (response.status !== 404) {
+          // @ts-ignore
+          res.writeHead(response.status, {
+            'Content-Length': response.headers.get('content-length'),
+            'Content-Type': response.headers.get('content-type'),
+          });
+          res.end(await response.buffer());
+          return;
+        }
+      } catch (e: any) {
+        logger.error(e);
+        res.writeHead(500);
+        res.end(e.message);
+        return;
+      }
     }
     res.writeHead(404);
     res.end('Not found');
