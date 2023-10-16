@@ -7,6 +7,18 @@
       "ens": "kwenta.eth"
     },
     {
+      "id": "lp",
+      "label": "Liquidity V3",
+      "icon": "https://synthetixio.github.io/synthetix-node/src/synthetix.svg",
+      "ens": "liquidity.synthetix.eth"
+    },
+    {
+      "id": "gov",
+      "label": "Governance",
+      "icon": "https://synthetixio.github.io/synthetix-node/src/synthetix.svg",
+      "ens": "governance.synthetix.eth"
+    },
+    {
       "id": "staking",
       "label": "Staking V2",
       "icon": "https://synthetixio.github.io/synthetix-node/src/synthetix.svg",
