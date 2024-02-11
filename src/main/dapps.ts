@@ -8,6 +8,7 @@ import * as contentHash from '@ensdomains/content-hash';
 import { ipfs } from './ipfs';
 import { getPid } from './pid';
 import { DappType } from '../config';
+import os from 'os';
 
 Object.assign(global, { fetch });
 
@@ -88,7 +89,8 @@ export async function resolveDapp(dapp: DappType): Promise<void> {
     if (!qm) {
       throw new Error(`Codec "${codec}" not supported`);
     }
-    if (await getPid(`pin add --progress ${qm}`)) {
+    const isWin = os.platform() === 'win32';
+    if (await getPid(`${isWin ? 'ipfs' : ''} pin add --progress ${qm}`)) {
       logger.log(dapp.id, 'pinning already in progres...');
       return;
     }

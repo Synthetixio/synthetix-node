@@ -1,13 +1,21 @@
 import { exec, execSync } from 'child_process';
+import os from 'os';
+import logger from 'electron-log';
 
 export function extractPids(processes: string): number[] {
+  const isWin = os.platform() === 'win32';
   return processes
     .trim()
     .split('\n')
     .filter((line) => !line.includes('grep'))
     .map((line) => {
-      const [raw] = line.trim().split(' ');
-      return parseInt(raw, 10);
+      if (isWin) {
+        const parts = line.trim().split(' ').filter(Boolean);
+        return parseInt(parts[1], 10); // On Windows, PID is the second column
+      } else {
+        const [raw] = line.trim().split(' ');
+        return parseInt(raw, 10);
+      }
     });
 }
 
@@ -52,10 +60,12 @@ function execCommand(command: string): Promise<string> {
 }
 
 export async function getPid(search: string): Promise<number | undefined> {
+  const command =
+    os.platform() === 'win32' ? `tasklist | findstr "${search}"` : `ps -ax | grep '${search}'`;
   try {
-    const processes = await execCommand(`ps -ax | grep '${search}'`);
+    const processes = await execCommand(command);
     return findPid(processes);
   } catch (_e) {
-    // whatever
+    logger.error(_e);
   }
 }

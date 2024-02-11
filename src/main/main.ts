@@ -82,16 +82,19 @@ function updateContextMenu() {
       ])
     );
   }
-  app.dock.setMenu(
-    Menu.buildFromTemplate([
-      menu.app,
-      menu.autoStart,
-      menu.devTools,
-      menu.tray,
-      { type: 'separator' },
-      ...menu.dapps,
-    ])
-  );
+
+  if (app.dock) {
+    app.dock.setMenu(
+      Menu.buildFromTemplate([
+        menu.app,
+        menu.autoStart,
+        menu.devTools,
+        menu.tray,
+        { type: 'separator' },
+        ...menu.dapps,
+      ])
+    );
+  }
 }
 
 function createWindow() {

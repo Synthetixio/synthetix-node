@@ -11,6 +11,8 @@ import logger from 'electron-log';
 import { SYNTHETIX_IPNS } from '../const';
 import { ROOT } from './settings';
 import { getPid, getPidsSync } from './pid';
+import unzipper from 'unzipper';
+import { getPlatformDetails } from './util';
 
 // Change if we ever want to store all follower info in a custom folder
 const HOME = os.homedir();
@@ -18,7 +20,7 @@ const IPFS_FOLLOW_PATH = path.join(HOME, '.ipfs-cluster-follow');
 
 export function followerKill() {
   try {
-    getPidsSync('.synthetix/ipfs-cluster-follow/ipfs-cluster-follow').forEach((pid) => {
+    getPidsSync('.synthetix/ipfs-cluster-follow/ipfs-cluster-follow.exe').forEach((pid) => {
       logger.log('Killing ipfs-cluster-follow', pid);
       process.kill(pid);
     });
@@ -28,12 +30,21 @@ export function followerKill() {
 }
 
 export async function followerPid() {
+  const isWin = os.platform() === 'win32';
+
+  if (isWin) {
+    return await getPid('ipfs-cluster-follow synthetix run');
+  }
+
   return await getPid('.synthetix/ipfs-cluster-follow/ipfs-cluster-follow synthetix run');
 }
 
 export async function followerIsInstalled() {
   try {
-    await fs.access(path.join(ROOT, 'ipfs-cluster-follow/ipfs-cluster-follow'), fs.constants.F_OK);
+    await fs.access(
+      path.join(ROOT, 'ipfs-cluster-follow/ipfs-cluster-follow.exe'),
+      fs.constants.F_OK
+    );
     return true;
   } catch (_e) {
     return false;
@@ -45,18 +56,26 @@ export async function followerDaemon() {
   if (!isInstalled) {
     return;
   }
-  const pid = await getPid('.synthetix/ipfs-cluster-follow/ipfs-cluster-follow synthetix run');
+
+  const isWin = os.platform() === 'win32';
+  let pid;
+  if (isWin) {
+    pid = await getPid('ipfs-cluster-follow synthetix run');
+  } else {
+    pid = await getPid('.synthetix/ipfs-cluster-follow/ipfs-cluster-follow synthetix run');
+  }
+
   if (!pid) {
     await configureFollower();
 
     try {
       // Cleanup locks in case of a previous crash
       await Promise.all([
-        fs.rm(path.join(IPFS_FOLLOW_PATH, 'synthetix/badger'), {
+        fs.rm(path.join(IPFS_FOLLOW_PATH, '.synthetix/badger'), {
           recursive: true,
           force: true,
         }),
-        fs.rm(path.join(IPFS_FOLLOW_PATH, 'synthetix/api-socket'), {
+        fs.rm(path.join(IPFS_FOLLOW_PATH, '.synthetix/api-socket'), {
           recursive: true,
           force: true,
         }),
@@ -120,8 +139,7 @@ export async function getInstalledVersion() {
 }
 
 export async function downloadFollower(_e?: IpcMainInvokeEvent, { log = logger.log } = {}) {
-  const arch = os.arch();
-  const targetArch = arch === 'x64' ? 'amd64' : 'arm64';
+  const { osPlatform, fileExt, targetArch } = getPlatformDetails();
 
   log('Checking for existing ipfs-cluster-follow installation...');
 
@@ -140,18 +158,18 @@ export async function downloadFollower(_e?: IpcMainInvokeEvent, { log = logger.l
     log(`Installing ipfs-cluster-follow version ${latestVersionNumber}`);
   }
 
-  const downloadUrl = `https://dist.ipfs.tech/ipfs-cluster-follow/${latestVersion}/ipfs-cluster-follow_${latestVersion}_darwin-${targetArch}.tar.gz`;
+  const downloadUrl = `https://dist.ipfs.tech/ipfs-cluster-follow/${latestVersion}/ipfs-cluster-follow_${latestVersion}_${osPlatform}-${targetArch}.${fileExt}`;
   log(`ipfs-cluster-follow package: ${downloadUrl}`);
 
   await fs.mkdir(ROOT, { recursive: true });
   await new Promise((resolve, reject) => {
-    const file = createWriteStream(path.join(ROOT, 'ipfs-cluster-follow.tar.gz'));
+    const file = createWriteStream(path.join(ROOT, `ipfs-cluster-follow.${fileExt}`));
     https.get(downloadUrl, (response) => pipeline(response, file).then(resolve).catch(reject));
   });
 
   await new Promise((resolve, reject) => {
-    createReadStream(path.join(ROOT, 'ipfs-cluster-follow.tar.gz'))
-      .pipe(zlib.createGunzip())
+    createReadStream(path.join(ROOT, `ipfs-cluster-follow.${fileExt}`))
+      .pipe(fileExt === 'zip' ? unzipper.Extract({ path: ROOT }) : zlib.createGunzip())
       .pipe(tar.extract({ cwd: ROOT }))
       .on('error', reject)
       .on('end', resolve);
