@@ -20,7 +20,9 @@ const IPFS_PATH = path.join(HOME, '.ipfs');
 
 export function ipfsKill() {
   try {
-    getPidsSync('.synthetix/go-ipfs/ipfs').forEach((pid) => {
+    getPidsSync(
+      process.platform === 'win32' ? 'ipfs.exe' : '.synthetix/go-ipfs/ipfs daemon'
+    ).forEach((pid) => {
       logger.log('Killing ipfs', pid);
       process.kill(pid);
     });
@@ -32,12 +34,15 @@ export function ipfsKill() {
 }
 
 export async function ipfsPid() {
-  return await getPid('.synthetix/go-ipfs/ipfs daemon');
+  return await getPid(process.platform === 'win32' ? 'ipfs.exe' : '.synthetix/go-ipfs/ipfs daemon');
 }
 
 export async function ipfsIsInstalled() {
   try {
-    await fs.access(path.join(ROOT, 'go-ipfs/ipfs.exe'), fs.constants.F_OK);
+    await fs.access(
+      path.join(ROOT, process.platform === 'win32' ? 'go-ipfs/ipfs.exe' : 'go-ipfs/ipfs'),
+      fs.constants.F_OK
+    );
     return true;
   } catch (_e) {
     return false;
@@ -50,13 +55,9 @@ export async function ipfsDaemon() {
     return;
   }
 
-  const isWin = os.platform() === 'win32';
-  let pid;
-  if (isWin) {
-    pid = await getPid('ipfs daemon');
-  } else {
-    pid = await getPid('.synthetix/go-ipfs/ipfs daemon');
-  }
+  const pid = await getPid(
+    process.platform === 'win32' ? 'ipfs.exe' : '.synthetix/go-ipfs/ipfs daemon'
+  );
 
   if (!pid) {
     await configureIpfs();

@@ -1,9 +1,8 @@
 import { exec, execSync } from 'child_process';
-import os from 'os';
 import logger from 'electron-log';
 
 export function extractPids(processes: string): number[] {
-  const isWin = os.platform() === 'win32';
+  const isWin = process.platform === 'win32';
   return processes
     .trim()
     .split('\n')
@@ -26,9 +25,14 @@ export function findPid(processes: string): number | undefined {
 
 export function getPidSync(search: string): number | undefined {
   try {
-    const processes = execSync(`ps -ax | grep "${search}"`, {
-      encoding: 'utf8',
-    });
+    const processes = execSync(
+      process.platform === 'win32'
+        ? `tasklist /fi "IMAGENAME eq ${search}" /fo table /nh`
+        : `ps -ax | grep '${search}'`,
+      {
+        encoding: 'utf8',
+      }
+    );
     return findPid(processes);
   } catch (_e) {
     // whatever
@@ -37,9 +41,14 @@ export function getPidSync(search: string): number | undefined {
 
 export function getPidsSync(search: string): number[] {
   try {
-    const processes = execSync(`ps -ax | grep '${search}'`, {
-      encoding: 'utf8',
-    });
+    const processes = execSync(
+      process.platform === 'win32'
+        ? `tasklist /fi "IMAGENAME eq ${search}" /fo table /nh`
+        : `ps -ax | grep '${search}'`,
+      {
+        encoding: 'utf8',
+      }
+    );
     return extractPids(processes);
   } catch (_e) {
     return [];
@@ -60,10 +69,12 @@ function execCommand(command: string): Promise<string> {
 }
 
 export async function getPid(search: string): Promise<number | undefined> {
-  const command =
-    os.platform() === 'win32' ? `tasklist | findstr "${search}"` : `ps -ax | grep '${search}'`;
   try {
-    const processes = await execCommand(command);
+    const processes = await execCommand(
+      process.platform === 'win32'
+        ? `tasklist /fi "IMAGENAME eq ${search}" /fo table /nh`
+        : `ps -ax | grep '${search}'`
+    );
     return findPid(processes);
   } catch (_e) {
     logger.error(_e);

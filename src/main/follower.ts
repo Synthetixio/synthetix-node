@@ -20,7 +20,11 @@ const IPFS_FOLLOW_PATH = path.join(HOME, '.ipfs-cluster-follow');
 
 export function followerKill() {
   try {
-    getPidsSync('.synthetix/ipfs-cluster-follow/ipfs-cluster-follow.exe').forEach((pid) => {
+    getPidsSync(
+      process.platform === 'win32'
+        ? 'ipfs-cluster-follow.exe'
+        : '.synthetix/ipfs-cluster-follow/ipfs-cluster-follow synthetix run'
+    ).forEach((pid) => {
       logger.log('Killing ipfs-cluster-follow', pid);
       process.kill(pid);
     });
@@ -30,19 +34,22 @@ export function followerKill() {
 }
 
 export async function followerPid() {
-  const isWin = os.platform() === 'win32';
-
-  if (isWin) {
-    return await getPid('ipfs-cluster-follow synthetix run');
-  }
-
-  return await getPid('.synthetix/ipfs-cluster-follow/ipfs-cluster-follow synthetix run');
+  return await getPid(
+    process.platform === 'win32'
+      ? 'ipfs-cluster-follow.exe'
+      : '.synthetix/ipfs-cluster-follow/ipfs-cluster-follow synthetix run'
+  );
 }
 
 export async function followerIsInstalled() {
   try {
     await fs.access(
-      path.join(ROOT, 'ipfs-cluster-follow/ipfs-cluster-follow.exe'),
+      path.join(
+        ROOT,
+        process.platform === 'win32'
+          ? 'ipfs-cluster-follow/ipfs-cluster-follow.exe'
+          : 'ipfs-cluster-follow/ipfs-cluster-follow'
+      ),
       fs.constants.F_OK
     );
     return true;
@@ -57,13 +64,11 @@ export async function followerDaemon() {
     return;
   }
 
-  const isWin = os.platform() === 'win32';
-  let pid;
-  if (isWin) {
-    pid = await getPid('ipfs-cluster-follow synthetix run');
-  } else {
-    pid = await getPid('.synthetix/ipfs-cluster-follow/ipfs-cluster-follow synthetix run');
-  }
+  const pid = await getPid(
+    process.platform === 'win32'
+      ? 'ipfs-cluster-follow.exe'
+      : '.synthetix/ipfs-cluster-follow/ipfs-cluster-follow synthetix run'
+  );
 
   if (!pid) {
     await configureFollower();
@@ -71,11 +76,11 @@ export async function followerDaemon() {
     try {
       // Cleanup locks in case of a previous crash
       await Promise.all([
-        fs.rm(path.join(IPFS_FOLLOW_PATH, '.synthetix/badger'), {
+        fs.rm(path.join(IPFS_FOLLOW_PATH, 'synthetix/badger'), {
           recursive: true,
           force: true,
         }),
-        fs.rm(path.join(IPFS_FOLLOW_PATH, '.synthetix/api-socket'), {
+        fs.rm(path.join(IPFS_FOLLOW_PATH, 'synthetix/api-socket'), {
           recursive: true,
           force: true,
         }),
