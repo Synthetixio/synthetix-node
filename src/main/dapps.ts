@@ -88,8 +88,7 @@ export async function resolveDapp(dapp: DappType): Promise<void> {
     if (!qm) {
       throw new Error(`Codec "${codec}" not supported`);
     }
-    const isWin = process.platform === 'win32';
-    if (await getPid(`${isWin ? 'ipfs' : ''} pin add --progress ${qm}`)) {
+    if (await getPid(`pin add --progress ${qm}`)) {
       logger.log(dapp.id, 'pinning already in progres...');
       return;
     }
