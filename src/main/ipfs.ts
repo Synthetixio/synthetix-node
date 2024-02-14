@@ -137,7 +137,7 @@ export async function downloadIpfs(_e?: IpcMainInvokeEvent, { log = logger.log }
   const downloadUrl = `https://dist.ipfs.tech/go-ipfs/${latestVersion}/go-ipfs_${latestVersion}_${osPlatform}-${targetArch}.${fileExt}`;
   log(`IPFS package: ${downloadUrl}`);
 
-  await fs.rm(path.join(IPFS_PATH, 'config'), { recursive: true });
+  await fs.rm(path.join(IPFS_PATH, 'config'), { recursive: true }).catch(() => {});
   await fs.mkdir(ROOT, { recursive: true });
   await new Promise((resolve, reject) => {
     const file = createWriteStream(path.join(ROOT, `ipfs.${fileExt}`));
