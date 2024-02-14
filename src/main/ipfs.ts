@@ -11,6 +11,8 @@ import type { IpcMainInvokeEvent } from 'electron';
 import { getPid, getPidsSync } from './pid';
 import { ROOT } from './settings';
 import logger from 'electron-log';
+import unzipper from 'unzipper';
+import { getPlatformDetails } from './util';
 
 const HOME = os.homedir();
 // Change if we ever want IPFS to store its data in non-standart path
@@ -18,7 +20,9 @@ const IPFS_PATH = path.join(HOME, '.ipfs');
 
 export function ipfsKill() {
   try {
-    getPidsSync('.synthetix/go-ipfs/ipfs').forEach((pid) => {
+    getPidsSync(
+      process.platform === 'win32' ? 'ipfs.exe' : '.synthetix/go-ipfs/ipfs daemon'
+    ).forEach((pid) => {
       logger.log('Killing ipfs', pid);
       process.kill(pid);
     });
@@ -30,12 +34,15 @@ export function ipfsKill() {
 }
 
 export async function ipfsPid() {
-  return await getPid('.synthetix/go-ipfs/ipfs daemon');
+  return await getPid(process.platform === 'win32' ? 'ipfs.exe' : '.synthetix/go-ipfs/ipfs daemon');
 }
 
 export async function ipfsIsInstalled() {
   try {
-    await fs.access(path.join(ROOT, 'go-ipfs/ipfs'), fs.constants.F_OK);
+    await fs.access(
+      path.join(ROOT, process.platform === 'win32' ? 'go-ipfs/ipfs.exe' : 'go-ipfs/ipfs'),
+      fs.constants.F_OK
+    );
     return true;
   } catch (_e) {
     return false;
@@ -47,7 +54,11 @@ export async function ipfsDaemon() {
   if (!isInstalled) {
     return;
   }
-  const pid = await getPid('.synthetix/go-ipfs/ipfs daemon');
+
+  const pid = await getPid(
+    process.platform === 'win32' ? 'ipfs.exe' : '.synthetix/go-ipfs/ipfs daemon'
+  );
+
   if (!pid) {
     await configureIpfs();
     spawn(path.join(ROOT, 'go-ipfs/ipfs'), ['daemon'], {
@@ -104,8 +115,7 @@ export async function getInstalledVersion() {
 }
 
 export async function downloadIpfs(_e?: IpcMainInvokeEvent, { log = logger.log } = {}) {
-  const arch = os.arch();
-  const targetArch = arch === 'x64' ? 'amd64' : 'arm64';
+  const { osPlatform, fileExt, targetArch } = getPlatformDetails();
 
   log('Checking for existing ipfs installation...');
 
@@ -124,19 +134,19 @@ export async function downloadIpfs(_e?: IpcMainInvokeEvent, { log = logger.log }
     log(`Installing ipfs version ${latestVersionNumber}`);
   }
 
-  const downloadUrl = `https://dist.ipfs.tech/go-ipfs/${latestVersion}/go-ipfs_${latestVersion}_darwin-${targetArch}.tar.gz`;
+  const downloadUrl = `https://dist.ipfs.tech/go-ipfs/${latestVersion}/go-ipfs_${latestVersion}_${osPlatform}-${targetArch}.${fileExt}`;
   log(`IPFS package: ${downloadUrl}`);
 
-  await fs.rm(path.join(IPFS_PATH, 'config'), { recursive: true });
+  await fs.rm(path.join(IPFS_PATH, 'config'), { recursive: true }).catch(() => {});
   await fs.mkdir(ROOT, { recursive: true });
   await new Promise((resolve, reject) => {
-    const file = createWriteStream(path.join(ROOT, 'ipfs.tar.gz'));
+    const file = createWriteStream(path.join(ROOT, `ipfs.${fileExt}`));
     https.get(downloadUrl, (response) => pipeline(response, file).then(resolve).catch(reject));
   });
 
   await new Promise((resolve, reject) => {
-    createReadStream(path.join(ROOT, 'ipfs.tar.gz'))
-      .pipe(zlib.createGunzip())
+    createReadStream(path.join(ROOT, `ipfs.${fileExt}`))
+      .pipe(fileExt === 'zip' ? unzipper.Extract({ path: ROOT }) : zlib.createGunzip())
       .pipe(tar.extract({ cwd: ROOT }))
       .on('error', reject)
       .on('end', resolve);
