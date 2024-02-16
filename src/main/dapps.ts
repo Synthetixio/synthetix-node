@@ -5,9 +5,9 @@ import { mainnet } from 'viem/chains';
 import { namehash, normalize } from 'viem/ens';
 // @ts-ignore
 import * as contentHash from '@ensdomains/content-hash';
-import { ipfs } from './ipfs';
 import { getPid } from './pid';
 import { DappType } from '../config';
+import { rpcRequest } from './util';
 
 Object.assign(global, { fetch });
 
@@ -56,19 +56,30 @@ export async function resolveEns(dapp: DappType): Promise<{ codec: string; hash:
 }
 
 export async function resolveQm(ipns: string): Promise<string> {
-  const ipfsPath = await ipfs(`resolve /ipns/${ipns}`);
-  const qm = ipfsPath.slice(6); // remove /ipfs/
-  return qm; // Qm
+  try {
+    const ipfsPath = await rpcRequest(`name/resolve`, [ipns]);
+    const qm = ipfsPath.Path.slice(6); // remove /ipfs/
+    return qm; // Qm
+  } catch {
+    logger.error('Invalid IPFS path received.');
+    return '';
+  }
 }
 
 export async function convertCid(qm: string): Promise<string> {
-  return await ipfs(`cid base32 ${qm}`);
+  try {
+    const res = await rpcRequest('cid/base32', [qm]);
+    return res.CidStr;
+  } catch (e) {
+    logger.error(`Error during CID conversion. Details: ${e}`);
+    return '';
+  }
 }
 
 export async function isPinned(qm: string): Promise<boolean> {
   try {
-    const result = await ipfs(`pin ls --type recursive ${qm}`);
-    return result.includes(qm);
+    const result = await rpcRequest('pin/ls', [qm], { type: 'recursive' });
+    return result.Keys[qm];
   } catch (e) {
     return false;
   }
@@ -95,7 +106,7 @@ export async function resolveDapp(dapp: DappType): Promise<void> {
     const isDappPinned = await isPinned(qm);
     if (!isDappPinned) {
       logger.log(dapp.id, 'pinning...', qm);
-      await ipfs(`pin add --progress ${qm}`);
+      await rpcRequest('pin/add', [qm], { progress: true });
     }
     const bafy = await convertCid(qm);
     Object.assign(dapp, { bafy });
@@ -118,7 +129,7 @@ export async function cleanupOldDapps() {
     return;
   }
   try {
-    const pins = JSON.parse(await ipfs('pin ls --enc=json --type=recursive'));
+    const pins = JSON.parse(await rpcRequest('pin/ls', [], { type: 'recursive' }));
     const pinnedHashes = Object.keys(pins.Keys);
     logger.log('Existing IPFS pins', pinnedHashes);
     const toUnpin = pinnedHashes.filter((hash) => !hashes.includes(hash));
@@ -126,12 +137,12 @@ export async function cleanupOldDapps() {
     if (toUnpin.length > 0) {
       for (const hash of toUnpin) {
         logger.log(`Unpinning ${hash}`);
-        await ipfs(`pin rm ${hash}`);
+        await rpcRequest('pin/rm', [hash]);
       }
-      const pinsAfter = JSON.parse(await ipfs('pin ls --enc=json --type=recursive'));
+      const pinsAfter = JSON.parse(await rpcRequest('pin/ls', [], { type: 'recursive' }));
       logger.log('Updated IPFS pins', pinsAfter);
       // Clenup the repo
-      await ipfs('repo gc');
+      await rpcRequest('repo/gc');
     }
   } catch (e) {
     // do nothing

@@ -7,8 +7,7 @@ export function useHostingSize() {
     if (!repoStat) {
       return 0;
     }
-    const numBytes = parseInt(repoStat.split('\n')[1].split(':')[1].trim(), 10);
-    const numMegabytes = numBytes / 1024 / 1024;
+    const numMegabytes = repoStat.RepoSize / 1024 / 1024;
     return numMegabytes;
   }, [repoStat]);
 }

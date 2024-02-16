@@ -10,11 +10,10 @@ import path from 'path';
 import { app, BrowserWindow, ipcMain, Menu, shell, Tray } from 'electron';
 // import { autoUpdater } from 'electron-updater';
 import logger from 'electron-log';
-import { resolveHtmlPath } from './util';
+import { resolveHtmlPath, rpcRequest } from './util';
 import {
   configureIpfs,
   downloadIpfs,
-  ipfs,
   ipfsDaemon,
   ipfsIsInstalled,
   ipfsIsRunning,
@@ -302,10 +301,10 @@ ipcMain.handle('run-follower', async () => {
   await followerDaemon();
 });
 
-ipcMain.handle('ipfs-peers', () => ipfs('swarm peers'));
+ipcMain.handle('ipfs-peers', async () => await rpcRequest('swarm/peers'));
 ipcMain.handle('ipfs-id', () => followerId());
-ipcMain.handle('ipfs-repo-stat', () => ipfs('repo stat'));
-ipcMain.handle('ipfs-stats-bw', () => ipfs('stats bw'));
+ipcMain.handle('ipfs-repo-stat', async () => await rpcRequest('repo/stat'));
+ipcMain.handle('ipfs-stats-bw', async () => await rpcRequest('stats/bw'));
 ipcMain.handle('ipfs-follower-info', () => follower('synthetix info'));
 
 app.on('will-quit', ipfsKill);
@@ -341,7 +340,7 @@ app.on('will-quit', () => clearInterval(dappsResolver));
 waitForIpfs().then(resolveAllDapps).catch(logger.error);
 
 async function updateConfig() {
-  const config = JSON.parse(await ipfs(`cat /ipns/${SYNTHETIX_NODE_APP_CONFIG}`));
+  const config = JSON.parse(await rpcRequest('cat', [`/ipns/${SYNTHETIX_NODE_APP_CONFIG}`]));
   logger.log('App config fetched', config);
   if (config.dapps) {
     const oldDapps = DAPPS.splice(0);

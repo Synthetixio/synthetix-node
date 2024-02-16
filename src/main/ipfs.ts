@@ -12,7 +12,7 @@ import { getPid, getPidsSync } from './pid';
 import { ROOT } from './settings';
 import logger from 'electron-log';
 import unzipper from 'unzipper';
-import { getPlatformDetails } from './util';
+import { getPlatformDetails, rpcRequest } from './util';
 
 const HOME = os.homedir();
 // Change if we ever want IPFS to store its data in non-standart path
@@ -63,7 +63,6 @@ export async function ipfsDaemon() {
     await configureIpfs();
     spawn(path.join(ROOT, 'go-ipfs/ipfs'), ['daemon'], {
       stdio: 'inherit',
-      detached: true,
       env: { IPFS_PATH },
     });
   }
@@ -106,9 +105,8 @@ export async function getLatestVersion(): Promise<string> {
 
 export async function getInstalledVersion() {
   try {
-    const ipfsVersion = await ipfs('--version');
-    const [, , installedVersion] = ipfsVersion.split(' ');
-    return installedVersion;
+    const result = await rpcRequest('version');
+    return result.Version;
   } catch (_error) {
     return null;
   }
@@ -173,7 +171,7 @@ export async function configureIpfs({ log = logger.log } = {}) {
     );
     // log(await ipfs('config profile apply lowpower'));
   } catch (_error) {
-    // whatever
+    log(`Error during IPFS configuration: ${_error}`);
   }
 }
 
