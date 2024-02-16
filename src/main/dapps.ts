@@ -99,7 +99,7 @@ export async function resolveDapp(dapp: DappType): Promise<void> {
     if (!qm) {
       throw new Error(`Codec "${codec}" not supported`);
     }
-    if (await getPid(`pin add --progress ${qm}`)) {
+    if (await rpcRequest('pin/add', [qm], { progress: true })) {
       logger.log(dapp.id, 'pinning already in progres...');
       return;
     }
