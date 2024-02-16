@@ -7,6 +7,6 @@ export function useRateIn() {
     if (!statsBw || !statsBw.RateIn) {
       return '';
     }
-    return statsBw.RateIn;
+    return `${Math.round(statsBw.RateIn)} B/s`;
   }, [statsBw]);
 }

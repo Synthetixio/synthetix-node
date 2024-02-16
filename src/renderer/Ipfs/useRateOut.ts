@@ -7,6 +7,6 @@ export function useRateOut() {
     if (!statsBw || !statsBw.RateOut) {
       return '';
     }
-    return statsBw.RateOut;
+    return `${Math.round(statsBw.RateOut)} B/s`;
   }, [statsBw]);
 }

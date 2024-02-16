@@ -301,10 +301,10 @@ ipcMain.handle('run-follower', async () => {
   await followerDaemon();
 });
 
-ipcMain.handle('ipfs-peers', async () => await rpcRequest('swarm/peers'));
+ipcMain.handle('ipfs-peers', () => rpcRequest('swarm/peers'));
 ipcMain.handle('ipfs-id', () => followerId());
-ipcMain.handle('ipfs-repo-stat', async () => await rpcRequest('repo/stat'));
-ipcMain.handle('ipfs-stats-bw', async () => await rpcRequest('stats/bw'));
+ipcMain.handle('ipfs-repo-stat', () => rpcRequest('repo/stat'));
+ipcMain.handle('ipfs-stats-bw', () => rpcRequest('stats/bw'));
 ipcMain.handle('ipfs-follower-info', () => follower('synthetix info'));
 
 app.on('will-quit', ipfsKill);
