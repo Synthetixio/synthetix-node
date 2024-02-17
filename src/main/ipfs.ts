@@ -12,11 +12,35 @@ import { getPid, getPidsSync } from './pid';
 import { ROOT } from './settings';
 import logger from 'electron-log';
 import unzipper from 'unzipper';
-import { getPlatformDetails, rpcRequest } from './util';
+import { getPlatformDetails } from './util';
+import { URL } from 'url';
 
 const HOME = os.homedir();
 // Change if we ever want IPFS to store its data in non-standart path
 const IPFS_PATH = path.join(HOME, '.ipfs');
+
+const BASE_URL = new URL('http://127.0.0.1:5001/api/v0/');
+export async function rpcRequest(
+  relativePath: string,
+  args: string[] = [],
+  flags?: { [key: string]: any }
+): Promise<any> {
+  const query = new URLSearchParams(flags);
+  args.forEach((arg) => query.append('arg', arg));
+  const url = new URL(relativePath, BASE_URL);
+  const res = await fetch(`${url}?${query}`, { method: 'POST' });
+
+  if (res.ok) {
+    const contentType = res.headers.get('content-type');
+    if (contentType && contentType.includes('application/json')) {
+      return res.json();
+    } else {
+      return res.text();
+    }
+  } else {
+    throw new Error(`RPC HTTP Error: ${res.status} on path: ${relativePath}`);
+  }
+}
 
 export function ipfsKill() {
   try {
@@ -170,8 +194,8 @@ export async function configureIpfs({ log = logger.log } = {}) {
       )
     );
     // log(await ipfs('config profile apply lowpower'));
-  } catch (_error) {
-    log(`Error during IPFS configuration: ${_error}`);
+  } catch (error) {
+    logger.error(error);
   }
 }
 

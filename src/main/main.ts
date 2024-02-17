@@ -10,7 +10,7 @@ import path from 'path';
 import { app, BrowserWindow, ipcMain, Menu, shell, Tray } from 'electron';
 // import { autoUpdater } from 'electron-updater';
 import logger from 'electron-log';
-import { resolveHtmlPath, rpcRequest } from './util';
+import { resolveHtmlPath } from './util';
 import {
   configureIpfs,
   downloadIpfs,
@@ -19,6 +19,7 @@ import {
   ipfsIsRunning,
   ipfsKill,
   waitForIpfs,
+  rpcRequest,
 } from './ipfs';
 import {
   configureFollower,

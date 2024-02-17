@@ -5,9 +5,8 @@ import { mainnet } from 'viem/chains';
 import { namehash, normalize } from 'viem/ens';
 // @ts-ignore
 import * as contentHash from '@ensdomains/content-hash';
-import { getPid } from './pid';
 import { DappType } from '../config';
-import { rpcRequest } from './util';
+import { rpcRequest } from './ipfs';
 
 Object.assign(global, { fetch });
 
@@ -85,6 +84,8 @@ export async function isPinned(qm: string): Promise<boolean> {
   }
 }
 
+const activePinningRequests = new Set<string>();
+
 export async function resolveDapp(dapp: DappType): Promise<void> {
   try {
     const { codec, hash } = await resolveEns(dapp);
@@ -99,14 +100,16 @@ export async function resolveDapp(dapp: DappType): Promise<void> {
     if (!qm) {
       throw new Error(`Codec "${codec}" not supported`);
     }
-    if (await rpcRequest('pin/add', [qm], { progress: true })) {
+    if (activePinningRequests.has(qm)) {
       logger.log(dapp.id, 'pinning already in progres...');
       return;
     }
     const isDappPinned = await isPinned(qm);
     if (!isDappPinned) {
       logger.log(dapp.id, 'pinning...', qm);
+      activePinningRequests.add(qm);
       await rpcRequest('pin/add', [qm], { progress: true });
+      activePinningRequests.delete(qm);
     }
     const bafy = await convertCid(qm);
     Object.assign(dapp, { bafy });
@@ -116,6 +119,9 @@ export async function resolveDapp(dapp: DappType): Promise<void> {
 
     logger.log(dapp.id, 'local IPFS host:', url);
   } catch (e) {
+    if (dapp.qm) {
+      activePinningRequests.delete(dapp.qm);
+    }
     logger.error(e);
     return;
   }
