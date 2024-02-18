@@ -13,7 +13,6 @@ import { ROOT } from './settings';
 import logger from 'electron-log';
 import unzipper from 'unzipper';
 import { getPlatformDetails } from './util';
-import { URL } from 'url';
 
 const HOME = os.homedir();
 // Change if we ever want IPFS to store its data in non-standart path
