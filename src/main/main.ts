@@ -14,12 +14,12 @@ import { resolveHtmlPath } from './util';
 import {
   configureIpfs,
   downloadIpfs,
-  ipfs,
   ipfsDaemon,
   ipfsIsInstalled,
   ipfsIsRunning,
   ipfsKill,
   waitForIpfs,
+  rpcRequest,
 } from './ipfs';
 import {
   configureFollower,
@@ -302,10 +302,10 @@ ipcMain.handle('run-follower', async () => {
   await followerDaemon();
 });
 
-ipcMain.handle('ipfs-peers', () => ipfs('swarm peers'));
+ipcMain.handle('ipfs-peers', () => rpcRequest('swarm/peers'));
 ipcMain.handle('ipfs-id', () => followerId());
-ipcMain.handle('ipfs-repo-stat', () => ipfs('repo stat'));
-ipcMain.handle('ipfs-stats-bw', () => ipfs('stats bw'));
+ipcMain.handle('ipfs-repo-stat', () => rpcRequest('repo/stat'));
+ipcMain.handle('ipfs-stats-bw', () => rpcRequest('stats/bw'));
 ipcMain.handle('ipfs-follower-info', () => follower('synthetix info'));
 
 app.on('will-quit', ipfsKill);
@@ -341,7 +341,7 @@ app.on('will-quit', () => clearInterval(dappsResolver));
 waitForIpfs().then(resolveAllDapps).catch(logger.error);
 
 async function updateConfig() {
-  const config = JSON.parse(await ipfs(`cat /ipns/${SYNTHETIX_NODE_APP_CONFIG}`));
+  const config = JSON.parse(await rpcRequest('cat', [`/ipns/${SYNTHETIX_NODE_APP_CONFIG}`]));
   logger.log('App config fetched', config);
   if (config.dapps) {
     const oldDapps = DAPPS.splice(0);

@@ -92,7 +92,6 @@ export async function followerDaemon() {
 
     spawn(path.join(ROOT, 'ipfs-cluster-follow/ipfs-cluster-follow'), ['synthetix', 'run'], {
       stdio: 'inherit',
-      detached: true,
       env: { HOME },
     });
   }
