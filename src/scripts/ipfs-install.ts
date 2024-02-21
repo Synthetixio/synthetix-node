@@ -1,9 +1,9 @@
-import { downloadIpfs, ipfsDaemon, ipfsKill } from '../main/ipfs';
+import { downloadIpfs, ipfsDaemon, ipfsTeardown } from '../main/ipfs';
 
 async function main() {
   await downloadIpfs();
   await ipfsDaemon();
 }
 
-process.on('beforeExit', ipfsKill);
+process.on('beforeExit', ipfsTeardown);
 main();
