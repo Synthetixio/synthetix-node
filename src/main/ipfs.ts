@@ -16,6 +16,10 @@ import { getPlatformDetails } from './util';
 const HOME = os.homedir();
 // Change if we ever want IPFS to store its data in non-standart path
 const IPFS_PATH = path.join(HOME, '.ipfs');
+const IPFS_CLI = path.join(
+  ROOT,
+  process.platform === 'win32' ? 'go-ipfs/ipfs.exe' : 'go-ipfs/ipfs'
+);
 
 const BASE_URL = new URL('http://127.0.0.1:5001/api/v0/');
 export async function rpcRequest(
@@ -42,9 +46,7 @@ export async function rpcRequest(
 
 export function ipfsTeardown() {
   try {
-    execSync(
-      process.platform === 'win32' ? 'ipfs.exe shutdown' : '.synthetix/go-ipfs/ipfs shutdown'
-    );
+    execSync(`${IPFS_CLI} shutdown`);
     rmSync(path.join(ROOT, 'ipfs.pid'), { recursive: true });
     rmSync(path.join(IPFS_PATH, 'repo.lock'), { recursive: true });
     logger.log('IPFS teardown: PID file removed, daemon shutdown, and repo.lock removed');
@@ -55,10 +57,7 @@ export function ipfsTeardown() {
 
 export async function ipfsIsInstalled() {
   try {
-    await fs.access(
-      path.join(ROOT, process.platform === 'win32' ? 'go-ipfs/ipfs.exe' : 'go-ipfs/ipfs'),
-      fs.constants.F_OK
-    );
+    await fs.access(IPFS_CLI, fs.constants.F_OK);
     return true;
   } catch (_e) {
     return false;
@@ -78,10 +77,7 @@ export async function ipfsDaemon() {
   }
 
   await configureIpfs();
-  const { pid: ipfsPid } = spawn(path.join(ROOT, 'go-ipfs/ipfs'), ['daemon'], {
-    stdio: 'inherit',
-    env: { IPFS_PATH },
-  });
+  const { pid: ipfsPid } = spawn(IPFS_CLI, ['daemon'], { stdio: 'inherit', env: { IPFS_PATH } });
   if (ipfsPid) {
     await fs.writeFile(path.join(ROOT, 'ipfs.pid'), ipfsPid.toString(), 'utf8');
   }
@@ -90,7 +86,7 @@ export async function ipfsDaemon() {
 export async function ipfs(arg: string): Promise<string> {
   return new Promise((resolve, reject) => {
     exec(
-      `${path.join(ROOT, 'go-ipfs/ipfs')} ${arg}`,
+      `${IPFS_CLI} ${arg}`,
       { encoding: 'utf8', env: { IPFS_PATH } },
       (error, stdout, stderr) => {
         if (error) {
@@ -169,14 +165,14 @@ export async function downloadIpfs(_e?: IpcMainInvokeEvent, { log = logger.log }
       .on('end', resolve);
   });
 
-  const installedVersionCheck = await getInstalledVersion();
-  if (installedVersionCheck) {
-    log(`ipfs version ${installedVersionCheck} installed successfully.`);
+  const isInstalled = await ipfsIsInstalled();
+  if (isInstalled) {
+    log(`IPFS installed successfully`);
   } else {
     throw new Error('IPFS installation failed.');
   }
 
-  return installedVersionCheck;
+  return isInstalled;
 }
 
 export async function configureIpfs({ log = logger.log } = {}) {
