@@ -7,6 +7,7 @@
  * `./src/main.js` using webpack. This gives us some performance wins.
  */
 import path from 'path';
+import fs from 'fs';
 import { app, BrowserWindow, ipcMain, Menu, shell, Tray } from 'electron';
 // import { autoUpdater } from 'electron-updater';
 import logger from 'electron-log';
@@ -17,7 +18,7 @@ import {
   ipfsDaemon,
   ipfsIsInstalled,
   ipfsIsRunning,
-  ipfsKill,
+  ipfsTeardown,
   waitForIpfs,
   rpcRequest,
 } from './ipfs';
@@ -29,7 +30,6 @@ import {
   followerId,
   followerIsInstalled,
   followerKill,
-  followerPid,
 } from './follower';
 import { DAPPS, resolveDapp } from './dapps';
 import { fetchPeers } from './peers';
@@ -37,10 +37,14 @@ import { SYNTHETIX_NODE_APP_CONFIG } from '../const';
 import * as settings from './settings';
 import http from 'http';
 import fetch from 'node-fetch';
+import { ROOT } from './settings';
 
 logger.transports.file.level = 'info';
 
 const isDebug = process.env.NODE_ENV === 'development' || process.env.DEBUG_PROD === 'true';
+
+fs.rmSync(path.join(ROOT, 'ipfs.pid'), { force: true });
+fs.rmSync(path.join(ROOT, 'ipfs-cluster-follow.pid'), { force: true });
 
 // class AppUpdater {
 //   constructor() {
@@ -290,7 +294,9 @@ ipcMain.handle('install-follower', downloadFollower);
 ipcMain.handle('ipfs-isInstalled', ipfsIsInstalled);
 ipcMain.handle('follower-isInstalled', followerIsInstalled);
 ipcMain.handle('ipfs-isRunning', ipfsIsRunning);
-ipcMain.handle('follower-isRunning', followerPid);
+ipcMain.handle('follower-isRunning', () =>
+  fs.promises.readFile(path.join(ROOT, 'ipfs-cluster-follow.pid'), 'utf8').catch(() => null)
+);
 
 ipcMain.handle('run-ipfs', async () => {
   await configureIpfs();
@@ -308,7 +314,7 @@ ipcMain.handle('ipfs-repo-stat', () => rpcRequest('repo/stat'));
 ipcMain.handle('ipfs-stats-bw', () => rpcRequest('stats/bw'));
 ipcMain.handle('ipfs-follower-info', () => follower('synthetix info'));
 
-app.on('will-quit', ipfsKill);
+app.on('will-quit', ipfsTeardown);
 app.on('will-quit', followerKill);
 
 downloadIpfs();

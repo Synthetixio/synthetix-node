@@ -1,4 +1,4 @@
-import { exec, spawn } from 'child_process';
+import { exec, spawn, execSync } from 'child_process';
 import https from 'https';
 import { createReadStream, createWriteStream, promises as fs, rmSync } from 'fs';
 import { pipeline } from 'stream/promises';
@@ -8,7 +8,6 @@ import tar from 'tar';
 import http from 'http';
 import path from 'path';
 import type { IpcMainInvokeEvent } from 'electron';
-import { getPid, getPidsSync } from './pid';
 import { ROOT } from './settings';
 import logger from 'electron-log';
 import unzipper from 'unzipper';
@@ -17,6 +16,10 @@ import { getPlatformDetails } from './util';
 const HOME = os.homedir();
 // Change if we ever want IPFS to store its data in non-standart path
 const IPFS_PATH = path.join(HOME, '.ipfs');
+const IPFS_CLI = path.join(
+  ROOT,
+  process.platform === 'win32' ? 'go-ipfs/ipfs.exe' : 'go-ipfs/ipfs'
+);
 
 const BASE_URL = new URL('http://127.0.0.1:5001/api/v0/');
 export async function rpcRequest(
@@ -41,31 +44,20 @@ export async function rpcRequest(
   }
 }
 
-export function ipfsKill() {
+export function ipfsTeardown() {
   try {
-    getPidsSync(
-      process.platform === 'win32' ? 'ipfs.exe' : '.synthetix/go-ipfs/ipfs daemon'
-    ).forEach((pid) => {
-      logger.log('Killing ipfs', pid);
-      process.kill(pid);
-    });
-    logger.log('Removing .ipfs/repo.lock');
+    execSync(`${IPFS_CLI} shutdown`);
+    rmSync(path.join(ROOT, 'ipfs.pid'), { recursive: true });
     rmSync(path.join(IPFS_PATH, 'repo.lock'), { recursive: true });
-  } catch (_e) {
-    // whatever
+    logger.log('IPFS teardown: PID file removed, daemon shutdown, and repo.lock removed');
+  } catch (e) {
+    logger.log('IPFS teardown error:', e);
   }
-}
-
-export async function ipfsPid() {
-  return await getPid(process.platform === 'win32' ? 'ipfs.exe' : '.synthetix/go-ipfs/ipfs daemon');
 }
 
 export async function ipfsIsInstalled() {
   try {
-    await fs.access(
-      path.join(ROOT, process.platform === 'win32' ? 'go-ipfs/ipfs.exe' : 'go-ipfs/ipfs'),
-      fs.constants.F_OK
-    );
+    await fs.access(IPFS_CLI, fs.constants.F_OK);
     return true;
   } catch (_e) {
     return false;
@@ -78,23 +70,23 @@ export async function ipfsDaemon() {
     return;
   }
 
-  const pid = await getPid(
-    process.platform === 'win32' ? 'ipfs.exe' : '.synthetix/go-ipfs/ipfs daemon'
-  );
+  const pid = await fs.readFile(path.join(ROOT, 'ipfs.pid'), 'utf8').catch(() => null);
 
-  if (!pid) {
-    await configureIpfs();
-    spawn(path.join(ROOT, 'go-ipfs/ipfs'), ['daemon'], {
-      stdio: 'inherit',
-      env: { IPFS_PATH },
-    });
+  if (pid) {
+    return;
+  }
+
+  await configureIpfs();
+  const { pid: ipfsPid } = spawn(IPFS_CLI, ['daemon'], { stdio: 'inherit', env: { IPFS_PATH } });
+  if (ipfsPid) {
+    await fs.writeFile(path.join(ROOT, 'ipfs.pid'), ipfsPid.toString(), 'utf8');
   }
 }
 
 export async function ipfs(arg: string): Promise<string> {
   return new Promise((resolve, reject) => {
     exec(
-      `${path.join(ROOT, 'go-ipfs/ipfs')} ${arg}`,
+      `${IPFS_CLI} ${arg}`,
       { encoding: 'utf8', env: { IPFS_PATH } },
       (error, stdout, stderr) => {
         if (error) {
@@ -173,14 +165,14 @@ export async function downloadIpfs(_e?: IpcMainInvokeEvent, { log = logger.log }
       .on('end', resolve);
   });
 
-  const installedVersionCheck = await getInstalledVersion();
-  if (installedVersionCheck) {
-    log(`ipfs version ${installedVersionCheck} installed successfully.`);
+  const isInstalled = await ipfsIsInstalled();
+  if (isInstalled) {
+    log(`IPFS installed successfully`);
   } else {
     throw new Error('IPFS installation failed.');
   }
 
-  return installedVersionCheck;
+  return isInstalled;
 }
 
 export async function configureIpfs({ log = logger.log } = {}) {
