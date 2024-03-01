@@ -29,3 +29,13 @@ npm-debug.log.*
 *.scss.d.ts
 
 /ipfs
+
+# Electron-Forge
+out/
+
+# yarn v2
+.yarn/cache
+.yarn/unplugged
+.yarn/build-state.yml
+.yarn/install-state.gz
+.pnp.*
