@@ -104,10 +104,10 @@ jobs:
           command: |
             diff <(ipfs cat /ipns/k2k4r8jhn5r54sf708bnlxun971q0pteab82iw98544sj1e0hi3hp9q6) ./config.json
 
-  build-all:
+  package-all:
     docker:
       - image: electronuserland/builder:wine
-    working_directory: /project
+    working_directory: /app
     steps:
       - checkout
       - npm-install
@@ -127,7 +127,7 @@ workflows:
   build:
     jobs:
       - checks
-      - build-all
+      - package-all
 
       - ipfs-deploy:
           requires: [checks]
