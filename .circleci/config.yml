@@ -104,34 +104,12 @@ jobs:
           command: |
             diff <(ipfs cat /ipns/k2k4r8jhn5r54sf708bnlxun971q0pteab82iw98544sj1e0hi3hp9q6) ./config.json
 
-  package-all:
-    docker:
-      - image: electronuserland/builder:wine
-    working_directory: /app
-    environment:
-      ELECTRON_CACHE: /root/.cache/electron
-      ELECTRON_BUILDER_CACHE: /root/.cache/electron-builder
-    steps:
-      - checkout
-      - npm-install
-      - restore_cache:
-          keys:
-            - electron-builder-cache
-      - run: npm run package
-      - store_artifacts:
-          path: /app/release/build
-      - save_cache:
-          key: electron-builder-cache
-          paths:
-            - /root/.cache
-
 workflows:
   version: 2.1
 
   build:
     jobs:
       - checks
-      - package-all
 
       - ipfs-deploy:
           requires: [checks]
