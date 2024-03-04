@@ -6,15 +6,15 @@ parameters:
     default: '20.10.0'
 
 commands:
-  npm-install:
+  yarn-install:
     steps:
       - restore_cache:
           keys:
-            - node_modules-{{ .Environment.CACHE_VERSION }}-{{ checksum "package-lock.json" }}
+            - node_modules-{{ .Environment.CACHE_VERSION }}-{{ checksum "yarn.lock" }}
             - node_modules-{{ .Environment.CACHE_VERSION }}-
-      - run: npm install
+      - run: yarn install
       - save_cache:
-          key: node_modules-{{ .Environment.CACHE_VERSION }}-{{ checksum "package-lock.json" }}
+          key: node_modules-{{ .Environment.CACHE_VERSION }}-{{ checksum "yarn.lock" }}
           paths:
             - node_modules
 
@@ -80,12 +80,9 @@ jobs:
     working_directory: ~/app
     steps:
       - checkout
-      - npm-install
-      - run: npm run lint:check
-      - run: npm run pretty:check
-      - run: npm run config:check
-      - run: npm run svg:check
-      - run: npm run package
+      - yarn-install
+      - run: yarn biome:check
+      - run: yarn make
 
   ipfs-deploy:
     docker:

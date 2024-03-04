@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { z } from 'zod';
 
 export const DappSchema = z
   .object({
@@ -12,8 +12,8 @@ export const DappSchema = z
     url: z.string().optional().nullable(),
   })
   .refine((obj) => Boolean(obj.ens || obj.ipns), {
-    message: "ens or ipns must be defined",
-    path: ["ens"],
+    message: 'ens or ipns must be defined',
+    path: ['ens'],
   });
 
 export const DappsSchema = z.array(DappSchema);
