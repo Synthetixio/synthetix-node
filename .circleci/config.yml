@@ -111,7 +111,7 @@ jobs:
     steps:
       - checkout
       - npm-install
-      - npm run package
+      - run: npm run package
       - store_artifacts:
           path: /project/release/build/SynthetixNode-linux-x86_64.AppImage
       - store_artifacts:
