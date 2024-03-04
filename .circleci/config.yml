@@ -108,18 +108,22 @@ jobs:
     docker:
       - image: electronuserland/builder:wine
     working_directory: /app
+    environment:
+      ELECTRON_CACHE: /root/.cache/electron
+      ELECTRON_BUILDER_CACHE: /root/.cache/electron-builder
     steps:
       - checkout
       - npm-install
+      - restore_cache:
+          keys:
+            - electron-builder-cache
       - run: npm run package
       - store_artifacts:
-          path: /project/release/build/SynthetixNode-linux-x86_64.AppImage
-      - store_artifacts:
-          path: /project/release/build/SynthetixNode-mac-arm64.zip
-      - store_artifacts:
-          path: /project/release/build/SynthetixNode-mac-x64.zip
-      - store_artifacts:
-          path: /project/release/build/SynthetixNode-win-x64.exe
+          path: /app/release/build
+      - save_cache:
+          key: electron-builder-cache
+          paths:
+            - /root/.cache
 
 workflows:
   version: 2.1
