@@ -83,7 +83,7 @@ jobs:
       - yarn-install
       - run:
           name: 'Install dependencies'
-          command: sudo apt-get update && sudo apt-get install -y dpkg fakeroot
+          command: sudo apt-get update && sudo apt-get install -y dpkg fakeroot rpm
       - run: yarn biome:check
       - run: yarn make
 
