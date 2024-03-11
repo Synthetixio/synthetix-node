@@ -1,16 +1,7 @@
-import fs from 'fs';
-import http from 'http';
-/**
- * This module executes inside of electron's main process. You can start
- * electron renderer process from here and communicate with the other processes
- * through IPC.
- *
- * When running `npm run build` or `npm run build:main`, this file is compiled to
- * `./src/main.js` using webpack. This gives us some performance wins.
- */
-import path from 'path';
+import fs from 'node:fs';
+import http from 'node:http';
+import path from 'node:path';
 import { BrowserWindow, Menu, Tray, app, ipcMain, session, shell } from 'electron';
-// import { autoUpdater } from 'electron-updater';
 import logger from 'electron-log';
 import { SYNTHETIX_NODE_APP_CONFIG } from './const';
 import { DAPPS, resolveDapp } from './main/dapps';
