@@ -16,6 +16,8 @@ function DappButton({ dapp }) {
       rightIcon={dapp.url ? <ExternalLinkIcon /> : <Spinner size="xs" />}
       isDisabled={!dapp.url}
       _hover={{ textDecoration: 'none' }}
+      flexGrow={1}
+      maxWidth="36%"
     >
       {dapp.label}
     </Button>
@@ -25,19 +27,17 @@ function DappButton({ dapp }) {
 export function Dapps() {
   const { data: dapps } = useDapps();
   return (
-    <Box pt="4" px="4" pb="4">
-      <Box flex="1" p="0">
-        <Heading mb="3" size="sm">
-          Available DApps:
-        </Heading>
-        <Flex direction="row" gap={2} justifyContent="start" mb="2" flexWrap="wrap">
-          {dapps.length > 0 ? (
-            dapps.map((dapp) => <DappButton key={dapp.id} dapp={dapp} />)
-          ) : (
-            <Skeleton w="full" height={8} />
-          )}
-        </Flex>
-      </Box>
+    <Box p="4">
+      <Heading mb="3" size="sm">
+        Available DApps:
+      </Heading>
+      <Flex gap={2} mb="2" flexWrap="wrap">
+        {dapps.length > 0 ? (
+          dapps.map((dapp) => <DappButton key={dapp.id} dapp={dapp} />)
+        ) : (
+          <Skeleton w="full" height={8} />
+        )}
+      </Flex>
     </Box>
   );
 }
