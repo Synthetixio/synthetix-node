@@ -39,7 +39,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/core@npm:^7.23.9":
+"@babel/core@npm:^7.24.0":
   version: 7.24.0
   resolution: "@babel/core@npm:7.24.0"
   dependencies:
@@ -348,18 +348,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@biomejs/biome@npm:1.5.3":
-  version: 1.5.3
-  resolution: "@biomejs/biome@npm:1.5.3"
+"@biomejs/biome@npm:^1.6.0":
+  version: 1.6.0
+  resolution: "@biomejs/biome@npm:1.6.0"
   dependencies:
-    "@biomejs/cli-darwin-arm64": "npm:1.5.3"
-    "@biomejs/cli-darwin-x64": "npm:1.5.3"
-    "@biomejs/cli-linux-arm64": "npm:1.5.3"
-    "@biomejs/cli-linux-arm64-musl": "npm:1.5.3"
-    "@biomejs/cli-linux-x64": "npm:1.5.3"
-    "@biomejs/cli-linux-x64-musl": "npm:1.5.3"
-    "@biomejs/cli-win32-arm64": "npm:1.5.3"
-    "@biomejs/cli-win32-x64": "npm:1.5.3"
+    "@biomejs/cli-darwin-arm64": "npm:1.6.0"
+    "@biomejs/cli-darwin-x64": "npm:1.6.0"
+    "@biomejs/cli-linux-arm64": "npm:1.6.0"
+    "@biomejs/cli-linux-arm64-musl": "npm:1.6.0"
+    "@biomejs/cli-linux-x64": "npm:1.6.0"
+    "@biomejs/cli-linux-x64-musl": "npm:1.6.0"
+    "@biomejs/cli-win32-arm64": "npm:1.6.0"
+    "@biomejs/cli-win32-x64": "npm:1.6.0"
   dependenciesMeta:
     "@biomejs/cli-darwin-arm64":
       optional: true
@@ -379,62 +379,62 @@ __metadata:
       optional: true
   bin:
     biome: bin/biome
-  checksum: 10/1bcdcc3a34de0871d91ecf37eae67f71847f3578723001f81616b1fd1d694d584accce37cf582f07aef3b920b47c32716e7244b7f67f52926c7c8526bc7cd5d9
+  checksum: 10/abf8c4a6a153370c669af092a463ca480dfb6454c1290fecf99e46b27c8141de3958465eda6109cf7106e8196ad9ef287f89ea99107edd3f213217e0a10c72a6
   languageName: node
   linkType: hard
 
-"@biomejs/cli-darwin-arm64@npm:1.5.3":
-  version: 1.5.3
-  resolution: "@biomejs/cli-darwin-arm64@npm:1.5.3"
+"@biomejs/cli-darwin-arm64@npm:1.6.0":
+  version: 1.6.0
+  resolution: "@biomejs/cli-darwin-arm64@npm:1.6.0"
   conditions: os=darwin & cpu=arm64
   languageName: node
   linkType: hard
 
-"@biomejs/cli-darwin-x64@npm:1.5.3":
-  version: 1.5.3
-  resolution: "@biomejs/cli-darwin-x64@npm:1.5.3"
+"@biomejs/cli-darwin-x64@npm:1.6.0":
+  version: 1.6.0
+  resolution: "@biomejs/cli-darwin-x64@npm:1.6.0"
   conditions: os=darwin & cpu=x64
   languageName: node
   linkType: hard
 
-"@biomejs/cli-linux-arm64-musl@npm:1.5.3":
-  version: 1.5.3
-  resolution: "@biomejs/cli-linux-arm64-musl@npm:1.5.3"
+"@biomejs/cli-linux-arm64-musl@npm:1.6.0":
+  version: 1.6.0
+  resolution: "@biomejs/cli-linux-arm64-musl@npm:1.6.0"
   conditions: os=linux & cpu=arm64 & libc=musl
   languageName: node
   linkType: hard
 
-"@biomejs/cli-linux-arm64@npm:1.5.3":
-  version: 1.5.3
-  resolution: "@biomejs/cli-linux-arm64@npm:1.5.3"
+"@biomejs/cli-linux-arm64@npm:1.6.0":
+  version: 1.6.0
+  resolution: "@biomejs/cli-linux-arm64@npm:1.6.0"
   conditions: os=linux & cpu=arm64 & libc=glibc
   languageName: node
   linkType: hard
 
-"@biomejs/cli-linux-x64-musl@npm:1.5.3":
-  version: 1.5.3
-  resolution: "@biomejs/cli-linux-x64-musl@npm:1.5.3"
+"@biomejs/cli-linux-x64-musl@npm:1.6.0":
+  version: 1.6.0
+  resolution: "@biomejs/cli-linux-x64-musl@npm:1.6.0"
   conditions: os=linux & cpu=x64 & libc=musl
   languageName: node
   linkType: hard
 
-"@biomejs/cli-linux-x64@npm:1.5.3":
-  version: 1.5.3
-  resolution: "@biomejs/cli-linux-x64@npm:1.5.3"
+"@biomejs/cli-linux-x64@npm:1.6.0":
+  version: 1.6.0
+  resolution: "@biomejs/cli-linux-x64@npm:1.6.0"
   conditions: os=linux & cpu=x64 & libc=glibc
   languageName: node
   linkType: hard
 
-"@biomejs/cli-win32-arm64@npm:1.5.3":
-  version: 1.5.3
-  resolution: "@biomejs/cli-win32-arm64@npm:1.5.3"
+"@biomejs/cli-win32-arm64@npm:1.6.0":
+  version: 1.6.0
+  resolution: "@biomejs/cli-win32-arm64@npm:1.6.0"
   conditions: os=win32 & cpu=arm64
   languageName: node
   linkType: hard
 
-"@biomejs/cli-win32-x64@npm:1.5.3":
-  version: 1.5.3
-  resolution: "@biomejs/cli-win32-x64@npm:1.5.3"
+"@biomejs/cli-win32-x64@npm:1.6.0":
+  version: 1.6.0
+  resolution: "@biomejs/cli-win32-x64@npm:1.6.0"
   conditions: os=win32 & cpu=x64
   languageName: node
   linkType: hard
@@ -1450,7 +1450,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@chakra-ui/system@npm:2.6.2":
+"@chakra-ui/system@npm:2.6.2, @chakra-ui/system@npm:^2.6.2":
   version: 2.6.2
   resolution: "@chakra-ui/system@npm:2.6.2"
   dependencies:
@@ -1811,7 +1811,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@electron-forge/plugin-fuses@npm:^7.2.0":
+"@electron-forge/plugin-fuses@npm:^7.3.0":
   version: 7.3.0
   resolution: "@electron-forge/plugin-fuses@npm:7.3.0"
   dependencies:
@@ -2549,10 +2549,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tanstack/query-core@npm:5.24.1":
-  version: 5.24.1
-  resolution: "@tanstack/query-core@npm:5.24.1"
-  checksum: 10/7a5a34f14c1c44c86fe674d7fc0bca9b0c3e5197ff738337825a273cae0585a61564c782f74ef620234f3f9b6527025ce7860853dad7512e1c3b69413f5dd333
+"@tanstack/query-core@npm:5.25.0":
+  version: 5.25.0
+  resolution: "@tanstack/query-core@npm:5.25.0"
+  checksum: 10/763f61907e279440c3cdb2af07036e0338b5f7deb302de451a535f61382e64e5c86f4c499909496d4855bb0754a84f5697bdbb8c13f15de6f8a355fa942c8b0e
   languageName: node
   linkType: hard
 
@@ -2563,26 +2563,26 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tanstack/react-query-devtools@npm:^5.24.1":
-  version: 5.24.1
-  resolution: "@tanstack/react-query-devtools@npm:5.24.1"
+"@tanstack/react-query-devtools@npm:^5.25.0":
+  version: 5.25.0
+  resolution: "@tanstack/react-query-devtools@npm:5.25.0"
   dependencies:
     "@tanstack/query-devtools": "npm:5.24.0"
   peerDependencies:
-    "@tanstack/react-query": ^5.24.1
+    "@tanstack/react-query": ^5.25.0
     react: ^18.0.0
-  checksum: 10/7e255d9a9c58aec5fa986c489b5075019962c825ace4e64bdf6bb7e7b2b53ec5677da2895d34be1b610f5e9523ed7e0628286eab368f8cfb606faa30dcb1e0e7
+  checksum: 10/797ab89ff1a83a899a591529f53788f76741e74167f9360f2e21af987be5de0bf285c9caa5bbcd9bc8840c4edef3c1c112a1241b8eb5e11da21339c5003b8f26
   languageName: node
   linkType: hard
 
-"@tanstack/react-query@npm:^5.24.1":
-  version: 5.24.1
-  resolution: "@tanstack/react-query@npm:5.24.1"
+"@tanstack/react-query@npm:^5.25.0":
+  version: 5.25.0
+  resolution: "@tanstack/react-query@npm:5.25.0"
   dependencies:
-    "@tanstack/query-core": "npm:5.24.1"
+    "@tanstack/query-core": "npm:5.25.0"
   peerDependencies:
     react: ^18.0.0
-  checksum: 10/4d57eb9a7ba2edfe66bb401ae647c87140642ca848d5895346d832bf67b696877bdeee80c1378d57be3c0f097e22a976a68a4ad36b2f15351b7be1bbb4e34ff4
+  checksum: 10/760c1825ffcf57a9219c64856270c682372c566d7a32c5146eed47e7c51e0cda0a7239360e5bd46c8cc69cc802f8a4e161957c3c035afb895eb2bdf36f5b992a
   languageName: node
   linkType: hard
 
@@ -2908,7 +2908,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@vercel/webpack-asset-relocator-loader@npm:1.7.3":
+"@vercel/webpack-asset-relocator-loader@npm:^1.7.3":
   version: 1.7.3
   resolution: "@vercel/webpack-asset-relocator-loader@npm:1.7.3"
   dependencies:
@@ -4155,7 +4155,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"css-loader@npm:^6.0.0":
+"css-loader@npm:^6.10.0":
   version: 6.10.0
   resolution: "css-loader@npm:6.10.0"
   dependencies:
@@ -4501,10 +4501,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"electron-log@npm:^5.1.1":
-  version: 5.1.1
-  resolution: "electron-log@npm:5.1.1"
-  checksum: 10/1e509f4b98ef23dfb5eaf83b22879b68646d7aa390937d11198cc16724f625c8deeab7272e108311ccfc4082f02cd2ad697ea45d583e9f7404c466c2bb07246e
+"electron-log@npm:^5.1.2":
+  version: 5.1.2
+  resolution: "electron-log@npm:5.1.2"
+  checksum: 10/34a9e69f0ea5e3ee401d2fdd09af89a1ccd1d4fdb15d613420ee33ed60bb27c81026bb860be0c03f0801265a0ce73b51bb8df091756dba71dbdf043fa9bb4cd2
   languageName: node
   linkType: hard
 
@@ -4537,16 +4537,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"electron@npm:29.0.1":
-  version: 29.0.1
-  resolution: "electron@npm:29.0.1"
+"electron@npm:^29.1.1":
+  version: 29.1.1
+  resolution: "electron@npm:29.1.1"
   dependencies:
     "@electron/get": "npm:^2.0.0"
     "@types/node": "npm:^20.9.0"
     extract-zip: "npm:^2.0.1"
   bin:
     electron: cli.js
-  checksum: 10/3b3b8359d1fa261988954b9a73205cc081b582a715f01935fe339a6da83147f29b2c554d8186e1ae674ea3e72bf09b3c3bcc8492e3d738770fcccc10d64915d5
+  checksum: 10/e2cf5464c891d32b481b0c08291effd01d7ce7231662c3a8a7d0ba40b1a7058b9596c7658809dc4f9d82e8694bf0f3834fe4cdb371f01f8852c83bc6bf1c155c
   languageName: node
   linkType: hard
 
@@ -5089,7 +5089,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"framer-motion@npm:^11.0.6":
+"framer-motion@npm:^11.0.8":
   version: 11.0.8
   resolution: "framer-motion@npm:11.0.8"
   dependencies:
@@ -8777,7 +8777,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"style-loader@npm:^3.0.0":
+"style-loader@npm:^3.3.4":
   version: 3.3.4
   resolution: "style-loader@npm:3.3.4"
   peerDependencies:
@@ -8847,40 +8847,42 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "synthetix-node@workspace:."
   dependencies:
-    "@babel/core": "npm:^7.23.9"
+    "@babel/core": "npm:^7.24.0"
     "@babel/preset-react": "npm:^7.23.3"
-    "@biomejs/biome": "npm:1.5.3"
+    "@biomejs/biome": "npm:^1.6.0"
     "@chakra-ui/icons": "npm:^2.1.1"
     "@chakra-ui/react": "npm:^2.8.2"
+    "@chakra-ui/system": "npm:^2.6.2"
     "@electron-forge/cli": "npm:^7.3.0"
     "@electron-forge/maker-deb": "npm:^7.3.0"
     "@electron-forge/maker-rpm": "npm:^7.3.0"
     "@electron-forge/maker-squirrel": "npm:^7.3.0"
     "@electron-forge/maker-zip": "npm:^7.3.0"
     "@electron-forge/plugin-auto-unpack-natives": "npm:^7.3.0"
-    "@electron-forge/plugin-fuses": "npm:^7.2.0"
+    "@electron-forge/plugin-fuses": "npm:^7.3.0"
     "@electron-forge/plugin-webpack": "npm:^7.3.0"
     "@electron/fuses": "npm:^1.7.0"
     "@emotion/react": "npm:^11.11.4"
     "@emotion/styled": "npm:^11.11.0"
     "@ensdomains/content-hash": "npm:^3.0.0"
-    "@tanstack/react-query": "npm:^5.24.1"
-    "@tanstack/react-query-devtools": "npm:^5.24.1"
-    "@vercel/webpack-asset-relocator-loader": "npm:1.7.3"
+    "@tanstack/react-query": "npm:^5.25.0"
+    "@tanstack/react-query-devtools": "npm:^5.25.0"
+    "@vercel/webpack-asset-relocator-loader": "npm:^1.7.3"
     adm-zip: "npm:^0.5.10"
     babel-loader: "npm:^9.1.3"
-    css-loader: "npm:^6.0.0"
-    electron: "npm:29.0.1"
-    electron-log: "npm:^5.1.1"
+    css-loader: "npm:^6.10.0"
+    electron: "npm:^29.1.1"
+    electron-log: "npm:^5.1.2"
     electron-squirrel-startup: "npm:^1.0.0"
-    framer-motion: "npm:^11.0.6"
+    framer-motion: "npm:^11.0.8"
     node-fetch: "npm:^3.3.2"
     node-loader: "npm:^2.0.0"
     react: "npm:^18.2.0"
     react-dom: "npm:^18.2.0"
-    style-loader: "npm:^3.0.0"
+    style-loader: "npm:^3.3.4"
     tar: "npm:^6.2.0"
-    viem: "npm:^2.7.14"
+    viem: "npm:^2.7.22"
+    webpack: "npm:^5.90.3"
     zod: "npm:^3.22.4"
   languageName: unknown
   linkType: soft
@@ -9255,9 +9257,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"viem@npm:^2.7.14":
-  version: 2.7.16
-  resolution: "viem@npm:2.7.16"
+"viem@npm:^2.7.22":
+  version: 2.7.22
+  resolution: "viem@npm:2.7.22"
   dependencies:
     "@adraffy/ens-normalize": "npm:1.10.0"
     "@noble/curves": "npm:1.2.0"
@@ -9272,7 +9274,7 @@ __metadata:
   peerDependenciesMeta:
     typescript:
       optional: true
-  checksum: 10/302ab8aed585b1853638cca24efae299c4628a16216434b98eee1f2ecf6ae5c57ce4b775bcf0af446e586bf176c519e135dc76fc7a48de82e64ea3a242e8f215
+  checksum: 10/2b4b8913ccf0a4b1ffc458581fd02ade73607158a36f736664860bd15c8a76cf437b8415adb554541f8f9260d8ffc227280d408a20460fc283875d50a11b30d6
   languageName: node
   linkType: hard
 
@@ -9398,7 +9400,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"webpack@npm:^5.69.1":
+"webpack@npm:^5.69.1, webpack@npm:^5.90.3":
   version: 5.90.3
   resolution: "webpack@npm:5.90.3"
   dependencies:
