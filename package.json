@@ -1,7 +1,7 @@
 {
   "name": "synthetix-node",
   "description": "Synthetix Node",
-  "repository": "synthetixio/snx-node",
+  "repository": "Synthetixio/synthetix-node",
   "version": "1.0.0",
   "license": "MIT",
   "author": "Synthetix Team",
@@ -64,7 +64,6 @@
       "node_modules",
       "package.json"
     ],
-    "afterSign": ".erb/scripts/notarize.js",
     "mac": {
       "target": {
         "target": "zip",
@@ -100,8 +99,8 @@
     ],
     "publish": {
       "provider": "github",
-      "owner": "synthetixui",
-      "repo": "snx-node"
+      "owner": "Synthetixio",
+      "repo": "synthetix-node"
     }
   },
   "devEngines": {

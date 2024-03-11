@@ -28,7 +28,7 @@ This will download the correct release of `SynthetixNode.app` to your Applicatio
 
 ### Manual Installation
 
-Download the macOS app from the [Latest release page](https://github.com/Synthetixio/snx-node/releases/latest). (Windows and Linux versions are in development.) Select the ARM64 version if you are using a Mac with [Apple silicon](https://support.apple.com/en-us/HT211814).
+Download the macOS app from the [Latest release page](https://github.com/Synthetixio/synthetix-node/releases/latest). (Windows and Linux versions are in development.) Select the ARM64 version if you are using a Mac with [Apple silicon](https://support.apple.com/en-us/HT211814).
 
 Unzip and copy SynthetixNode to your Applications folder. There will be no pop-up to do so. Make sure to move it manually before proceeding to the next step.
 
