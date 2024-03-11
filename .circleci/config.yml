@@ -3,18 +3,18 @@ version: 2.1
 parameters:
   node-version:
     type: string
-    default: '20.10.0'
+    default: '20.11.1'
 
 commands:
-  npm-install:
+  yarn-install:
     steps:
       - restore_cache:
           keys:
-            - node_modules-{{ .Environment.CACHE_VERSION }}-{{ checksum "package-lock.json" }}
+            - node_modules-{{ .Environment.CACHE_VERSION }}-{{ checksum "yarn.lock" }}
             - node_modules-{{ .Environment.CACHE_VERSION }}-
-      - run: npm install
+      - run: yarn install
       - save_cache:
-          key: node_modules-{{ .Environment.CACHE_VERSION }}-{{ checksum "package-lock.json" }}
+          key: node_modules-{{ .Environment.CACHE_VERSION }}-{{ checksum "yarn.lock" }}
           paths:
             - node_modules
 
@@ -80,12 +80,14 @@ jobs:
     working_directory: ~/app
     steps:
       - checkout
-      - npm-install
-      - run: npm run lint:check
-      - run: npm run pretty:check
-      - run: npm run config:check
-      - run: npm run svg:check
-      - run: npm run package
+      - yarn-install
+      - run:
+          name: 'Install dependencies'
+          command: sudo apt-get update && sudo apt-get install -y dpkg fakeroot rpm
+      - run: yarn lint:check
+      - run: yarn config:check
+      - run: yarn svg:check
+      - run: yarn package
 
   ipfs-deploy:
     docker:

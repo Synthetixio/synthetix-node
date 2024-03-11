@@ -28,7 +28,7 @@ This will download the correct release of `SynthetixNode.app` to your Applicatio
 
 ### Manual Installation
 
-Download the macOS app from the [Latest release page](https://github.com/Synthetixio/snx-node/releases/latest). (Windows and Linux versions are in development.) Select the ARM64 version if you are using a Mac with [Apple silicon](https://support.apple.com/en-us/HT211814).
+Download the macOS app from the [Latest release page](https://github.com/Synthetixio/synthetix-node/releases/latest). (Windows and Linux versions are in development.) Select the ARM64 version if you are using a Mac with [Apple silicon](https://support.apple.com/en-us/HT211814).
 
 Unzip and copy SynthetixNode to your Applications folder. There will be no pop-up to do so. Make sure to move it manually before proceeding to the next step.
 
@@ -92,15 +92,9 @@ export IPFS_PASS=
 # 2. Use `synthetix-node-app-config` IPNS key
 export IPNS_KEY=synthetix-node-app-config
 
-# 3. Add and pin config.json to local IPFS node
-export IPFS_CID=$(ipfs add --progress=false --pin=true --recursive --quieter config.json)
+# 3. Add and pin config.json to IPFS node
+export IPFS_CID=$(curl -u "$IPFS_USER:$IPFS_PASS" 'https://ipfs.synthetix.io/api/v0/add' -F file=@config.json --silent | jq -r '.Hash')
 
-# 4. Pin config.json to Synthetix node
-curl --silent --request POST --user "$IPFS_USER:$IPFS_PASS" "https://ipfs.synthetix.io:5001/api/v0/pin/add?recursive=true&progress=true&arg=$IPFS_CID" | jq
-
-# 5. Publish config.json to Synthetix IPNS key
+# 4. Publish config.json to Synthetix IPNS key
 curl --silent --request POST --user "$IPFS_USER:$IPFS_PASS" "https://ipfs.synthetix.io:5001/api/v0/name/publish?key=$IPNS_KEY&arg=$IPFS_CID" | jq
-
-# 6. Pin config.json to Synthetix IPFS Cluster
-curl --silent --request POST --user "$IPFS_USER:$IPFS_PASS" "https://ipfs.synthetix.io/api/v0/pin/add?arg=$IPFS_CID"
 ```
