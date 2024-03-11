@@ -3,7 +3,7 @@ version: 2.1
 parameters:
   node-version:
     type: string
-    default: '20.10.0'
+    default: '20.11.1'
 
 commands:
   yarn-install:
@@ -81,10 +81,10 @@ jobs:
     steps:
       - checkout
       - yarn-install
-      - run:
-          name: 'Install dependencies'
-          command: sudo apt-get update && sudo apt-get install -y dpkg fakeroot rpm
-      - run: yarn biome:check
+#      - run:
+#          name: 'Install dependencies'
+#          command: sudo apt-get update && sudo apt-get install -y dpkg fakeroot rpm
+      - run: yarn lint:check
       - run: yarn make
 
   ipfs-deploy:
