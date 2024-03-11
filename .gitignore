@@ -33,6 +33,8 @@ npm-debug.log.*
 # Electron-Forge
 out/
 
+.webpack
+
 # yarn v2
 .yarn/cache
 .yarn/unplugged

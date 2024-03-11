@@ -1,2 +1,0 @@
-(()=>{"use strict";const e=require("electron"),r={ipcRenderer:{invoke:(r,...n)=>e.ipcRenderer.invoke(r,...n),send:(r,...n)=>{e.ipcRenderer.send(r,...n)},on:(r,n)=>{e.ipcRenderer.on(r,n)},removeListener:(r,n)=>{e.ipcRenderer.removeListener(r,n)}}};e.contextBridge.exposeInMainWorld("electron",r)})();
-//# sourceMappingURL=preload.js.map
