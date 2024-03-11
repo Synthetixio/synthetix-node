@@ -12,7 +12,10 @@
     "make": "electron-forge make",
     "publish": "electron-forge publish",
     "lint": "biome check --apply ./src",
-    "lint:check": "biome check ./src"
+    "lint:check": "biome check ./src",
+    "config:check": "node config-check.ms",
+    "svg": "svgo --recursive assets",
+    "svg:check": "yarn svg && git diff --exit-code assets/**/*.svg"
   },
   "dependencies": {
     "@chakra-ui/icons": "^2.1.1",
@@ -53,6 +56,7 @@
     "electron": "^29.1.1",
     "node-loader": "^2.0.0",
     "style-loader": "^3.3.4",
+    "svgo": "^3.2.0",
     "webpack": "^5.90.3"
   },
   "packageManager": "yarn@4.1.0"

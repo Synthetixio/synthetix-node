@@ -85,6 +85,8 @@ jobs:
           name: 'Install dependencies'
           command: sudo apt-get update && sudo apt-get install -y dpkg fakeroot rpm
       - run: yarn lint:check
+      - run: yarn config:check
+      - run: yarn svg:check
       - run: yarn make
 
   ipfs-deploy:

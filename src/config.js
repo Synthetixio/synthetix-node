@@ -1,6 +1,6 @@
-import { z } from 'zod';
+const { z } = require('zod');
 
-export const DappSchema = z
+const DappSchema = z
   .object({
     id: z.string(),
     label: z.string(),
@@ -16,10 +16,16 @@ export const DappSchema = z
     path: ['ens'],
   });
 
-export const DappsSchema = z.array(DappSchema);
+const DappsSchema = z.array(DappSchema);
 
-export const ConfigSchema = z
+const ConfigSchema = z
   .object({
     dapps: DappsSchema,
   })
   .strict();
+
+module.exports = {
+  DappSchema,
+  DappsSchema,
+  ConfigSchema,
+};
