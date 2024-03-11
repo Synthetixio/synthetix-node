@@ -11,9 +11,9 @@ ARCH=$(uname -m)
 
 # Check if the system is running on ARM or x86_64 architecture
 if [ "$ARCH" = "arm64" ]; then
-  DOWNLOAD_URL="https://github.com/Synthetixio/snx-node/releases/latest/download/SynthetixNode-mac-arm64.zip"
+  DOWNLOAD_URL="https://github.com/Synthetixio/synthetix-node/releases/latest/download/SynthetixNode-mac-arm64.zip"
 elif [ "$ARCH" = "x86_64" ]; then
-  DOWNLOAD_URL="https://github.com/Synthetixio/snx-node/releases/latest/download/SynthetixNode-mac-x64.zip"
+  DOWNLOAD_URL="https://github.com/Synthetixio/synthetix-node/releases/latest/download/SynthetixNode-mac-x64.zip"
 else
   echo "Unsupported architecture $ARCH"
   exit 1
