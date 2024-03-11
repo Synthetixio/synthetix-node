@@ -12,7 +12,6 @@ import path from 'path';
 import { BrowserWindow, Menu, Tray, app, ipcMain, session, shell } from 'electron';
 // import { autoUpdater } from 'electron-updater';
 import logger from 'electron-log';
-import fetch from 'node-fetch';
 import { SYNTHETIX_NODE_APP_CONFIG } from './const';
 import { DAPPS, resolveDapp } from './main/dapps';
 import {

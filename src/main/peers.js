@@ -1,5 +1,4 @@
 import logger from 'electron-log';
-import fetch from 'node-fetch';
 
 Object.assign(global, { fetch });
 

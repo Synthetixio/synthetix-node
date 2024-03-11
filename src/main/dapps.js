@@ -1,12 +1,9 @@
 import * as contentHash from '@ensdomains/content-hash';
 import logger from 'electron-log';
-import fetch from 'node-fetch';
 import { http, createPublicClient } from 'viem';
 import { mainnet } from 'viem/chains';
 import { namehash, normalize } from 'viem/ens';
 import { rpcRequest } from './ipfs';
-
-Object.assign(global, { fetch });
 
 export const DAPPS = [];
 
@@ -88,7 +85,12 @@ export async function resolveDapp(dapp) {
   try {
     const { codec, hash } = await resolveEns(dapp);
     logger.log(dapp.id, 'resolved', codec, hash);
-    const qm = (codec === 'ipns-ns' || codec === 'ipns') ? await resolveQm(hash) : codec === 'ipfs-ns' ? hash : undefined;
+    const qm =
+      codec === 'ipns-ns' || codec === 'ipns'
+        ? await resolveQm(hash)
+        : codec === 'ipfs-ns'
+          ? hash
+          : undefined;
     if (qm) {
       Object.assign(dapp, { qm });
     }

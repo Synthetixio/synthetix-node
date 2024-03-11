@@ -1,5 +1,5 @@
 import { exec, spawn } from 'child_process';
-import { createReadStream, createWriteStream, promises as fs, readFileSync, rmSync } from 'fs';
+import { promises as fs, createReadStream, createWriteStream, readFileSync, rmSync } from 'fs';
 import https from 'https';
 import os from 'os';
 import path from 'path';
