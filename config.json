@@ -1,0 +1,41 @@
+{
+  "dapps": [
+    {
+      "id": "kwenta",
+      "label": "Kwenta",
+      "icon": "https://synthetixio.github.io/synthetix-node/src/kwenta.svg",
+      "ens": "kwenta.eth"
+    },
+    {
+      "id": "lp",
+      "label": "Liquidity V3",
+      "icon": "https://synthetixio.github.io/synthetix-node/src/synthetix.svg",
+      "ens": "liquidity.synthetix.eth"
+    },
+    {
+      "id": "gov",
+      "label": "Governance",
+      "icon": "https://synthetixio.github.io/synthetix-node/src/synthetix.svg",
+      "ens": "governance.synthetix.eth"
+    },
+    {
+      "id": "staking",
+      "label": "Staking V2",
+      "icon": "https://synthetixio.github.io/synthetix-node/src/synthetix.svg",
+      "ens": "staking.synthetix.eth",
+      "ipns": "k2k4r8jvf8qlg4ytq7y3ta749vkjzms0hisd9i92ohk0lsp0yestbhy3"
+    },
+    {
+      "id": "watcher",
+      "label": "Perps V2 Watcher",
+      "icon": "https://synthetixio.github.io/synthetix-node/src/synthetix.svg",
+      "ipns": "k2k4r8pf9z20v99lm731p2d8vp0lg6w3sics8iot60mvjyret5tzfefl"
+    },
+    {
+      "id": "spongly",
+      "label": "Spongly",
+      "icon": "https://synthetixio.github.io/synthetix-node/src/spongly.svg",
+      "ens": "spongly.eth"
+    }
+  ]
+}
