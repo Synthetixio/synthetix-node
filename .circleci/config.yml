@@ -87,7 +87,7 @@ jobs:
       - run: yarn lint:check
       - run: yarn config:check
       - run: yarn svg:check
-      - run: yarn make
+      - run: yarn package
 
   ipfs-deploy:
     docker:
