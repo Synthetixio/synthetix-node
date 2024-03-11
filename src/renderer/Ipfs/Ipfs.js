@@ -117,7 +117,7 @@ export function Ipfs() {
                   <DrawerCloseButton />
                   <DrawerHeader>Online peers</DrawerHeader>
                   <DrawerBody>
-                    <Stack direction="column" margin="0" overflow="scroll">
+                    <Stack direction="column">
                       {peers.map((peer, i) => (
                         <Code
                           key={peer.id}
@@ -125,6 +125,8 @@ export function Ipfs() {
                           display="block"
                           backgroundColor="transparent"
                           whiteSpace="nowrap"
+                          overflow="hidden"
+                          textOverflow="ellipsis"
                         >
                           {`${i}`.padStart(3, '0')}.{' '}
                           <Tooltip
@@ -132,7 +134,11 @@ export function Ipfs() {
                             placement="top"
                             openDelay={200}
                             fontSize="xs"
-                            label={peer.id === peerId ? 'Your connected Peer ID' : 'Copy Peer ID'}
+                            label={
+                              peer.id === peerId
+                                ? `Your connected Peer ID\n${peer.id}`
+                                : `Copy Peer ID\n${peer.id}`
+                            }
                           >
                             <Text
                               as="span"
