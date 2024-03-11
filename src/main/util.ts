@@ -1,10 +1,5 @@
 import { URL } from 'url';
 import path from 'path';
-import os from 'os';
-
-const PLATFORM_OVERRIDE = {
-  win32: 'windows',
-};
 
 export function resolveHtmlPath(htmlFileName: string) {
   if (process.env.NODE_ENV === 'development') {
@@ -17,10 +12,34 @@ export function resolveHtmlPath(htmlFileName: string) {
 }
 
 export function getPlatformDetails() {
-  const arch = os.arch();
-  const targetArch = arch === 'x64' ? 'amd64' : 'arm64';
-  const osPlatform =
-    PLATFORM_OVERRIDE[process.platform as keyof typeof PLATFORM_OVERRIDE] || process.platform;
-  const fileExt = osPlatform === 'windows' ? 'zip' : 'tar.gz';
+  const targetArch = (() => {
+    switch (process.arch) {
+      case 'x64':
+        return 'amd64';
+      case 'arm64':
+      default:
+        return process.arch;
+    }
+  })();
+  const osPlatform = (() => {
+    switch (process.platform) {
+      case 'win32':
+        return 'windows';
+      case 'darwin':
+      case 'linux':
+      default:
+        return process.platform;
+    }
+  })();
+  const fileExt = (() => {
+    switch (process.platform) {
+      case 'win32':
+        return 'zip';
+      case 'darwin':
+      case 'linux':
+      default:
+        return 'tar.gz';
+    }
+  })();
   return { osPlatform, fileExt, targetArch };
 }
