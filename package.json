@@ -17,7 +17,7 @@
     "pretty:check": "prettier --check . './**/*.svg'",
     "svg": "svgo --recursive . && prettier --write './**/*.svg'",
     "svg:check": "npm run svg && git diff --exit-code **/*.svg",
-    "package": "ts-node ./.erb/scripts/clean.js dist && npm run build && CSC_IDENTITY_AUTO_DISCOVERY=false electron-builder build --publish never",
+    "package": "ts-node ./.erb/scripts/clean.js dist && npm run build && CSC_IDENTITY_AUTO_DISCOVERY=false electron-builder build --publish never -ml",
     "rebuild": "electron-rebuild --parallel --types prod,dev,optional --module-dir release/app",
     "start": "ts-node ./.erb/scripts/check-port-in-use.js && npm run start:renderer",
     "start:main": "cross-env NODE_ENV=development electronmon -r ts-node/register/transpile-only .",
