@@ -22,7 +22,7 @@ import {
   followerDaemon,
   followerId,
   followerIsInstalled,
-  followerKill,
+  // followerKill,
 } from './main/follower';
 import {
   configureIpfs,
@@ -30,7 +30,7 @@ import {
   ipfsDaemon,
   ipfsIsInstalled,
   ipfsIsRunning,
-  ipfsTeardown,
+  // ipfsTeardown,
   rpcRequest,
   waitForIpfs,
 } from './main/ipfs';
@@ -304,8 +304,8 @@ ipcMain.handle('ipfs-repo-stat', () => rpcRequest('repo/stat'));
 ipcMain.handle('ipfs-stats-bw', () => rpcRequest('stats/bw'));
 ipcMain.handle('ipfs-follower-info', () => follower('synthetix info'));
 
-app.on('will-quit', ipfsTeardown);
-app.on('will-quit', followerKill);
+//app.on('will-quit', ipfsTeardown);
+//app.on('will-quit', followerKill);
 
 downloadIpfs();
 ipfsDaemon();
