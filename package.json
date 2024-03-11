@@ -13,7 +13,7 @@
     "publish": "electron-forge publish",
     "lint": "biome check --apply ./src",
     "lint:check": "biome check ./src",
-    "config:check": "node config-check.ms",
+    "config:check": "node config-check.js",
     "svg": "svgo --recursive src assets",
     "svg:check": "yarn svg && git diff --exit-code **/*.svg"
   },
