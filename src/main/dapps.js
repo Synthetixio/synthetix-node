@@ -88,7 +88,7 @@ export async function resolveDapp(dapp) {
   try {
     const { codec, hash } = await resolveEns(dapp);
     logger.log(dapp.id, 'resolved', codec, hash);
-    const qm = codec === 'ipns-ns' ? await resolveQm(hash) : codec === 'ipfs-ns' ? hash : undefined;
+    const qm = (codec === 'ipns-ns' || codec === 'ipns') ? await resolveQm(hash) : codec === 'ipfs-ns' ? hash : undefined;
     if (qm) {
       Object.assign(dapp, { qm });
     }
