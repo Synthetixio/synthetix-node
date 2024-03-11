@@ -14,8 +14,8 @@
     "lint": "biome check --apply ./src",
     "lint:check": "biome check ./src",
     "config:check": "node config-check.ms",
-    "svg": "svgo --recursive assets",
-    "svg:check": "yarn svg && git diff --exit-code assets/**/*.svg"
+    "svg": "svgo --recursive src assets",
+    "svg:check": "yarn svg && git diff --exit-code **/*.svg"
   },
   "dependencies": {
     "@chakra-ui/icons": "^2.1.1",
