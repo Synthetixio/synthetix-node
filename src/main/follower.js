@@ -16,17 +16,8 @@ import { getPlatformDetails } from './util';
 const HOME = os.homedir();
 const IPFS_FOLLOW_PATH = path.join(HOME, '.ipfs-cluster-follow');
 
-export function followerKill() {
-  try {
-    const pid = readFileSync(path.join(ROOT, 'ipfs-cluster-follow.pid'), 'utf8');
-    if (pid) {
-      process.kill(Number(pid));
-      rmSync(path.join(ROOT, 'ipfs-cluster-follow.pid'));
-      logger.log(`follower kill: PID ${pid} killed and PID file removed`);
-    }
-  } catch (_e) {
-    // whatever
-  }
+export function followerTeardown() {
+  rmSync(path.join(ROOT, 'ipfs-cluster-follow.pid'), { force: true });
 }
 
 export async function followerIsInstalled() {

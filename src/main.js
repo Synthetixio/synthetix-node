@@ -22,7 +22,7 @@ import {
   followerDaemon,
   followerId,
   followerIsInstalled,
-  // followerKill,
+  followerTeardown,
 } from './main/follower';
 import {
   configureIpfs,
@@ -30,7 +30,7 @@ import {
   ipfsDaemon,
   ipfsIsInstalled,
   ipfsIsRunning,
-  // ipfsTeardown,
+  ipfsTeardown,
   rpcRequest,
   waitForIpfs,
 } from './main/ipfs';
@@ -44,14 +44,6 @@ const isDebug = process.env.NODE_ENV === 'development' || process.env.DEBUG_PROD
 
 fs.rmSync(path.join(ROOT, 'ipfs.pid'), { force: true });
 fs.rmSync(path.join(ROOT, 'ipfs-cluster-follow.pid'), { force: true });
-
-// class AppUpdater {
-//   constructor() {
-//     log.transports.file.level = 'info';
-//     autoUpdater.logger = log;
-//     autoUpdater.checkForUpdatesAndNotify();
-//   }
-// }
 
 let tray = null;
 let mainWindow = null;
@@ -304,8 +296,8 @@ ipcMain.handle('ipfs-repo-stat', () => rpcRequest('repo/stat'));
 ipcMain.handle('ipfs-stats-bw', () => rpcRequest('stats/bw'));
 ipcMain.handle('ipfs-follower-info', () => follower('synthetix info'));
 
-//app.on('will-quit', ipfsTeardown);
-//app.on('will-quit', followerKill);
+app.on('will-quit', ipfsTeardown);
+app.on('will-quit', followerTeardown);
 
 downloadIpfs();
 ipfsDaemon();

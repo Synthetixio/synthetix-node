@@ -40,14 +40,8 @@ export async function rpcRequest(relativePath, args = [], flags = {}) {
 }
 
 export function ipfsTeardown() {
-  try {
-    execSync(`${IPFS_CLI} shutdown`);
-    rmSync(path.join(ROOT, 'ipfs.pid'), { recursive: true });
-    rmSync(path.join(IPFS_PATH, 'repo.lock'), { recursive: true });
-    logger.log('IPFS teardown: PID file removed, daemon shutdown, and repo.lock removed');
-  } catch (e) {
-    logger.log('IPFS teardown error:', e);
-  }
+  rmSync(path.join(ROOT, 'ipfs.pid'), { force: true });
+  rmSync(path.join(IPFS_PATH, 'repo.lock'), { force: true });
 }
 
 export async function ipfsIsInstalled() {
@@ -65,9 +59,8 @@ export async function ipfsDaemon() {
     return;
   }
 
-  const pid = await fs.readFile(path.join(ROOT, 'ipfs.pid'), 'utf8').catch(() => null);
-
-  if (pid) {
+  const isRunning = await ipfsIsRunning();
+  if (isRunning) {
     return;
   }
 
