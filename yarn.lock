@@ -2281,16 +2281,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@ensdomains/content-hash@npm:^3.0.0":
-  version: 3.0.0
-  resolution: "@ensdomains/content-hash@npm:3.0.0"
-  dependencies:
-    "@multiformats/sha3": "npm:^2.0.17"
-    multiformats: "npm:^12.0.1"
-  checksum: 10/95512a0175098ef70fbfa00cde66ea0665d4e182cf674bc4975f7b76ed95ab4d8df70b3dfb82af30bb9d72af08578316f13caf95f520658f3cefd5ff510c5dce
-  languageName: node
-  linkType: hard
-
 "@gar/promisify@npm:^1.1.3":
   version: 1.1.3
   resolution: "@gar/promisify@npm:1.1.3"
@@ -2386,16 +2376,6 @@ __metadata:
   dependencies:
     cross-spawn: "npm:^7.0.1"
   checksum: 10/b7402d050e5ca99375b0226e4bb3fbefb0bcd86187dd4d6baac70f34b93d5c7fada9c78bd377ccd8ee74886ce911dd38f91c53479d1e40a2a38fc890150b670f
-  languageName: node
-  linkType: hard
-
-"@multiformats/sha3@npm:^2.0.17":
-  version: 2.0.17
-  resolution: "@multiformats/sha3@npm:2.0.17"
-  dependencies:
-    js-sha3: "npm:^0.8.0"
-    multiformats: "npm:^9.5.4"
-  checksum: 10/970b444ae096be7d901d7fbc95809ed1748228262a19b41b3b746bd1fcfbd546e26782d4724c2ce4015cfe5da4b5fbc0acf68fe67ed47173cb84f18c3d490f38
   languageName: node
   linkType: hard
 
@@ -6191,13 +6171,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"js-sha3@npm:^0.8.0":
-  version: 0.8.0
-  resolution: "js-sha3@npm:0.8.0"
-  checksum: 10/a49ac6d3a6bfd7091472a28ab82a94c7fb8544cc584ee1906486536ba1cb4073a166f8c7bb2b0565eade23c5b3a7b8f7816231e0309ab5c549b737632377a20c
-  languageName: node
-  linkType: hard
-
 "js-tokens@npm:^3.0.0 || ^4.0.0, js-tokens@npm:^4.0.0":
   version: 4.0.0
   resolution: "js-tokens@npm:4.0.0"
@@ -6931,20 +6904,6 @@ __metadata:
   bin:
     multicast-dns: cli.js
   checksum: 10/e9add8035fb7049ccbc87b1b069f05bb3b31e04fe057bf7d0116739d81295165afc2568291a4a962bee01a5074e475996816eed0f50c8110d652af5abb74f95a
-  languageName: node
-  linkType: hard
-
-"multiformats@npm:^12.0.1":
-  version: 12.1.3
-  resolution: "multiformats@npm:12.1.3"
-  checksum: 10/b89ec581fc2b0fc567ca2b5450cc3f0f9ad56adf01b7b9780d07981d5177532be3296b22c1e415e0f17c6c6ddb9beece4ae2e14b79edfc5f3deacbd319a37516
-  languageName: node
-  linkType: hard
-
-"multiformats@npm:^9.5.4":
-  version: 9.9.0
-  resolution: "multiformats@npm:9.9.0"
-  checksum: 10/ad55c7d480d22f4258a68fd88aa2aab744fe0cb1e68d732fc886f67d858b37e3aa6c2cec12b2960ead7730d43be690931485238569952d8a3d7f90fdc726c652
   languageName: node
   linkType: hard
 
@@ -8915,7 +8874,6 @@ __metadata:
     "@electron/fuses": "npm:^1.7.0"
     "@emotion/react": "npm:^11.11.4"
     "@emotion/styled": "npm:^11.11.0"
-    "@ensdomains/content-hash": "npm:^3.0.0"
     "@tanstack/react-query": "npm:^5.25.0"
     "@tanstack/react-query-devtools": "npm:^5.25.0"
     "@vercel/webpack-asset-relocator-loader": "npm:^1.7.3"

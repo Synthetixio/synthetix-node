@@ -23,7 +23,6 @@
     "@chakra-ui/system": "^2.6.2",
     "@emotion/react": "^11.11.4",
     "@emotion/styled": "^11.11.0",
-    "@ensdomains/content-hash": "^3.0.0",
     "@tanstack/react-query": "^5.25.0",
     "@tanstack/react-query-devtools": "^5.25.0",
     "adm-zip": "^0.5.10",
