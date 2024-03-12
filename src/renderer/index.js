@@ -1,9 +1,9 @@
-import { ChakraProvider, extendTheme } from '@chakra-ui/react';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
-import React from 'react';
-import { createRoot } from 'react-dom/client';
-import App from './App.js';
+const { ChakraProvider, extendTheme } = require('@chakra-ui/react');
+const { QueryClient, QueryClientProvider } = require('@tanstack/react-query');
+const { ReactQueryDevtools } = require('@tanstack/react-query-devtools');
+const React = require('react');
+const { createRoot } = require('react-dom/client');
+const App = require('./App.js');
 
 const config = {
   initialColorMode: 'dark',

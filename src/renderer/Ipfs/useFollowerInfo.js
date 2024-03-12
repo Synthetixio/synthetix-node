@@ -1,9 +1,9 @@
-import { useQuery } from '@tanstack/react-query';
-import { useIsFollowerRunning } from './useIsFollowerRunning';
+const { useQuery } = require('@tanstack/react-query');
+const { useIsFollowerRunning } = require('./useIsFollowerRunning');
 
 const { ipcRenderer } = window?.electron || {};
 
-export function useFollowerInfo() {
+function useFollowerInfo() {
   const { data: isRunning } = useIsFollowerRunning();
   return useQuery({
     queryKey: ['follower', 'info'],
@@ -26,3 +26,5 @@ export function useFollowerInfo() {
     refetchInterval: 30_000,
   });
 }
+
+module.exports = { useFollowerInfo };

@@ -1,26 +1,26 @@
-import { exec, spawn } from 'node:child_process';
-import { promises as fs, createReadStream, createWriteStream, readFileSync, rmSync } from 'node:fs';
-import https from 'node:https';
-import os from 'node:os';
-import path from 'node:path';
-import { pipeline } from 'node:stream/promises';
-import zlib from 'node:zlib';
-import AdmZip from 'adm-zip';
-import logger from 'electron-log';
-import tar from 'tar';
-import { SYNTHETIX_IPNS } from '../const';
-import { ROOT } from './settings';
-import { getPlatformDetails } from './util';
+const { exec, spawn } = require('node:child_process');
+const { promises: fs, createReadStream, createWriteStream, rmSync } = require('node:fs');
+const https = require('node:https');
+const os = require('node:os');
+const path = require('node:path');
+const { pipeline } = require('node:stream/promises');
+const zlib = require('node:zlib');
+const AdmZip = require('adm-zip');
+const logger = require('electron-log');
+const tar = require('tar');
+const { SYNTHETIX_IPNS } = require('../const');
+const { ROOT } = require('./settings');
+const { getPlatformDetails } = require('./util');
 
 // Change if we ever want to store all follower info in a custom folder
 const HOME = os.homedir();
 const IPFS_FOLLOW_PATH = path.join(HOME, '.ipfs-cluster-follow');
 
-export function followerTeardown() {
+function followerTeardown() {
   rmSync(path.join(ROOT, 'ipfs-cluster-follow.pid'), { force: true });
 }
 
-export async function followerIsInstalled() {
+async function followerIsInstalled() {
   try {
     await fs.access(
       path.join(
@@ -37,7 +37,7 @@ export async function followerIsInstalled() {
   }
 }
 
-export async function followerDaemon() {
+async function followerDaemon() {
   const isInstalled = await followerIsInstalled();
   if (!isInstalled) {
     return;
@@ -82,7 +82,7 @@ export async function followerDaemon() {
   }
 }
 
-export async function follower(arg) {
+async function follower(arg) {
   return new Promise((resolve, reject) => {
     exec(
       `${path.join(ROOT, 'ipfs-cluster-follow/ipfs-cluster-follow')} ${arg}`,
@@ -99,7 +99,7 @@ export async function follower(arg) {
   });
 }
 
-export async function getLatestVersion() {
+async function getLatestVersion() {
   return new Promise((resolve, reject) => {
     https
       .get('https://dist.ipfs.tech/ipfs-cluster-follow/versions', (res) => {
@@ -117,7 +117,7 @@ export async function getLatestVersion() {
   });
 }
 
-export async function getInstalledVersion() {
+async function getInstalledVersion() {
   try {
     const version = await follower('--version');
     const [, , installedVersion] = version.split(' ');
@@ -127,7 +127,7 @@ export async function getInstalledVersion() {
   }
 }
 
-export async function downloadFollower(_e, { log = logger.log } = {}) {
+async function downloadFollower(_e, { log = logger.log } = {}) {
   const { osPlatform, fileExt, targetArch } = getPlatformDetails();
 
   log('Checking for existing ipfs-cluster-follow installation...');
@@ -179,7 +179,7 @@ export async function downloadFollower(_e, { log = logger.log } = {}) {
   return installedVersionCheck;
 }
 
-export async function isConfigured() {
+async function isConfigured() {
   try {
     const service = await fs.readFile(
       path.join(IPFS_FOLLOW_PATH, 'synthetix/service.json'),
@@ -191,7 +191,7 @@ export async function isConfigured() {
   }
 }
 
-export async function followerId() {
+async function followerId() {
   try {
     const identity = JSON.parse(
       await fs.readFile(path.join(IPFS_FOLLOW_PATH, 'synthetix/identity.json'), 'utf8')
@@ -202,7 +202,7 @@ export async function followerId() {
   }
 }
 
-export async function configureFollower({ log = logger.log } = {}) {
+async function configureFollower({ log = logger.log } = {}) {
   if (await isConfigured()) {
     return;
   }
@@ -214,3 +214,16 @@ export async function configureFollower({ log = logger.log } = {}) {
     // whatever
   }
 }
+
+module.exports = {
+  followerTeardown,
+  followerIsInstalled,
+  followerDaemon,
+  follower,
+  getLatestVersion,
+  getInstalledVersion,
+  downloadFollower,
+  isConfigured,
+  followerId,
+  configureFollower,
+};

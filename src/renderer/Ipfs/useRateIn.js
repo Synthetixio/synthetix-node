@@ -1,7 +1,7 @@
-import React from 'react';
-import { useStatsBw } from './useStatsBw';
+const React = require('react');
+const { useStatsBw } = require('./useStatsBw');
 
-export function useRateIn() {
+function useRateIn() {
   const { data: statsBw } = useStatsBw();
   return React.useMemo(() => {
     if (!statsBw || !statsBw.RateIn) {
@@ -10,3 +10,5 @@ export function useRateIn() {
     return `${Math.round(statsBw.RateIn)} B/s`;
   }, [statsBw]);
 }
+
+module.exports = { useRateIn };

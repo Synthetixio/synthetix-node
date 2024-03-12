@@ -1,12 +1,12 @@
-import logger from 'electron-log';
-import { EnsResolver, getDefaultProvider } from 'ethers';
-import { rpcRequest } from './ipfs';
+const logger = require('electron-log');
+const { EnsResolver, getDefaultProvider } = require('ethers');
+const { rpcRequest } = require('./ipfs');
 
-export const DAPPS = [];
+const DAPPS = [];
 
 const provider = getDefaultProvider();
 
-export async function resolveEns(dapp) {
+async function resolveEns(dapp) {
   if (dapp.ipns) {
     return {
       codec: 'ipns-ns',
@@ -32,7 +32,7 @@ export async function resolveEns(dapp) {
   return { codec, hash };
 }
 
-export async function resolveQm(ipns) {
+async function resolveQm(ipns) {
   try {
     const ipfsPath = await rpcRequest('name/resolve', [ipns]);
     const qm = ipfsPath.Path.slice(6); // remove /ipfs/
@@ -43,7 +43,7 @@ export async function resolveQm(ipns) {
   }
 }
 
-export async function convertCid(qm) {
+async function convertCid(qm) {
   try {
     const res = await rpcRequest('cid/base32', [qm]);
     return res.CidStr;
@@ -53,7 +53,7 @@ export async function convertCid(qm) {
   }
 }
 
-export async function isPinned(qm) {
+async function isPinned(qm) {
   try {
     const result = await rpcRequest('pin/ls', [qm], { type: 'recursive' });
     return result.Keys[qm];
@@ -64,7 +64,7 @@ export async function isPinned(qm) {
 
 const activePinningRequests = new Set();
 
-export async function resolveDapp(dapp) {
+async function resolveDapp(dapp) {
   try {
     const { codec, hash } = await resolveEns(dapp);
     logger.log(dapp.id, 'resolved', codec, hash);
@@ -110,7 +110,7 @@ export async function resolveDapp(dapp) {
   }
 }
 
-export async function cleanupOldDapps() {
+async function cleanupOldDapps() {
   const hashes = DAPPS.map((dapp) => dapp.qm);
   logger.log('Current DAPPs hashes', hashes);
   if (hashes.length < 1 || hashes.some((hash) => !hash)) {
@@ -137,3 +137,13 @@ export async function cleanupOldDapps() {
     // do nothing
   }
 }
+
+module.exports = {
+  DAPPS,
+  resolveEns,
+  resolveQm,
+  convertCid,
+  isPinned,
+  resolveDapp,
+  cleanupOldDapps,
+};

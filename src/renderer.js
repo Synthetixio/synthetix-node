@@ -1,1 +1,1 @@
-import './renderer/index';
+require('./renderer/index');

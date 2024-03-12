@@ -1,9 +1,9 @@
-import { useQuery } from '@tanstack/react-query';
-import { useIsIpfsRunning } from './useIsIpfsRunning';
+const { useQuery } = require('@tanstack/react-query');
+const { useIsIpfsRunning } = require('./useIsIpfsRunning');
 
 const { ipcRenderer } = window?.electron || {};
 
-export function useStatsBw() {
+function useStatsBw() {
   const { data: isRunning } = useIsIpfsRunning();
   return useQuery({
     queryKey: ['ipfs', 'stats bw'],
@@ -19,3 +19,5 @@ export function useStatsBw() {
     enabled: Boolean(ipcRenderer && isRunning),
   });
 }
+
+module.exports = { useStatsBw };

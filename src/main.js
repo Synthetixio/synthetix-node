@@ -1,11 +1,11 @@
-import fs from 'node:fs';
-import http from 'node:http';
-import path from 'node:path';
-import { BrowserWindow, Menu, Tray, app, ipcMain, session, shell } from 'electron';
-import logger from 'electron-log';
-import { SYNTHETIX_NODE_APP_CONFIG } from './const';
-import { DAPPS, resolveDapp } from './main/dapps';
-import {
+const fs = require('node:fs');
+const http = require('node:http');
+const path = require('node:path');
+const { BrowserWindow, Menu, Tray, app, ipcMain, session, shell } = require('electron');
+const logger = require('electron-log');
+const { SYNTHETIX_NODE_APP_CONFIG } = require('./const');
+const { DAPPS, resolveDapp } = require('./main/dapps');
+const {
   configureFollower,
   downloadFollower,
   follower,
@@ -13,8 +13,8 @@ import {
   followerId,
   followerIsInstalled,
   followerTeardown,
-} from './main/follower';
-import {
+} = require('./main/follower');
+const {
   configureIpfs,
   downloadIpfs,
   ipfsDaemon,
@@ -23,10 +23,10 @@ import {
   ipfsTeardown,
   rpcRequest,
   waitForIpfs,
-} from './main/ipfs';
-import { fetchPeers } from './main/peers';
-import * as settings from './main/settings';
-import { ROOT } from './main/settings';
+} = require('./main/ipfs');
+const { fetchPeers } = require('./main/peers');
+const settings = require('./main/settings');
+const { ROOT } = require('./main/settings');
 
 logger.transports.file.level = 'info';
 

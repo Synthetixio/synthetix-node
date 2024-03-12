@@ -1,8 +1,8 @@
-import { useQuery } from '@tanstack/react-query';
+const { useQuery } = require('@tanstack/react-query');
 
 const { ipcRenderer } = window?.electron || {};
 
-export function useDapp(id) {
+function useDapp(id) {
   return useQuery({
     queryKey: ['dapp', id],
     queryFn: async () => {
@@ -17,3 +17,7 @@ export function useDapp(id) {
     enabled: Boolean(ipcRenderer),
   });
 }
+
+module.exports = {
+  useDapp,
+};

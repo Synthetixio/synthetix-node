@@ -1,5 +1,5 @@
-import { ArrowRightIcon, CheckIcon, CopyIcon } from '@chakra-ui/icons';
-import {
+const { ArrowRightIcon, CheckIcon, CopyIcon } = require('@chakra-ui/icons');
+const {
   Box,
   Code,
   Drawer,
@@ -18,18 +18,18 @@ import {
   StatNumber,
   Text,
   Tooltip,
-} from '@chakra-ui/react';
-import React from 'react';
-import { SYNTHETIX_IPNS } from '../../const';
-import { useFollowerInfo } from './useFollowerInfo';
-import { useHostingSize } from './useHostingSize';
-import { useIsFollowerInstalled } from './useIsFollowerInstalled';
-import { useIsIpfsInstalled } from './useIsIpfsInstalled';
-import { useIsIpfsRunning } from './useIsIpfsRunning';
-import { usePeerId } from './usePeerId';
-import { usePeers } from './usePeers';
-import { useRateIn } from './useRateIn';
-import { useRateOut } from './useRateOut';
+} = require('@chakra-ui/react');
+const React = require('react');
+const { SYNTHETIX_IPNS } = require('../../const');
+const { useFollowerInfo } = require('./useFollowerInfo');
+const { useHostingSize } = require('./useHostingSize');
+const { useIsFollowerInstalled } = require('./useIsFollowerInstalled');
+const { useIsIpfsInstalled } = require('./useIsIpfsInstalled');
+const { useIsIpfsRunning } = require('./useIsIpfsRunning');
+const { usePeerId } = require('./usePeerId');
+const { usePeers } = require('./usePeers');
+const { useRateIn } = require('./useRateIn');
+const { useRateOut } = require('./useRateOut');
 
 function handleCopy(text) {
   if (text) {
@@ -50,7 +50,7 @@ function StatusIcon(props) {
   );
 }
 
-export function Ipfs() {
+function Ipfs() {
   const { data: isIpfsInstalled } = useIsIpfsInstalled();
   const { data: isIpfsRunning } = useIsIpfsRunning();
   const { data: isFollowerInstalled } = useIsFollowerInstalled();
@@ -240,3 +240,5 @@ export function Ipfs() {
     </Box>
   );
 }
+
+module.exports = { Ipfs };

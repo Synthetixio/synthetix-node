@@ -1,9 +1,9 @@
-import { useQuery } from '@tanstack/react-query';
-import { useIsIpfsRunning } from './useIsIpfsRunning';
+const { useQuery } = require('@tanstack/react-query');
+const { useIsIpfsRunning } = require('./useIsIpfsRunning');
 
 const { ipcRenderer } = window?.electron || {};
 
-export function usePeerId() {
+function usePeerId() {
   const { data: isRunning } = useIsIpfsRunning();
   return useQuery({
     queryKey: ['ipfs', 'id'],
@@ -19,3 +19,5 @@ export function usePeerId() {
     enabled: Boolean(ipcRenderer && isRunning),
   });
 }
+
+module.exports = { usePeerId };
