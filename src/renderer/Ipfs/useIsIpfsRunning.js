@@ -1,9 +1,9 @@
-import { useQuery } from '@tanstack/react-query';
-import { useIsIpfsInstalled } from './useIsIpfsInstalled';
+const { useQuery } = require('@tanstack/react-query');
+const { useIsIpfsInstalled } = require('./useIsIpfsInstalled');
 
 const { ipcRenderer } = window?.electron || {};
 
-export function useIsIpfsRunning() {
+function useIsIpfsRunning() {
   const { data: isInstalled } = useIsIpfsInstalled();
   return useQuery({
     queryKey: ['ipfs', 'isRunning'],
@@ -13,3 +13,5 @@ export function useIsIpfsRunning() {
     enabled: Boolean(ipcRenderer && isInstalled),
   });
 }
+
+module.exports = { useIsIpfsRunning };

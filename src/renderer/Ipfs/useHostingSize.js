@@ -1,7 +1,7 @@
-import React from 'react';
-import { useRepoStat } from './useRepoStat';
+const React = require('react');
+const { useRepoStat } = require('./useRepoStat');
 
-export function useHostingSize() {
+function useHostingSize() {
   const { data: repoStat } = useRepoStat();
   return React.useMemo(() => {
     if (!repoStat) {
@@ -11,3 +11,5 @@ export function useHostingSize() {
     return numMegabytes;
   }, [repoStat]);
 }
+
+module.exports = { useHostingSize };

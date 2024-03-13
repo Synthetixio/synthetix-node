@@ -1,9 +1,9 @@
-import { useQuery } from '@tanstack/react-query';
-import { useIsIpfsRunning } from './useIsIpfsRunning';
+const { useQuery } = require('@tanstack/react-query');
+const { useIsIpfsRunning } = require('./useIsIpfsRunning');
 
 const { ipcRenderer } = window?.electron || {};
 
-export function usePeers() {
+function usePeers() {
   const { data: isRunning } = useIsIpfsRunning();
   return useQuery({
     queryKey: ['ipfs', 'peers'],
@@ -21,3 +21,5 @@ export function usePeers() {
     refetchOnWindowFocus: true,
   });
 }
+
+module.exports = { usePeers };

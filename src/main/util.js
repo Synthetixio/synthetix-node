@@ -1,4 +1,4 @@
-export function getPlatformDetails() {
+function getPlatformDetails() {
   const targetArch = (() => {
     switch (process.arch) {
       case 'x64':
@@ -35,3 +35,5 @@ export function getPlatformDetails() {
   })();
   return { osPlatform, fileExt, targetArch };
 }
+
+module.exports = { getPlatformDetails };

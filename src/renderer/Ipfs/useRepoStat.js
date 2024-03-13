@@ -1,9 +1,9 @@
-import { useQuery } from '@tanstack/react-query';
-import { useIsIpfsRunning } from './useIsIpfsRunning';
+const { useQuery } = require('@tanstack/react-query');
+const { useIsIpfsRunning } = require('./useIsIpfsRunning');
 
 const { ipcRenderer } = window?.electron || {};
 
-export function useRepoStat() {
+function useRepoStat() {
   const { data: isRunning } = useIsIpfsRunning();
   return useQuery({
     queryKey: ['ipfs', 'repo stat'],
@@ -19,3 +19,5 @@ export function useRepoStat() {
     enabled: Boolean(ipcRenderer && isRunning),
   });
 }
+
+module.exports = { useRepoStat };

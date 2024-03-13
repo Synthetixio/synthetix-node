@@ -1,9 +1,9 @@
-import { useQuery } from '@tanstack/react-query';
-import { useIsFollowerInstalled } from './useIsFollowerInstalled';
+const { useQuery } = require('@tanstack/react-query');
+const { useIsFollowerInstalled } = require('./useIsFollowerInstalled');
 
 const { ipcRenderer } = window?.electron || {};
 
-export function useIsFollowerRunning() {
+function useIsFollowerRunning() {
   const { data: isInstalled } = useIsFollowerInstalled();
   return useQuery({
     queryKey: ['follower', 'isRunning'],
@@ -13,3 +13,5 @@ export function useIsFollowerRunning() {
     enabled: Boolean(ipcRenderer && isInstalled),
   });
 }
+
+module.exports = { useIsFollowerRunning };

@@ -1,7 +1,7 @@
-import { ExternalLinkIcon } from '@chakra-ui/icons';
-import { Box, Button, Flex, Heading, Image, Link, Skeleton, Spinner } from '@chakra-ui/react';
-import React from 'react';
-import { useDapps } from './useDapps';
+const { ExternalLinkIcon } = require('@chakra-ui/icons');
+const { Box, Button, Flex, Heading, Image, Link, Skeleton, Spinner } = require('@chakra-ui/react');
+const React = require('react');
+const { useDapps } = require('./useDapps');
 
 function DappButton({ dapp }) {
   return (
@@ -24,7 +24,7 @@ function DappButton({ dapp }) {
   );
 }
 
-export function Dapps() {
+function Dapps() {
   const { data: dapps } = useDapps();
   return (
     <Box p="4">
@@ -41,3 +41,8 @@ export function Dapps() {
     </Box>
   );
 }
+
+module.exports = {
+  DappButton,
+  Dapps,
+};

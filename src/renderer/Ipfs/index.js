@@ -1,1 +1,1 @@
-export * from './Ipfs';
+module.exports = require('./Ipfs');

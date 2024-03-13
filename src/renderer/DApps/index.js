@@ -1,1 +1,1 @@
-export * from './Dapps';
+module.exports = require('./Dapps');
