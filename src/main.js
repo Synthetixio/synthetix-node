@@ -368,7 +368,7 @@ http
             'Content-Length': response.headers.get('content-length'),
             'Content-Type': response.headers.get('content-type'),
           });
-          res.end(await response.buffer());
+          res.end(Buffer.from(await response.arrayBuffer()));
           return;
         }
       } catch (e) {
