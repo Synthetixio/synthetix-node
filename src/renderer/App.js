@@ -1,9 +1,9 @@
-import { Box, Text } from '@chakra-ui/react';
-import React from 'react';
-import { Dapps } from './DApps';
-import { Ipfs } from './Ipfs';
+const { Box, Text } = require('@chakra-ui/react');
+const React = require('react');
+const { Dapps } = require('./DApps');
+const { Ipfs } = require('./Ipfs');
 
-export default function App() {
+function App() {
   return (
     <Box display="flex" flexDirection="column" minHeight="100vh">
       <Box px="5" flex="1" overflowY="auto">
@@ -21,3 +21,5 @@ export default function App() {
     </Box>
   );
 }
+
+module.exports = App;

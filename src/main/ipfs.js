@@ -1,16 +1,16 @@
-import { exec, execSync, spawn } from 'node:child_process';
-import { promises as fs, createReadStream, createWriteStream, rmSync } from 'node:fs';
-import http from 'node:http';
-import https from 'node:https';
-import os from 'node:os';
-import path from 'node:path';
-import { pipeline } from 'node:stream/promises';
-import zlib from 'node:zlib';
-import AdmZip from 'adm-zip';
-import logger from 'electron-log';
-import tar from 'tar';
-import { ROOT } from './settings';
-import { getPlatformDetails } from './util';
+const { exec, spawn } = require('node:child_process');
+const { promises: fs, createReadStream, createWriteStream, rmSync } = require('node:fs');
+const http = require('node:http');
+const https = require('node:https');
+const os = require('node:os');
+const path = require('node:path');
+const { pipeline } = require('node:stream/promises');
+const zlib = require('node:zlib');
+const AdmZip = require('adm-zip');
+const logger = require('electron-log');
+const tar = require('tar');
+const { ROOT } = require('./settings');
+const { getPlatformDetails } = require('./util');
 
 const HOME = os.homedir();
 // Change if we ever want IPFS to store its data in non-standart path
@@ -21,7 +21,7 @@ const IPFS_CLI = path.join(
 );
 
 const BASE_URL = new URL('http://127.0.0.1:5001/api/v0/');
-export async function rpcRequest(relativePath, args = [], flags = {}) {
+async function rpcRequest(relativePath, args = [], flags = {}) {
   const query = new URLSearchParams(flags);
   for (const arg of args) {
     query.append('arg', arg);
@@ -39,12 +39,12 @@ export async function rpcRequest(relativePath, args = [], flags = {}) {
   throw new Error(`RPC HTTP Error: ${res.status} on path: ${relativePath}`);
 }
 
-export function ipfsTeardown() {
+function ipfsTeardown() {
   rmSync(path.join(ROOT, 'ipfs.pid'), { force: true });
   rmSync(path.join(IPFS_PATH, 'repo.lock'), { force: true });
 }
 
-export async function ipfsIsInstalled() {
+async function ipfsIsInstalled() {
   try {
     await fs.access(IPFS_CLI, fs.constants.F_OK);
     return true;
@@ -53,7 +53,7 @@ export async function ipfsIsInstalled() {
   }
 }
 
-export async function ipfsDaemon() {
+async function ipfsDaemon() {
   const isInstalled = await ipfsIsInstalled();
   if (!isInstalled) {
     return;
@@ -71,7 +71,7 @@ export async function ipfsDaemon() {
   }
 }
 
-export async function ipfs(arg) {
+async function ipfs(arg) {
   return new Promise((resolve, reject) => {
     exec(
       `${IPFS_CLI} ${arg}`,
@@ -88,7 +88,7 @@ export async function ipfs(arg) {
   });
 }
 
-export async function getLatestVersion() {
+async function getLatestVersion() {
   return new Promise((resolve, reject) => {
     https
       .get('https://dist.ipfs.tech/go-ipfs/versions', (res) => {
@@ -106,7 +106,7 @@ export async function getLatestVersion() {
   });
 }
 
-export async function getInstalledVersion() {
+async function getInstalledVersion() {
   try {
     const result = await rpcRequest('version');
     return result.Version;
@@ -115,7 +115,7 @@ export async function getInstalledVersion() {
   }
 }
 
-export async function downloadIpfs(_e, { log = logger.log } = {}) {
+async function downloadIpfs(_e, { log = logger.log } = {}) {
   const { osPlatform, fileExt, targetArch } = getPlatformDetails();
 
   log('Checking for existing ipfs installation...');
@@ -168,7 +168,7 @@ export async function downloadIpfs(_e, { log = logger.log } = {}) {
   return isInstalled;
 }
 
-export async function configureIpfs({ log = logger.log } = {}) {
+async function configureIpfs({ log = logger.log } = {}) {
   try {
     log(await ipfs('init'));
     log(await ipfs('config --json API.HTTPHeaders.Access-Control-Allow-Origin \'["*"]\''));
@@ -183,7 +183,7 @@ export async function configureIpfs({ log = logger.log } = {}) {
   }
 }
 
-export async function ipfsIsRunning() {
+async function ipfsIsRunning() {
   return new Promise((resolve, _reject) => {
     http
       .get('http://127.0.0.1:5001', (res) => {
@@ -199,10 +199,24 @@ export async function ipfsIsRunning() {
   });
 }
 
-export async function waitForIpfs() {
+async function waitForIpfs() {
   let isRunning = await ipfsIsRunning();
   while (!isRunning) {
     await new Promise((resolve) => setTimeout(resolve, 1000));
     isRunning = await ipfsIsRunning();
   }
 }
+
+module.exports = {
+  rpcRequest,
+  ipfsTeardown,
+  ipfsIsInstalled,
+  ipfsDaemon,
+  ipfs,
+  getLatestVersion,
+  getInstalledVersion,
+  downloadIpfs,
+  configureIpfs,
+  ipfsIsRunning,
+  waitForIpfs,
+};

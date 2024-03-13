@@ -1,30 +1,12 @@
-import * as contentHash from '@ensdomains/content-hash';
-import logger from 'electron-log';
-import { http, createPublicClient } from 'viem';
-import { mainnet } from 'viem/chains';
-import { namehash, normalize } from 'viem/ens';
-import { rpcRequest } from './ipfs';
+const logger = require('electron-log');
+const { EnsResolver, getDefaultProvider } = require('ethers');
+const { rpcRequest } = require('./ipfs');
 
-export const DAPPS = [];
+const DAPPS = [];
 
-const client = createPublicClient({
-  chain: mainnet,
-  transport: http(),
-});
+const provider = getDefaultProvider();
 
-const resolverAbi = [
-  {
-    constant: true,
-    inputs: [{ internalType: 'bytes32', name: 'node', type: 'bytes32' }],
-    name: 'contenthash',
-    outputs: [{ internalType: 'bytes', name: '', type: 'bytes' }],
-    payable: false,
-    stateMutability: 'view',
-    type: 'function',
-  },
-];
-
-export async function resolveEns(dapp) {
+async function resolveEns(dapp) {
   if (dapp.ipns) {
     return {
       codec: 'ipns-ns',
@@ -34,22 +16,23 @@ export async function resolveEns(dapp) {
   if (!dapp.ens) {
     throw new Error('Neither ipns nor ens was set, cannot resolve');
   }
-  const name = normalize(dapp.ens);
-  const resolverAddress = await client.getEnsResolver({ name });
-  const hash = await client.readContract({
-    address: resolverAddress,
-    abi: resolverAbi,
-    functionName: 'contenthash',
-    args: [namehash(name)],
-  });
-  const codec = contentHash.getCodec(hash);
-  return {
-    codec,
-    hash: contentHash.decode(hash),
-  };
+
+  const ensResolver = await EnsResolver.fromName(provider, dapp.ens);
+
+  if (!ensResolver) {
+    throw new Error(`No resolver found for the ENS name: ${dapp.ens}`);
+  }
+  const contentHash = await ensResolver.getContentHash();
+
+  if (!contentHash) {
+    throw new Error(`No content hash found for the ENS name: ${dapp.ens}`);
+  }
+  const [codec, hash] = contentHash.split('://');
+
+  return { codec, hash };
 }
 
-export async function resolveQm(ipns) {
+async function resolveQm(ipns) {
   try {
     const ipfsPath = await rpcRequest('name/resolve', [ipns]);
     const qm = ipfsPath.Path.slice(6); // remove /ipfs/
@@ -60,7 +43,7 @@ export async function resolveQm(ipns) {
   }
 }
 
-export async function convertCid(qm) {
+async function convertCid(qm) {
   try {
     const res = await rpcRequest('cid/base32', [qm]);
     return res.CidStr;
@@ -70,7 +53,7 @@ export async function convertCid(qm) {
   }
 }
 
-export async function isPinned(qm) {
+async function isPinned(qm) {
   try {
     const result = await rpcRequest('pin/ls', [qm], { type: 'recursive' });
     return result.Keys[qm];
@@ -81,7 +64,7 @@ export async function isPinned(qm) {
 
 const activePinningRequests = new Set();
 
-export async function resolveDapp(dapp) {
+async function resolveDapp(dapp) {
   try {
     const { codec, hash } = await resolveEns(dapp);
     logger.log(dapp.id, 'resolved', codec, hash);
@@ -127,7 +110,7 @@ export async function resolveDapp(dapp) {
   }
 }
 
-export async function cleanupOldDapps() {
+async function cleanupOldDapps() {
   const hashes = DAPPS.map((dapp) => dapp.qm);
   logger.log('Current DAPPs hashes', hashes);
   if (hashes.length < 1 || hashes.some((hash) => !hash)) {
@@ -154,3 +137,13 @@ export async function cleanupOldDapps() {
     // do nothing
   }
 }
+
+module.exports = {
+  DAPPS,
+  resolveEns,
+  resolveQm,
+  convertCid,
+  isPinned,
+  resolveDapp,
+  cleanupOldDapps,
+};

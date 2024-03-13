@@ -1,8 +1,8 @@
-import logger from 'electron-log';
+const logger = require('electron-log');
 
 Object.assign(global, { fetch });
 
-export async function fetchPeers() {
+async function fetchPeers() {
   try {
     const response = await fetch('https://ipfs.synthetix.io/dash/api');
     if (response.ok) {
@@ -15,3 +15,5 @@ export async function fetchPeers() {
     return [];
   }
 }
+
+module.exports = { fetchPeers };
