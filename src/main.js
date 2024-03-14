@@ -66,6 +66,7 @@ function updateContextMenu() {
         ...menu.dapps,
       ])
     );
+    app.dock.setIcon(path.join(__dirname, '../../assets/icon.png'));
   }
 }
 

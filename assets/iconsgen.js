@@ -1,8 +1,8 @@
 const sharp = require('sharp');
-const path = require('path');
-const fs = require('fs');
-const os = require('os');
-const cp = require('child_process');
+const path = require('node:path');
+const fs = require('node:fs');
+const os = require('node:os');
+const cp = require('node:child_process');
 
 async function createResizedImage(inputPath, outputPath, size) {
   await sharp(inputPath)
@@ -43,7 +43,7 @@ async function main(inputFile, outputDir) {
     })
     .greyscale()
     .modulate({ brightness: 2 })
-    .toFile(path.join(outputDir, `tray@3x.png`));
+    .toFile(path.join(outputDir, 'tray@3x.png'));
 
   await icns(inputFile, outputDir);
   await createResizedImage(inputFile, path.join(outputDir, 'icon.ico'), 256);
