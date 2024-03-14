@@ -35,6 +35,9 @@ async function icns(inputFile, outputDir) {
   await fs.promises.rm(iconsetDir, { recursive: true });
 }
 
+// The following suffixes for DPI are also supported by Electron Forge
+const dpiSuffixes = [1, 1.25, 1.33, 1.4, 1.5, 1.8, 2, 2.5, 3, 4, 5];
+
 async function main(inputFile, outputDir) {
   await sharp(inputFile)
     .resize(24 * 3, 24 * 3, {
@@ -49,18 +52,9 @@ async function main(inputFile, outputDir) {
   await createResizedImage(inputFile, path.join(outputDir, 'icon.ico'), 256);
   await createResizedImage(inputFile, path.join(outputDir, 'icon.png'), 256);
 
-  for (const size of [16, 24, 32, 48, 64, 96, 128, 256, 512, 1024]) {
-    await createResizedImage(inputFile, path.join(outputDir, 'icons', `${size}x${size}.png`), size);
-    await createResizedImage(
-      inputFile,
-      path.join(outputDir, 'icons', `${size}x${size}@2x.png`),
-      size * 2
-    );
-    await createResizedImage(
-      inputFile,
-      path.join(outputDir, 'icons', `${size}x${size}@3x.png`),
-      size * 3
-    );
+  for (const dpi of dpiSuffixes) {
+    const size = Math.round(256 * dpi);
+    await createResizedImage(inputFile, path.join(outputDir, 'icons', `icon@${dpi}x.png`), size);
   }
 }
 
