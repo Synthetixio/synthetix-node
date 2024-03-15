@@ -54,7 +54,7 @@ async function main(inputFile, outputDir) {
 
   for (const dpi of dpiSuffixes) {
     const size = Math.round(256 * dpi);
-    await createResizedImage(inputFile, path.join(outputDir, 'icons', `icon@${dpi}x.png`), size);
+    await createResizedImage(inputFile, path.join(outputDir, `icon@${dpi}x.png`), size);
   }
 }
 

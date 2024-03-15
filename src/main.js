@@ -66,7 +66,7 @@ function updateContextMenu() {
         ...menu.dapps,
       ])
     );
-    app.dock.setIcon(path.join(__dirname, '../../assets/icon.png'));
+    app.dock.setIcon(path.join(app.getAppPath(), 'assets/icon.png'));
   }
 }
 
