@@ -85,7 +85,7 @@ function createWindow() {
     width: 600,
     height: 470,
     // frame: false,
-    icon: isDebug ? path.join(__dirname, '../../assets/icon.ico') : undefined,
+    icon: isDebug ? path.join(app.getAppPath(), 'assets/icon.ico') : undefined,
     webPreferences: {
       preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY,
     },
