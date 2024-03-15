@@ -49,7 +49,6 @@ async function main(inputFile, outputDir) {
     .toFile(path.join(outputDir, 'tray@3x.png'));
 
   await icns(inputFile, outputDir);
-  await createResizedImage(inputFile, path.join(outputDir, 'icon.ico'), 256);
   await createResizedImage(inputFile, path.join(outputDir, 'icon.png'), 256);
 
   for (const dpi of dpiSuffixes) {
