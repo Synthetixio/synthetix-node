@@ -66,7 +66,6 @@ function updateContextMenu() {
         ...menu.dapps,
       ])
     );
-    app.dock.setIcon(path.join(app.getAppPath(), 'assets/icon.png'));
   }
 }
 
@@ -83,7 +82,6 @@ function createWindow() {
     width: 600,
     height: 470,
     // frame: false,
-    icon: path.join(__dirname, '../../assets/icon.ico'),
     webPreferences: {
       preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY,
     },
