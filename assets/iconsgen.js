@@ -1,8 +1,8 @@
 const sharp = require('sharp');
-const path = require('path');
-const fs = require('fs');
-const os = require('os');
-const cp = require('child_process');
+const path = require('node:path');
+const fs = require('node:fs');
+const os = require('node:os');
+const cp = require('node:child_process');
 
 async function createResizedImage(inputPath, outputPath, size) {
   await sharp(inputPath)
@@ -35,6 +35,9 @@ async function icns(inputFile, outputDir) {
   await fs.promises.rm(iconsetDir, { recursive: true });
 }
 
+// The following suffixes for DPI are also supported by Electron Forge
+const dpiSuffixes = [1, 1.25, 1.33, 1.4, 1.5, 1.8, 2, 2.5, 3, 4, 5];
+
 async function main(inputFile, outputDir) {
   await sharp(inputFile)
     .resize(24 * 3, 24 * 3, {
@@ -43,24 +46,14 @@ async function main(inputFile, outputDir) {
     })
     .greyscale()
     .modulate({ brightness: 2 })
-    .toFile(path.join(outputDir, `tray@3x.png`));
+    .toFile(path.join(outputDir, 'tray@3x.png'));
 
   await icns(inputFile, outputDir);
-  await createResizedImage(inputFile, path.join(outputDir, 'icon.ico'), 256);
   await createResizedImage(inputFile, path.join(outputDir, 'icon.png'), 256);
 
-  for (const size of [16, 24, 32, 48, 64, 96, 128, 256, 512, 1024]) {
-    await createResizedImage(inputFile, path.join(outputDir, 'icons', `${size}x${size}.png`), size);
-    await createResizedImage(
-      inputFile,
-      path.join(outputDir, 'icons', `${size}x${size}@2x.png`),
-      size * 2
-    );
-    await createResizedImage(
-      inputFile,
-      path.join(outputDir, 'icons', `${size}x${size}@3x.png`),
-      size * 3
-    );
+  for (const dpi of dpiSuffixes) {
+    const size = Math.round(256 * dpi);
+    await createResizedImage(inputFile, path.join(outputDir, `icon@${dpi}x.png`), size);
   }
 }
 
