@@ -8,7 +8,17 @@ const { useSubmitApplicationMutation } = require('./useSubmitApplicationMutation
 const { useWithdrawApplicationMutation } = require('./useWithdrawApplicationMutation');
 const ethers = require('ethers');
 const { getApiUrl, restoreToken } = require('./utils');
-const { Skeleton, Button, Box, Input, Stack, Heading, VStack, Text } = require('@chakra-ui/react');
+const {
+  FormControl,
+  FormErrorMessage,
+  Skeleton,
+  Button,
+  Box,
+  Input,
+  Stack,
+  Heading,
+  VStack,
+} = require('@chakra-ui/react');
 const { WalletsList } = require('./WalletsList');
 
 function AccessControl() {
@@ -152,19 +162,21 @@ function AccessControl() {
             <Heading size="sm" mb={2}>
               Approve Wallet
             </Heading>
-            <Input
-              type="text"
-              bg="gray.600"
-              color="whiteAlpha.900"
-              _placeholder={{ color: 'gray.400' }}
-              placeholder="Enter wallet address"
-              value={userApproveWallet}
-              onChange={(e) => {
-                setUserApproveWalletError(false);
-                setUserApproveWallet(e.target.value);
-              }}
-              isInvalid={userApproveWalletError}
-            />
+            <FormControl isInvalid={userApproveWalletError}>
+              <Input
+                type="text"
+                bg="gray.600"
+                color="whiteAlpha.900"
+                _placeholder={{ color: 'gray.400' }}
+                placeholder="Enter wallet address"
+                value={userApproveWallet}
+                onChange={(e) => {
+                  setUserApproveWalletError(false);
+                  setUserApproveWallet(e.target.value);
+                }}
+              />
+              <FormErrorMessage>This address is invalid</FormErrorMessage>
+            </FormControl>
             <Button
               type="submit"
               colorScheme="green"
@@ -194,19 +206,21 @@ function AccessControl() {
             <Heading size="sm" mb={2}>
               Reject Wallet
             </Heading>
-            <Input
-              type="text"
-              placeholder="Enter wallet address"
-              bg="gray.600"
-              color="whiteAlpha.900"
-              _placeholder={{ color: 'gray.400' }}
-              value={userRejectWallet}
-              onChange={(e) => {
-                setUserRevokeWalletError(false);
-                setUserRejectWallet(e.target.value);
-              }}
-              isInvalid={userRevokeWalletError}
-            />
+            <FormControl isInvalid={userRevokeWalletError}>
+              <Input
+                type="text"
+                placeholder="Enter wallet address"
+                bg="gray.600"
+                color="whiteAlpha.900"
+                _placeholder={{ color: 'gray.400' }}
+                value={userRejectWallet}
+                onChange={(e) => {
+                  setUserRevokeWalletError(false);
+                  setUserRejectWallet(e.target.value);
+                }}
+              />
+              <FormErrorMessage>This address is invalid</FormErrorMessage>
+            </FormControl>
             <Button
               type="submit"
               colorScheme="red"
