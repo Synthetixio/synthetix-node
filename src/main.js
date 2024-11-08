@@ -210,7 +210,9 @@ app.once('ready', async () => {
     callback({
       responseHeaders: {
         ...details.responseHeaders,
-        'Content-Security-Policy': "connect-src 'self'",
+        'Content-Security-Policy': [
+          "connect-src 'self' http://45.146.7.38:3005 wss://relay.walletconnect.org https://pulse.walletconnect.org https://api.web3modal.org https://rpc.walletconnect.org https://sepolia.optimism.io",
+        ],
       },
     });
   });
@@ -342,6 +344,7 @@ async function updateConfig() {
 }
 
 let dappsUpdaterTimer = null;
+
 async function debouncedDappsUpdater() {
   if (dappsUpdaterTimer) {
     clearTimeout(dappsUpdaterTimer);
@@ -355,6 +358,7 @@ async function debouncedDappsUpdater() {
   // On initial load keep updater interval short and extend to 10m when dapps are already resolved
   dappsUpdaterTimer = setTimeout(debouncedDappsUpdater, DAPPS.length > 0 ? 600_000 : 10_000);
 }
+
 waitForIpfs().then(debouncedDappsUpdater).catch(logger.error);
 
 ipcMain.handle('peers', async () => fetchPeers());
