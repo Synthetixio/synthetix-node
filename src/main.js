@@ -211,7 +211,7 @@ app.once('ready', async () => {
       responseHeaders: {
         ...details.responseHeaders,
         'Content-Security-Policy': [
-          "connect-src 'self' http://45.146.7.38:3005 wss://relay.walletconnect.org https://pulse.walletconnect.org https://api.web3modal.org https://rpc.walletconnect.org https://sepolia.optimism.io",
+          "connect-src 'self' http://45.146.7.38:3005 http://localhost:3005 wss://relay.walletconnect.org https://pulse.walletconnect.org https://api.web3modal.org https://rpc.walletconnect.org https://sepolia.optimism.io",
         ],
       },
     });

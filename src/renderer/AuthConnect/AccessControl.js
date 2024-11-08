@@ -51,6 +51,7 @@ function AccessControl() {
         onSuccess: () => {
           queryClient.invalidateQueries({ queryKey: [chainId, 'approved-wallets'] });
           queryClient.invalidateQueries({ queryKey: [chainId, 'submitted-wallets'] });
+          setUserApproveWallet('');
         },
       });
     } else {
@@ -62,7 +63,13 @@ function AccessControl() {
     e.preventDefault();
 
     if (ethers.isAddress(userRejectWallet)) {
-      rejectApplicationMutation.mutate(userRejectWallet);
+      rejectApplicationMutation.mutate(userRejectWallet, {
+        onSuccess: () => {
+          queryClient.invalidateQueries({ queryKey: [chainId, 'approved-wallets'] });
+          queryClient.invalidateQueries({ queryKey: [chainId, 'submitted-wallets'] });
+          setUserRejectWallet('');
+        },
+      });
     } else {
       setUserRevokeWalletError(true);
     }
@@ -82,7 +89,7 @@ function AccessControl() {
     },
     enabled: permissions.data.isAdmin === true,
     refetchInterval: false,
-    select: (data) => data.data.wallets,
+    select: (data) => data.data?.wallets,
   });
 
   const submittedWallets = useQuery({
@@ -99,7 +106,7 @@ function AccessControl() {
     },
     enabled: permissions.data.isAdmin === true,
     refetchInterval: false,
-    select: (data) => data.data.wallets,
+    select: (data) => data.data?.wallets,
   });
 
   let content;

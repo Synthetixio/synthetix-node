@@ -1,16 +1,16 @@
-const {Box, Text, Button} = require('@chakra-ui/react');
+const { Box, Text, Button } = require('@chakra-ui/react');
 const React = require('react');
-const {Dapps} = require('./DApps');
-const {Ipfs} = require('./Ipfs');
-const {AuthConnect} = require('./AuthConnect');
-const {createAppKit} = require('@reown/appkit/react');
-const {optimismSepolia, mainnet} = require('@reown/appkit/networks');
+const { Dapps } = require('./DApps');
+const { Ipfs } = require('./Ipfs');
+const { AuthConnect } = require('./AuthConnect');
+const { createAppKit } = require('@reown/appkit/react');
+const { optimismSepolia, mainnet } = require('@reown/appkit/networks');
 
 createAppKit({
   networks: [optimismSepolia, mainnet],
   metadata: {
     name: 'synthetix-node-test-1',
-    description: 'AppKit Example',
+    description: 'Synthetix Node',
     url: 'https://reown.com/appkit', // origin must match your domain & subdomain
   },
   projectId: 'projectId',
@@ -29,14 +29,14 @@ function App() {
       </Button>
 
       {isAuthPage ? (
-        <AuthConnect/>
+        <AuthConnect />
       ) : (
         <>
           <Box px="5" flex="1" overflowY="auto">
-            <Ipfs/>
+            <Ipfs />
           </Box>
           <Box p="1">
-            <Dapps/>
+            <Dapps />
           </Box>
         </>
       )}
