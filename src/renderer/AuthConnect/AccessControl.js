@@ -21,6 +21,17 @@ const {
 } = require('@chakra-ui/react');
 const { WalletsList } = require('./WalletsList');
 
+const fetchData = async (endpoint, walletAddress) => {
+  const response = await fetch(`${getApiUrl()}${endpoint}`, {
+    method: 'GET',
+    headers: { Authorization: `Bearer ${restoreToken({ walletAddress })}` },
+  });
+  if (!response.ok) {
+    throw new Error('Network response was not ok');
+  }
+  return response.json();
+};
+
 function AccessControl() {
   const { chainId } = useAppKitNetwork();
   const { address: walletAddress } = useAppKitAccount();
@@ -77,16 +88,7 @@ function AccessControl() {
 
   const approvedWallets = useQuery({
     queryKey: [chainId, 'approved-wallets'],
-    queryFn: async () => {
-      const response = await fetch(`${getApiUrl()}approved-wallets`, {
-        method: 'GET',
-        headers: { Authorization: `Bearer ${restoreToken({ walletAddress })}` },
-      });
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-      return response.json();
-    },
+    queryFn: () => fetchData('approved-wallets', walletAddress),
     enabled: permissions.data.isAdmin === true,
     refetchInterval: false,
     select: (data) => data.data?.wallets,
@@ -94,16 +96,7 @@ function AccessControl() {
 
   const submittedWallets = useQuery({
     queryKey: [chainId, 'submitted-wallets'],
-    queryFn: async () => {
-      const response = await fetch(`${getApiUrl()}submitted-wallets`, {
-        method: 'GET',
-        headers: { Authorization: `Bearer ${restoreToken({ walletAddress })}` },
-      });
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-      return response.json();
-    },
+    queryFn: () => fetchData('submitted-wallets', walletAddress),
     enabled: permissions.data.isAdmin === true,
     refetchInterval: false,
     select: (data) => data.data?.wallets,
