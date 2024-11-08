@@ -1,10 +1,10 @@
 const fs = require('node:fs');
 const http = require('node:http');
 const path = require('node:path');
-const {BrowserWindow, Menu, Tray, app, ipcMain, session, shell} = require('electron');
+const { BrowserWindow, Menu, Tray, app, ipcMain, session, shell } = require('electron');
 const logger = require('electron-log');
-const {SYNTHETIX_NODE_APP_CONFIG} = require('./const');
-const {DAPPS, resolveDapp} = require('./main/dapps');
+const { SYNTHETIX_NODE_APP_CONFIG } = require('./const');
+const { DAPPS, resolveDapp } = require('./main/dapps');
 const {
   configureFollower,
   downloadFollower,
@@ -24,16 +24,16 @@ const {
   rpcRequest,
   waitForIpfs,
 } = require('./main/ipfs');
-const {fetchPeers} = require('./main/peers');
+const { fetchPeers } = require('./main/peers');
 const settings = require('./main/settings');
-const {ROOT} = require('./main/settings');
+const { ROOT } = require('./main/settings');
 
 logger.transports.file.level = 'info';
 
 const isDebug = process.env.NODE_ENV === 'development' || process.env.DEBUG_PROD === 'true';
 
-fs.rmSync(path.join(ROOT, 'ipfs.pid'), {force: true});
-fs.rmSync(path.join(ROOT, 'ipfs-cluster-follow.pid'), {force: true});
+fs.rmSync(path.join(ROOT, 'ipfs.pid'), { force: true });
+fs.rmSync(path.join(ROOT, 'ipfs-cluster-follow.pid'), { force: true });
 
 let tray = null;
 let mainWindow = null;
@@ -47,9 +47,9 @@ function updateContextMenu() {
         menu.autoStart,
         menu.devTools,
         menu.dock,
-        {type: 'separator'},
+        { type: 'separator' },
         ...menu.dapps,
-        {type: 'separator'},
+        { type: 'separator' },
         menu.quit,
       ])
     );
@@ -62,7 +62,7 @@ function updateContextMenu() {
         menu.autoStart,
         menu.devTools,
         menu.tray,
-        {type: 'separator'},
+        { type: 'separator' },
         ...menu.dapps,
       ])
     );
@@ -92,7 +92,7 @@ function createWindow() {
   });
 
   if (isDebug) {
-    mainWindow.webContents.openDevTools({mode: 'detach'});
+    mainWindow.webContents.openDevTools({ mode: 'detach' });
   }
 
   mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
@@ -103,7 +103,7 @@ function createWindow() {
   // Open urls in the user's browser
   mainWindow.webContents.setWindowOpenHandler((edata) => {
     shell.openExternal(edata.url);
-    return {action: 'deny'};
+    return { action: 'deny' };
   });
 
   mainWindow.webContents.on('devtools-opened', updateContextMenu);
@@ -152,7 +152,7 @@ function generateMenuItems() {
           if (mainWindow.webContents.isDevToolsOpened()) {
             mainWindow.webContents.closeDevTools();
           } else {
-            mainWindow.webContents.openDevTools({mode: 'detach'});
+            mainWindow.webContents.openDevTools({ mode: 'detach' });
           }
         }
         updateContextMenu();
