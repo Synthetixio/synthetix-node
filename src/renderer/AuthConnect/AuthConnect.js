@@ -6,9 +6,21 @@ const {
   useAppKit,
   useAppKitProvider,
 } = require('@reown/appkit/react');
-const { Spinner, Text, Box, Flex, Button, Stack, useColorModeValue } = require('@chakra-ui/react');
+const {
+  Spinner,
+  Text,
+  Box,
+  Flex,
+  Button,
+  Stack,
+  useColorModeValue,
+  Alert,
+  AlertIcon,
+  AlertTitle,
+  AlertDescription,
+} = require('@chakra-ui/react');
 const { usePermissions } = require('./usePermissions');
-const { getApiUrl, saveToken } = require('./utils');
+const { getApiUrl, saveToken, removeToken, restoreToken } = require('./utils');
 const { BrowserProvider } = require('ethers');
 
 // TODO make as env
@@ -36,18 +48,28 @@ const makeUnauthenticatedRequest = async (endpoint, data) => {
 
 function AuthConnect() {
   const [token, setToken] = React.useState();
+  const [isSigning, setIsSigning] = React.useState(false);
   const { address: walletAddress, isConnected } = useAppKitAccount();
   const { disconnect } = useDisconnect();
   const { open } = useAppKit();
   const { walletProvider } = useAppKitProvider('eip155');
   const permissions = usePermissions();
 
+  React.useEffect(() => {
+    const restoredToken = restoreToken({ walletAddress });
+    if (restoredToken) {
+      setToken(restoredToken);
+    }
+  }, [walletAddress]);
+
   const signupMutation = useMutation({
     mutationFn: (data) => makeUnauthenticatedRequest('signup', data),
     onSuccess: async ({ nonce }) => {
       const provider = new BrowserProvider(walletProvider);
       const signer = await provider.getSigner();
+      setIsSigning(true);
       const signedMessage = await signer?.signMessage(nonce);
+      setIsSigning(false);
       if (signedMessage) {
         verificationMutation.mutate({ nonce, signedMessage });
       }
@@ -61,6 +83,11 @@ function AuthConnect() {
       setToken(token);
     },
   });
+
+  const logout = () => {
+    removeToken(walletAddress);
+    setToken(null);
+  };
 
   return (
     <div>
@@ -77,9 +104,7 @@ function AuthConnect() {
         >
           <Stack flex={{ base: 1, md: 0 }} direction={'row'} spacing={6}>
             <Button onClick={() => open({ view: 'Networks' })}>Open Network Modal</Button>
-            {isConnected && token ? (
-              <Button onClick={() => console.log('Log Out')}>Log Out</Button>
-            ) : null}
+            {isConnected && token ? <Button onClick={logout}>Log Out</Button> : null}
             {isConnected && !token ? (
               <>
                 <Button onClick={() => signupMutation.mutate({ walletAddress })}> Log In</Button>
@@ -92,6 +117,14 @@ function AuthConnect() {
           </Stack>
         </Flex>
       </Box>
+
+      {isSigning ? (
+        <Alert status="info">
+          <AlertIcon />
+          <AlertTitle>Confirm the action!</AlertTitle>
+          <AlertDescription>Please confirm signing the message in your wallet.</AlertDescription>
+        </Alert>
+      ) : null}
 
       {permissions.isFetching ? (
         <Spinner />
