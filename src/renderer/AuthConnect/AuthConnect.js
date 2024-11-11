@@ -93,44 +93,47 @@ function AuthConnect() {
 
   if (isConnected && isNetworkMismatch) {
     return (
-      <Box minW="600px" mx="auto" mt="4">
-        <Box borderWidth="1px" borderRadius="lg" overflow="hidden" p="6" boxShadow="lg">
-          <Flex
-            minH="60px"
-            py={2}
-            px={4}
-            borderBottomWidth="1px"
-            borderColor={useColorModeValue('gray.200', 'gray.700')}
-            align="center"
-            justify="flex-end"
-          >
+      <>
+        <Box
+          as="header"
+          width="100%"
+          bg={useColorModeValue('gray.100', 'gray.900')}
+          p={4}
+          boxShadow="sm"
+        >
+          <Flex maxW="1200px" mx="auto" align="center" justify="space-between">
+            <Box>Synthetix Node</Box>
             <Button colorScheme="teal" variant="outline" onClick={disconnect}>
               Disconnect
             </Button>
           </Flex>
         </Box>
-        <Alert status="warning" mt="4" borderRadius="md">
-          <AlertIcon />
-          <AlertTitle>Network mismatch detected.</AlertTitle>
-          <AlertDescription>Please switch to OP Sepolia.</AlertDescription>
-        </Alert>
-      </Box>
+
+        <Box minW="600px" mx="auto" mt="4">
+          <Box borderWidth="1px" borderRadius="lg" overflow="hidden" p="6" boxShadow="lg">
+            <Alert status="warning" mt="4" borderRadius="md">
+              <AlertIcon />
+              <AlertTitle>Network mismatch detected.</AlertTitle>
+              <AlertDescription>Please switch to OP Sepolia.</AlertDescription>
+            </Alert>
+          </Box>
+        </Box>
+      </>
     );
   }
 
   return (
-    <Box minW="600px" mx="auto" mt="4">
-      <Box borderWidth="1px" borderRadius="lg" overflow="hidden" p="6" boxShadow="lg">
-        <Flex
-          minH="60px"
-          py={2}
-          px={4}
-          borderBottomWidth="1px"
-          borderColor={useColorModeValue('gray.200', 'gray.700')}
-          align="center"
-          justify="flex-end"
-        >
-          <Stack direction="row" spacing={4}>
+    <>
+      <Box
+        as="header"
+        width="100%"
+        bg={useColorModeValue('gray.100', 'gray.900')}
+        p={4}
+        boxShadow="sm"
+      >
+        <Flex maxW="1200px" mx="auto" align="center" justify="space-between">
+          <Box>Synthetix Node</Box>
+          <Stack direction="row" spacing={4} align="center">
             {isConnected && token ? (
               <Button colorScheme="teal" variant="outline" onClick={logout}>
                 Log Out
@@ -160,42 +163,51 @@ function AuthConnect() {
         </Flex>
       </Box>
 
-      {permissions.isFetching ? (
-        <Box mt="4" display="flex" justifyContent="center">
-          <Spinner size="lg" />
+      {isConnected ? (
+        <Box minW="600px" mx="auto" mt="4">
+          <Box borderWidth="1px" borderRadius="lg" overflow="hidden" p="6" boxShadow="lg">
+            {permissions.isFetching ? (
+              <Box mt="4" display="flex" justifyContent="center">
+                <Spinner size="lg" />
+              </Box>
+            ) : null}
+
+            {signupMutation.isPending ? (
+              <Alert status="info" mt="4" borderRadius="md">
+                <AlertIcon />
+                <AlertTitle>Confirm the action!</AlertTitle>
+                <AlertDescription>
+                  Please confirm signing the message in your wallet.
+                </AlertDescription>
+              </Alert>
+            ) : null}
+
+            {permissions.data.isGranted ? (
+              <Alert status="success" mt="4" borderRadius="md">
+                <AlertIcon />
+                <AlertDescription>Access granted</AlertDescription>
+              </Alert>
+            ) : null}
+
+            {!permissions.data.isGranted && token ? (
+              <Box mt="4" p="4" borderWidth="1px" borderRadius="md" boxShadow="sm">
+                <AccessControl />
+              </Box>
+            ) : null}
+
+            {!permissions.data.isGranted && !token ? (
+              <Alert status="info" mt="4" borderRadius="md">
+                <AlertIcon />
+                <AlertDescription>
+                  Please <strong>login</strong> and <strong>request</strong> access permissions to
+                  use
+                </AlertDescription>
+              </Alert>
+            ) : null}
+          </Box>
         </Box>
       ) : null}
-
-      {signupMutation.isPending ? (
-        <Alert status="info" mt="4" borderRadius="md">
-          <AlertIcon />
-          <AlertTitle>Confirm the action!</AlertTitle>
-          <AlertDescription>Please confirm signing the message in your wallet.</AlertDescription>
-        </Alert>
-      ) : null}
-
-      {isConnected && permissions.data.isGranted ? (
-        <Alert status="success" mt="4" borderRadius="md">
-          <AlertIcon />
-          <AlertDescription>Access granted</AlertDescription>
-        </Alert>
-      ) : null}
-
-      {isConnected && !permissions.data.isGranted && token ? (
-        <Box mt="4" p="4" borderWidth="1px" borderRadius="md" boxShadow="sm">
-          <AccessControl />
-        </Box>
-      ) : null}
-
-      {isConnected && !permissions.data.isGranted && !token ? (
-        <Alert status="info" mt="4" borderRadius="md">
-          <AlertIcon />
-          <AlertDescription>
-            Please <strong>login</strong> and <strong>request</strong> access permissions to use
-          </AlertDescription>
-        </Alert>
-      ) : null}
-    </Box>
+    </>
   );
 }
 

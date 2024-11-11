@@ -9,7 +9,7 @@ const { optimismSepolia } = require('@reown/appkit/networks');
 createAppKit({
   networks: [optimismSepolia],
   metadata: {
-    name: 'synthetix-node-test-1',
+    name: 'Synthetix Node',
     description: 'Synthetix Node',
     url: 'https://reown.com/appkit', // origin must match your domain & subdomain
   },
@@ -24,7 +24,7 @@ function App() {
 
   return (
     <Box display="flex" flexDirection="column" minHeight="100vh">
-      <Button onClick={() => setIsAuthPage((prev) => !prev)}>
+      <Button colorScheme="teal" variant="outline" onClick={() => setIsAuthPage((prev) => !prev)}>
         {isAuthPage ? 'Go to Main Page' : 'Go to Auth Page'}
       </Button>
 
