@@ -5,6 +5,7 @@ const {
   useDisconnect,
   useAppKit,
   useAppKitProvider,
+  useAppKitNetwork,
 } = require('@reown/appkit/react');
 const {
   Spinner,
@@ -18,6 +19,7 @@ const {
   AlertTitle,
   AlertDescription,
 } = require('@chakra-ui/react');
+const { optimismSepolia } = require('@reown/appkit/networks');
 const { usePermissions } = require('./usePermissions');
 const { AccessControl } = require('./AccessControl');
 const { getApiUrl, saveToken, removeToken, restoreToken } = require('./utils');
@@ -45,10 +47,11 @@ const makeUnauthenticatedRequest = async (endpoint, data) => {
 
 function AuthConnect() {
   const [token, setToken] = React.useState();
-  const [isSigning, setIsSigning] = React.useState(false);
   const { address: walletAddress, isConnected } = useAppKitAccount();
   const { disconnect } = useDisconnect();
   const { open } = useAppKit();
+  const { chainId } = useAppKitNetwork();
+  const [isNetworkMismatch, setIsNetworkMismatch] = React.useState(optimismSepolia.id !== chainId);
   const { walletProvider } = useAppKitProvider('eip155');
   const permissions = usePermissions();
 
@@ -59,14 +62,16 @@ function AuthConnect() {
     }
   }, [walletAddress]);
 
+  React.useEffect(() => {
+    setIsNetworkMismatch(optimismSepolia.id !== chainId);
+  }, [chainId]);
+
   const signupMutation = useMutation({
     mutationFn: (data) => makeUnauthenticatedRequest('signup', data),
     onSuccess: async ({ nonce }) => {
       const provider = new BrowserProvider(walletProvider);
       const signer = await provider.getSigner();
-      setIsSigning(true);
       const signedMessage = await signer?.signMessage(nonce);
-      setIsSigning(false);
       if (signedMessage) {
         verificationMutation.mutate({ nonce, signedMessage });
       }
@@ -86,6 +91,33 @@ function AuthConnect() {
     setToken(null);
   };
 
+  if (isConnected && isNetworkMismatch) {
+    return (
+      <Box minW="600px" mx="auto" mt="4">
+        <Box borderWidth="1px" borderRadius="lg" overflow="hidden" p="6" boxShadow="lg">
+          <Flex
+            minH="60px"
+            py={2}
+            px={4}
+            borderBottomWidth="1px"
+            borderColor={useColorModeValue('gray.200', 'gray.700')}
+            align="center"
+            justify="flex-end"
+          >
+            <Button colorScheme="teal" variant="outline" onClick={disconnect}>
+              Disconnect
+            </Button>
+          </Flex>
+        </Box>
+        <Alert status="warning" mt="4" borderRadius="md">
+          <AlertIcon />
+          <AlertTitle>Network mismatch detected.</AlertTitle>
+          <AlertDescription>Please switch to OP Sepolia.</AlertDescription>
+        </Alert>
+      </Box>
+    );
+  }
+
   return (
     <Box minW="600px" mx="auto" mt="4">
       <Box borderWidth="1px" borderRadius="lg" overflow="hidden" p="6" boxShadow="lg">
@@ -97,52 +129,36 @@ function AuthConnect() {
           borderColor={useColorModeValue('gray.200', 'gray.700')}
           align="center"
           justify="flex-end"
-          bg={useColorModeValue('gray.50', 'gray.800')}
         >
           <Stack direction="row" spacing={4}>
-            <Button colorScheme="blue" onClick={() => open({ view: 'Networks' })}>
-              Open Network Modal
-            </Button>
             {isConnected && token ? (
-              <Button colorScheme="red" onClick={logout}>
+              <Button colorScheme="teal" variant="outline" onClick={logout}>
                 Log Out
               </Button>
             ) : null}
             {isConnected && !token ? (
               <>
                 <Button
-                  colorScheme="green"
+                  colorScheme="teal"
+                  variant="outline"
+                  isLoading={signupMutation.isPending}
                   onClick={() => signupMutation.mutate({ walletAddress })}
                 >
                   Log In
                 </Button>
-                <Button variant="outline" colorScheme="gray" onClick={disconnect}>
+                <Button colorScheme="teal" variant="outline" onClick={disconnect}>
                   Disconnect
                 </Button>
               </>
             ) : null}
             {!isConnected && !token ? (
-              <Button colorScheme="blue" onClick={() => open()}>
-                Open Connect Modal
+              <Button colorScheme="teal" variant="outline" onClick={() => open()}>
+                Connect Wallet
               </Button>
             ) : null}
           </Stack>
         </Flex>
       </Box>
-
-      {isSigning ? (
-        <Alert status="info" mt="4" borderRadius="md">
-          <AlertIcon />
-          <AlertTitle>Confirm the action!</AlertTitle>
-          <AlertDescription>Please confirm signing the message in your wallet.</AlertDescription>
-        </Alert>
-      ) : null}
-
-      {isConnected && token ? (
-        <Box mt="4" p="4" borderWidth="1px" borderRadius="md" boxShadow="sm">
-          <AccessControl />
-        </Box>
-      ) : null}
 
       {permissions.isFetching ? (
         <Box mt="4" display="flex" justifyContent="center">
@@ -150,7 +166,28 @@ function AuthConnect() {
         </Box>
       ) : null}
 
-      {!permissions.data.isGranted || !token ? (
+      {signupMutation.isPending ? (
+        <Alert status="info" mt="4" borderRadius="md">
+          <AlertIcon />
+          <AlertTitle>Confirm the action!</AlertTitle>
+          <AlertDescription>Please confirm signing the message in your wallet.</AlertDescription>
+        </Alert>
+      ) : null}
+
+      {isConnected && permissions.data.isGranted ? (
+        <Alert status="success" mt="4" borderRadius="md">
+          <AlertIcon />
+          <AlertDescription>Access granted</AlertDescription>
+        </Alert>
+      ) : null}
+
+      {isConnected && !permissions.data.isGranted && token ? (
+        <Box mt="4" p="4" borderWidth="1px" borderRadius="md" boxShadow="sm">
+          <AccessControl />
+        </Box>
+      ) : null}
+
+      {isConnected && !permissions.data.isGranted && !token ? (
         <Alert status="info" mt="4" borderRadius="md">
           <AlertIcon />
           <AlertDescription>

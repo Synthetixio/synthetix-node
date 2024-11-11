@@ -4,10 +4,10 @@ const { Dapps } = require('./DApps');
 const { Ipfs } = require('./Ipfs');
 const { AuthConnect } = require('./AuthConnect');
 const { createAppKit } = require('@reown/appkit/react');
-const { optimismSepolia, mainnet } = require('@reown/appkit/networks');
+const { optimismSepolia } = require('@reown/appkit/networks');
 
 createAppKit({
-  networks: [optimismSepolia, mainnet],
+  networks: [optimismSepolia],
   metadata: {
     name: 'synthetix-node-test-1',
     description: 'Synthetix Node',
