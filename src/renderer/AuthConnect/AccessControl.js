@@ -57,7 +57,7 @@ function AccessControl() {
   }
 
   return (
-    <Stack spacing={6} padding={5} boxShadow="md" borderRadius="md">
+    <Stack spacing={6} padding={5} borderRadius="md">
       <Box>{content}</Box>
     </Stack>
   );

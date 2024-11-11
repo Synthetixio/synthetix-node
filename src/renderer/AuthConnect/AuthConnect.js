@@ -94,13 +94,7 @@ function AuthConnect() {
   if (isConnected && isNetworkMismatch) {
     return (
       <>
-        <Box
-          as="header"
-          width="100%"
-          bg={useColorModeValue('gray.100', 'gray.900')}
-          p={4}
-          boxShadow="sm"
-        >
+        <Box as="header" width="100%" borderBottomWidth="1px" p={4}>
           <Flex maxW="1200px" mx="auto" align="center" justify="space-between">
             <Box>Synthetix Node</Box>
             <Button colorScheme="teal" variant="outline" onClick={disconnect}>
@@ -110,7 +104,7 @@ function AuthConnect() {
         </Box>
 
         <Box minW="600px" mx="auto" mt="4">
-          <Box borderWidth="1px" borderRadius="lg" overflow="hidden" p="6" boxShadow="lg">
+          <Box borderWidth="1px" borderRadius="lg" overflow="hidden" p="6">
             <Alert status="warning" mt="4" borderRadius="md">
               <AlertIcon />
               <AlertTitle>Network mismatch detected.</AlertTitle>
@@ -124,13 +118,7 @@ function AuthConnect() {
 
   return (
     <>
-      <Box
-        as="header"
-        width="100%"
-        bg={useColorModeValue('gray.100', 'gray.900')}
-        p={4}
-        boxShadow="sm"
-      >
+      <Box as="header" width="100%" p={4} borderBottomWidth="1px">
         <Flex maxW="1200px" mx="auto" align="center" justify="space-between">
           <Box>Synthetix Node</Box>
           <Stack direction="row" spacing={4} align="center">
@@ -165,7 +153,7 @@ function AuthConnect() {
 
       {isConnected ? (
         <Box minW="600px" mx="auto" mt="4">
-          <Box borderWidth="1px" borderRadius="lg" overflow="hidden" p="6" boxShadow="lg">
+          <Box borderWidth="1px" borderRadius="lg" overflow="hidden" p="6">
             {permissions.isFetching ? (
               <Box mt="4" display="flex" justifyContent="center">
                 <Spinner size="lg" />
@@ -190,7 +178,7 @@ function AuthConnect() {
             ) : null}
 
             {!permissions.data.isGranted && token ? (
-              <Box mt="4" p="4" borderWidth="1px" borderRadius="md" boxShadow="sm">
+              <Box mt="4" p="4" borderWidth="1px" borderRadius="md">
                 <AccessControl />
               </Box>
             ) : null}
