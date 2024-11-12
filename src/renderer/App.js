@@ -1,11 +1,11 @@
-const { Box, Text, Button } = require('@chakra-ui/react');
+const { Flex, Box, Text, Button } = require('@chakra-ui/react');
 const React = require('react');
 const { Dapps } = require('./DApps');
 const { Ipfs } = require('./Ipfs');
 const { AuthConnect } = require('./AuthConnect');
 const { createAppKit } = require('@reown/appkit/react');
 const { optimismSepolia } = require('@reown/appkit/networks');
-const { Routes, Route, useLocation, useNavigate } = require('react-router-dom');
+const { Routes, Route, useNavigate } = require('react-router-dom');
 
 createAppKit({
   networks: [optimismSepolia],
@@ -22,22 +22,22 @@ createAppKit({
 
 function App() {
   const navigate = useNavigate();
-  const location = useLocation();
-
-  const handleButtonClick = () => {
-    navigate(location.pathname === '/auth' ? '/' : '/auth');
-  };
 
   return (
     <Box display="flex" flexDirection="column" minHeight="100vh">
-      <Button colorScheme="teal" variant="outline" onClick={handleButtonClick}>
-        {location.pathname === '/auth' ? 'Go to Main Page' : 'Go to Auth Page'}
-      </Button>
       <Routes>
         <Route
           path="/"
           element={
             <>
+              <Box as="header" width="100%" borderBottomWidth="1px" p={3}>
+                <Flex maxW="1200px" mx="auto" align="center" justify="space-between">
+                  <Box>Synthetix Node</Box>
+                  <Button colorScheme="teal" variant="outline" onClick={() => navigate('/auth')}>
+                    Go to Auth Page
+                  </Button>
+                </Flex>
+              </Box>
               <Box px="5" flex="1" overflowY="auto">
                 <Ipfs />
               </Box>

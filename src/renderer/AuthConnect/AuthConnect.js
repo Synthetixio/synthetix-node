@@ -13,7 +13,6 @@ const {
   Flex,
   Button,
   Stack,
-  useColorModeValue,
   Alert,
   AlertIcon,
   AlertTitle,
@@ -22,8 +21,10 @@ const {
 const { optimismSepolia } = require('@reown/appkit/networks');
 const { usePermissions } = require('./usePermissions');
 const { AccessControl } = require('./AccessControl');
+const { NetworkMismatch } = require('./NetworkMismatch');
 const { getApiUrl, saveToken, removeToken, restoreToken } = require('./utils');
 const { BrowserProvider } = require('ethers');
+const { useNavigate } = require('react-router-dom');
 
 const makeUnauthenticatedRequest = async (endpoint, data) => {
   const response = await fetch(`${getApiUrl()}${endpoint}`, {
@@ -54,6 +55,7 @@ function AuthConnect() {
   const [isNetworkMismatch, setIsNetworkMismatch] = React.useState(optimismSepolia.id !== chainId);
   const { walletProvider } = useAppKitProvider('eip155');
   const permissions = usePermissions();
+  const navigate = useNavigate();
 
   React.useEffect(() => {
     const restoredToken = restoreToken({ walletAddress });
@@ -92,36 +94,18 @@ function AuthConnect() {
   };
 
   if (isConnected && isNetworkMismatch) {
-    return (
-      <>
-        <Box as="header" width="100%" borderBottomWidth="1px" p={4}>
-          <Flex maxW="1200px" mx="auto" align="center" justify="space-between">
-            <Box>Synthetix Node</Box>
-            <Button colorScheme="teal" variant="outline" onClick={disconnect}>
-              Disconnect
-            </Button>
-          </Flex>
-        </Box>
-
-        <Box minW="600px" mx="auto" mt="4">
-          <Box borderWidth="1px" borderRadius="lg" overflow="hidden" p="6">
-            <Alert status="warning" mt="4" borderRadius="md">
-              <AlertIcon />
-              <AlertTitle>Network mismatch detected.</AlertTitle>
-              <AlertDescription>Please switch to OP Sepolia.</AlertDescription>
-            </Alert>
-          </Box>
-        </Box>
-      </>
-    );
+    return <NetworkMismatch />;
   }
 
   return (
     <>
-      <Box as="header" width="100%" p={4} borderBottomWidth="1px">
+      <Box as="header" width="100%" borderBottomWidth="1px" p={3}>
         <Flex maxW="1200px" mx="auto" align="center" justify="space-between">
           <Box>Synthetix Node</Box>
           <Stack direction="row" spacing={4} align="center">
+            <Button colorScheme="teal" variant="outline" onClick={() => navigate('/')}>
+              Go to Main Page
+            </Button>
             {isConnected && token ? (
               <Button colorScheme="teal" variant="outline" onClick={logout}>
                 Log Out
