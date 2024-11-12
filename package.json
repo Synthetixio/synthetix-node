@@ -28,6 +28,7 @@
     "@tanstack/react-query-devtools": "^5.25.0",
     "@vderunov/whitelist-contract": "^2.0.0",
     "adm-zip": "^0.5.10",
+    "dotenv": "^16.4.5",
     "electron-log": "^5.1.2",
     "electron-squirrel-startup": "^1.0.0",
     "ethers": "^6.13.4",

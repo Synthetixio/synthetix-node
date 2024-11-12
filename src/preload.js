@@ -1,5 +1,10 @@
 const { contextBridge, ipcRenderer } = require('electron');
 
+contextBridge.exposeInMainWorld('env', {
+  API_URL: process.env.API_URL,
+  PROJECTID: process.env.PROJECTID,
+});
+
 const electronHandler = {
   ipcRenderer: {
     invoke: (func, ...args) => ipcRenderer.invoke(func, ...args),

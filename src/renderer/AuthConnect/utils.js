@@ -1,9 +1,5 @@
 function getApiUrl() {
-  // TODO make as env
-  // const API_URL = 'http://45.146.7.38:3005/';
-  const API_URL = 'http://localhost:3005/';
-  // return window.localStorage.getItem('API_URL') ?? process.env.API_URL;
-  return window.localStorage.getItem('API_URL') || process.env.API_URL || API_URL;
+  return window.localStorage.getItem('API_URL') || process.env.API_URL || window.env.API_URL;
 }
 
 function restoreToken({ walletAddress }) {

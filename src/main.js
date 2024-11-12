@@ -3,6 +3,7 @@ const http = require('node:http');
 const path = require('node:path');
 const { BrowserWindow, Menu, Tray, app, ipcMain, session, shell } = require('electron');
 const logger = require('electron-log');
+require('dotenv').config();
 const { SYNTHETIX_NODE_APP_CONFIG } = require('./const');
 const { DAPPS, resolveDapp } = require('./main/dapps');
 const {
