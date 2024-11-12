@@ -35,6 +35,7 @@
     "framer-motion": "^11.0.8",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-router-dom": "^6.28.0",
     "tar": "^6.2.0",
     "zod": "^3.22.4"
   },
