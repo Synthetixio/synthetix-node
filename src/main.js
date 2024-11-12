@@ -84,7 +84,7 @@ function createWindow() {
     fullscreen: false,
     fullscreenable: false,
     width: 600,
-    height: 470,
+    height: 540,
     // frame: false,
     icon: isDebug ? path.join(app.getAppPath(), 'assets/icon.ico') : undefined,
     webPreferences: {

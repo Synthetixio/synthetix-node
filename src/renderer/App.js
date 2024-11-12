@@ -12,7 +12,6 @@ createAppKit({
   metadata: {
     name: 'Synthetix Node',
     description: 'Synthetix Node',
-    url: 'https://reown.com/appkit', // origin must match your domain & subdomain
   },
   projectId: process.env.PROJECTID || window.env.PROJECTID,
   features: {
