@@ -3,9 +3,6 @@ const { abi, address } = require('@vderunov/whitelist-contract/deployments/11155
 const { Contract, JsonRpcProvider } = require('ethers');
 const { useAppKitNetwork, useAppKitAccount } = require('@reown/appkit/react');
 
-// TODO make URL as env
-const URL = 'https://sepolia.optimism.io';
-
 function usePermissions() {
   const { chainId } = useAppKitNetwork();
   const { address: walletAddress, isConnected } = useAppKitAccount();
@@ -15,7 +12,7 @@ function usePermissions() {
     queryFn: async () => {
       if (!isConnected) throw Error('User disconnected');
 
-      const ethersProvider = new JsonRpcProvider(URL);
+      const ethersProvider = new JsonRpcProvider(window.env.OPTIMISM_SEPOLIA_RPC_URL);
       const contract = new Contract(address, abi, ethersProvider);
 
       const [isPending, isGranted, isAdmin] = await Promise.all([
