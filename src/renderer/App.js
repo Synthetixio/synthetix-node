@@ -33,7 +33,7 @@ function App() {
                 <Flex maxW="1200px" mx="auto" align="center" justify="space-between">
                   <Box>Synthetix Node</Box>
                   <Button colorScheme="teal" variant="outline" onClick={() => navigate('/auth')}>
-                    Go to Auth Page
+                    Sign In
                   </Button>
                 </Flex>
               </Box>

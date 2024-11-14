@@ -25,7 +25,7 @@ function NetworkMismatch() {
           <Box>Synthetix Node</Box>
           <Stack direction="row" spacing={4} align="center">
             <Button colorScheme="teal" variant="outline" onClick={() => navigate('/')}>
-              Go to Main Page
+              Close
             </Button>
             <Button colorScheme="teal" variant="outline" onClick={disconnect}>
               Disconnect

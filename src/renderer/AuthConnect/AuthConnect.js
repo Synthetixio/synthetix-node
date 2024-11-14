@@ -104,7 +104,7 @@ function AuthConnect() {
           <Box>Synthetix Node</Box>
           <Stack direction="row" spacing={4} align="center">
             <Button colorScheme="teal" variant="outline" onClick={() => navigate('/')}>
-              Go to Main Page
+              Close
             </Button>
             {isConnected && token ? (
               <Button colorScheme="teal" variant="outline" onClick={logout}>
