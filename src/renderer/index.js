@@ -4,6 +4,7 @@ const { ReactQueryDevtools } = require('@tanstack/react-query-devtools');
 const React = require('react');
 const { createRoot } = require('react-dom/client');
 const App = require('./App.js');
+const { HashRouter } = require('react-router-dom');
 
 const config = {
   initialColorMode: 'dark',
@@ -27,7 +28,9 @@ const root = createRoot(container);
 root.render(
   <QueryClientProvider client={queryClient}>
     <ChakraProvider theme={theme}>
-      <App />
+      <HashRouter>
+        <App />
+      </HashRouter>
     </ChakraProvider>
     <ReactQueryDevtools initialIsOpen={false} />
   </QueryClientProvider>
