@@ -1,5 +1,5 @@
 const { useQuery } = require('@tanstack/react-query');
-const { abi, address } = require('@vderunov/whitelist-contract/deployments/11155420/Whitelist');
+const Whitelist = require('@synthetixio/synthetix-node-namespace/deployments/11155420/Whitelist');
 const { Contract, JsonRpcProvider } = require('ethers');
 const { useAppKitNetwork, useAppKitAccount } = require('@reown/appkit/react');
 
@@ -13,12 +13,12 @@ function usePermissions() {
       if (!isConnected) throw Error('User disconnected');
 
       const ethersProvider = new JsonRpcProvider(window.env.OPTIMISM_SEPOLIA_RPC_URL);
-      const contract = new Contract(address, abi, ethersProvider);
+      const WhitelistContract = new Contract(Whitelist.address, Whitelist.abi, ethersProvider);
 
       const [isPending, isGranted, isAdmin] = await Promise.all([
-        contract.isPending(walletAddress),
-        contract.isGranted(walletAddress),
-        contract.isAdmin(walletAddress),
+        WhitelistContract.isPending(walletAddress),
+        WhitelistContract.isGranted(walletAddress),
+        WhitelistContract.isAdmin(walletAddress),
       ]);
 
       return { isPending, isGranted, isAdmin };

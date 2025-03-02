@@ -96,5 +96,5 @@ export IPNS_KEY=synthetix-node-app-config
 export IPFS_CID=$(curl -u "$IPFS_USER:$IPFS_PASS" 'https://ipfs.synthetix.io/api/v0/add' -F file=@config.json --silent | jq -r '.Hash')
 
 # 4. Publish config.json to Synthetix IPNS key
-curl --silent --request POST --user "$IPFS_USER:$IPFS_PASS" "https://ipfs.synthetix.io:5001/api/v0/name/publish?key=$IPNS_KEY&arg=$IPFS_CID" | jq
+curl --silent --request POST --user "$IPFS_USER:$IPFS_PASS" "https://ipfs.synthetix.io:5001/api/v0/name/publish?key=$IPNS_KEY&arg=$IPFS_CID&ttl=5m&lifetime=168h" | jq
 ```

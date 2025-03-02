@@ -1,6 +1,6 @@
 const { useMutation, useQueryClient } = require('@tanstack/react-query');
 const { useAppKitProvider, useAppKitAccount, useAppKitNetwork } = require('@reown/appkit/react');
-const { abi, address } = require('@vderunov/whitelist-contract/deployments/11155420/Whitelist');
+const Whitelist = require('@synthetixio/synthetix-node-namespace/deployments/11155420/Whitelist');
 const { Contract, BrowserProvider } = require('ethers');
 
 function useSubmitApplicationMutation() {
@@ -15,8 +15,8 @@ function useSubmitApplicationMutation() {
 
       const ethersProvider = new BrowserProvider(walletProvider);
       const signer = await ethersProvider.getSigner();
-      const contract = new Contract(address, abi, signer);
-      const tx = await contract.submitApplication();
+      const WhitelistContract = new Contract(Whitelist.address, Whitelist.abi, signer);
+      const tx = await WhitelistContract.submitApplication();
       await tx.wait();
     },
     onSuccess: () => {
