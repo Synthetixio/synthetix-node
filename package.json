@@ -2,7 +2,7 @@
   "name": "synthetix-node",
   "description": "Synthetix Node",
   "repository": "Synthetixio/synthetix-node",
-  "version": "1.6.2",
+  "version": "1.7.0",
   "license": "MIT",
   "author": "Synthetix Team",
   "main": ".webpack/main",
