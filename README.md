@@ -49,14 +49,14 @@ If you would rather run this in a Docker container or run scripts manually, chec
 ### Get Started
 
 ```sh
-npm install
-npm start
+yarn install
+yarn start
 ```
 
 ### Regenerate Electron app icons from svg
 
 ```sh
-npm run iconsgen
+yarn iconsgen
 ```
 
 ### Releasing new version
@@ -73,7 +73,7 @@ git push --follow-tags
 
 # build app
 export CSC_IDENTITY_AUTO_DISCOVERY=false
-npm run package
+yarn package
 
 # create release and upload artifacts
 gh release create $NEXT_VERSION --generate-notes ./release/build/*.zip

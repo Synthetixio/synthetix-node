@@ -1,5 +1,6 @@
 const { ExternalLinkIcon } = require('@chakra-ui/icons');
 const { Box, Button, Flex, Heading, Image, Link, Skeleton, Spinner } = require('@chakra-ui/react');
+// biome-ignore lint/correctness/noUnusedVariables: React is required
 const React = require('react');
 const { useDapps } = require('./useDapps');
 

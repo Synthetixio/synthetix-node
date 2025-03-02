@@ -1,12 +1,20 @@
 {
-  "$schema": "https://biomejs.dev/schemas/1.5.3/schema.json",
+  "$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
+  "files": {
+    "ignore": ["package.json", ".yarnrc.yml", "yarn.lock", "cache", ".yarn", "node_modules", "out"],
+    "ignoreUnknown": true
+  },
   "organizeImports": {
     "enabled": true
   },
   "linter": {
     "enabled": true,
     "rules": {
-      "recommended": true
+      "recommended": true,
+      "correctness": {
+        "noUndeclaredVariables": "error",
+        "noUnusedVariables": "error"
+      }
     }
   },
   "vcs": {
@@ -25,12 +33,17 @@
     "ignore": []
   },
   "javascript": {
+    "jsxRuntime": "reactClassic",
+    "globals": [
+      "MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY",
+      "MAIN_WINDOW_WEBPACK_ENTRY"
+    ],
     "formatter": {
       "quoteStyle": "single",
       "arrowParentheses": "always",
       "jsxQuoteStyle": "double",
       "semicolons": "always",
-      "trailingComma": "es5",
+      "trailingCommas": "es5",
       "quoteProperties": "asNeeded",
       "bracketSpacing": true,
       "bracketSameLine": false

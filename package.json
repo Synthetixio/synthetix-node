@@ -11,8 +11,8 @@
     "package": "electron-forge package",
     "make": "electron-forge make",
     "publish": "electron-forge publish",
-    "lint": "biome check --apply ./src",
-    "lint:check": "biome check ./src",
+    "lint": "biome lint --write ./src",
+    "lint:check": "biome lint ./src",
     "config:check": "node config-check.js",
     "svg": "svgo --recursive src assets",
     "svg:check": "yarn svg && git diff --exit-code **/*.svg"
@@ -41,8 +41,9 @@
   },
   "devDependencies": {
     "@babel/core": "^7.24.0",
+    "@babel/preset-env": "^7.26.9",
     "@babel/preset-react": "^7.23.3",
-    "@biomejs/biome": "^1.6.0",
+    "@biomejs/biome": "^1.9.4",
     "@electron-forge/cli": "^7.3.0",
     "@electron-forge/maker-deb": "^7.3.0",
     "@electron-forge/maker-rpm": "^7.3.0",

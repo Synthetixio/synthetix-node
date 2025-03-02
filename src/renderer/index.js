@@ -1,6 +1,7 @@
 const { ChakraProvider, extendTheme } = require('@chakra-ui/react');
 const { QueryClient, QueryClientProvider } = require('@tanstack/react-query');
 const { ReactQueryDevtools } = require('@tanstack/react-query-devtools');
+// biome-ignore lint/correctness/noUnusedVariables: React is required
 const React = require('react');
 const { createRoot } = require('react-dom/client');
 const App = require('./App.js');

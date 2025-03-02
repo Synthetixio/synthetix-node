@@ -1,4 +1,5 @@
 const { Flex, Box, Text, Button } = require('@chakra-ui/react');
+// biome-ignore lint/correctness/noUnusedVariables: React is required
 const React = require('react');
 const { Dapps } = require('./DApps');
 const { Ipfs } = require('./Ipfs');

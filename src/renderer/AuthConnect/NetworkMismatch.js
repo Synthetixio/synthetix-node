@@ -1,3 +1,4 @@
+// biome-ignore lint/correctness/noUnusedVariables: React is required
 const React = require('react');
 const {
   Box,

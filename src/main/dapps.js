@@ -57,7 +57,7 @@ async function isPinned(qm) {
   try {
     const result = await rpcRequest('pin/ls', [qm], { type: 'recursive' });
     return result.Keys[qm];
-  } catch (e) {
+  } catch {
     return false;
   }
 }
@@ -133,7 +133,7 @@ async function cleanupOldDapps() {
       // Clenup the repo
       await rpcRequest('repo/gc');
     }
-  } catch (e) {
+  } catch {
     // do nothing
   }
 }
