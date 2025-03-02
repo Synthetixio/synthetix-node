@@ -62,13 +62,7 @@ yarn iconsgen
 ### Releasing new version
 
 ```sh
-pushd .
-cd ./release/app
-NEXT_VERSION=$(npm version patch)
-popd
-git add .
-git commit -m $NEXT_VERSION
-git tag -a -m $NEXT_VERSION $NEXT_VERSION
+npm version minor
 git push --follow-tags
 
 # build app
