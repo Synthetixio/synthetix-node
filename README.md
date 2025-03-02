@@ -62,18 +62,18 @@ yarn iconsgen
 ### Releasing new version
 
 ```sh
-npm version minor
+export NEXT_VERSION=$(npm version minor)
 git push --follow-tags
 
 # build app
 export CSC_IDENTITY_AUTO_DISCOVERY=false
-yarn package
+yarn make
 
 # create release and upload artifacts
-gh release create $NEXT_VERSION --generate-notes ./release/build/*.zip
+gh release create $NEXT_VERSION --generate-notes ./out/make/**/*.zip
 
 # re-upload artifacts if needed
-gh release upload $NEXT_VERSION ./release/build/*.zip
+gh release upload $NEXT_VERSION ./out/make/**/*.zip
 ```
 
 ### Publishing new config
