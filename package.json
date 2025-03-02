@@ -62,5 +62,5 @@
     "svgo": "^3.2.0",
     "webpack": "^5.90.3"
   },
-  "packageManager": "yarn@4.1.0"
+  "packageManager": "yarn@4.7.0"
 }
