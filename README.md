@@ -42,6 +42,14 @@ iwr -useb https://synthetixio.github.io/synthetix-node/install-win32.ps1 | iex
 
 This will download the correct release of `synthetix-node.exe` to your Program Files directory and start it.
 
+On Linux, open your terminal and run the following command:
+
+```sh
+curl https://synthetixio.github.io/synthetix-node/install-ubuntu.sh | bash
+```
+
+This will download the correct release of `synthetix-node` package, install it, and start it on your system.
+
 ### Manual Installation
 
 #### For macOS
@@ -66,6 +74,24 @@ Download the Windows app from the [Latest release page](https://github.com/Synth
 Please note that the application supports only Windows 64-bit.
 
 Unzip and run synthetix-node.exe to start the application.
+
+#### For Ubuntu/Linux
+
+Download the `.deb` package from
+the [Latest release page](https://github.com/Synthetixio/synthetix-node/releases/latest). Navigate to the folder
+that contains `synthetix-node_1.7.0_arm64.deb`.
+
+Run the following command to install the application:
+
+   ```sh
+   sudo dpkg -i synthetix-node_1.7.0_arm64.deb
+   ```
+
+After installation, launch the application using:
+
+   ```sh
+   synthetix-node
+   ```
 
 ### Build From Source Code
 
