@@ -1,10 +1,4 @@
-const { contextBridge, ipcRenderer } = require('electron');
-
-contextBridge.exposeInMainWorld('env', {
-  API_URL: process.env.API_URL,
-  PROJECTID: process.env.PROJECTID,
-  OPTIMISM_SEPOLIA_RPC_URL: process.env.OPTIMISM_SEPOLIA_RPC_URL,
-});
+const {contextBridge, ipcRenderer} = require('electron');
 
 const electronHandler = {
   ipcRenderer: {
